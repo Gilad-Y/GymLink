@@ -1,0 +1,10 @@
+.header {
+  width: 100%;
+  overflow: auto;
+  /* border: 1px solid black; */
+}
+
+.headerButtons {
+  display: flex;
+  flex-direction: row-reverse;
+}
