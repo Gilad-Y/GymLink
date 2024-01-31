@@ -5,10 +5,12 @@ import LangAndNot from "./langAndNot/langAndNot";
 function Header(): JSX.Element {
   return (
     <div className="header">
-      GymLink
+      <h1 className="logo" style={{ marginTop: "-1px" }}>
+        GymLink
+      </h1>
       <div className="headerButtons">
-        <AccountButton />
         <LangAndNot />
+        <AccountButton />
       </div>
     </div>
   );

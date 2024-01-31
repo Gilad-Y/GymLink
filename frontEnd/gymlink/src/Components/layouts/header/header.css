@@ -1,10 +1,33 @@
-.header {
+/* .header {
   width: 100%;
+  height: 100%;
   overflow: auto;
   /* border: 1px solid black; */
+/* display: flex; */
+/* flex-direction: row-reverse; */
+/* } */
+
+/* .headerButtons { */
+/* display: flex; */
+/* flex-direction: row-reverse; */
+/* border: 1px solid black; */
+/* align-items: end; */
+/* } */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* padding: 10px; */
+}
+
+.logo {
+  flex-grow: 1;
+  text-align: center;
 }
 
 .headerButtons {
+  margin-top: -10px;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
+  align-items: center;
 }

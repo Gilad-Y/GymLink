@@ -88,9 +88,7 @@ function LogIn(): JSX.Element {
                   alignItems: "center",
                 }}
               >
-                <Typography component="h1" variant="h5">
-                  התחבר
-                </Typography>
+                <h1>התחבר</h1>
                 <form onSubmit={handleSubmit(logUser)}>
                   <TextField
                     margin="normal"
