@@ -4,7 +4,7 @@ import {
   // checkNum,
   // deleteUser,
   // getAll,
-  // getById,
+  getAllById,
   // getNameById,
   // getOption,
   logUser,
@@ -31,13 +31,14 @@ const router = express.Router();
 //     response.status(200).json(await getNameById(id));
 //   }
 // );
-// router.get(
-//   "/getById/:id",
-//   async (request: Request, response: Response, next: NextFunction) => {
-//     const id = +request.params.id;
-//     response.status(200).json(await getById(id));
-//   }
-// );
+router.get(
+  "/getAllById/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const id = +request.params.id;
+    console.log(id);
+    response.status(200).json(await getAllById(id));
+  }
+);
 router.post(
   "/logUser",
   async (request: Request, response: Response, next: NextFunction) => {

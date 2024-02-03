@@ -24,13 +24,13 @@ import dal_mysql from "../Utils/dal_mysql";
 //   // console.log(`${data[0].firstName} ${data[0].lastName}`);
 //   return `${data[0].firstName} ${data[0].lastName}`;
 // };
-// const getById = async (id: number) => {
-//   const SQLcmd = `
-//   SELECT * FROM userTable WHERE userId = ${id}
-//   `;
-//   const data = await dal_mysql.execute(SQLcmd);
-//   return data;
-// };
+const getAllById = async (id: number) => {
+  const SQLcmd = `
+  SELECT * FROM users WHERE belonging  = ${id}
+  `;
+  const data = await dal_mysql.execute(SQLcmd);
+  return data;
+};
 const logUser = async (email: string, password: string) => {
   const SQLcmd = `
   SELECT id,firstName,
@@ -104,9 +104,8 @@ export {
   // checkNum,
   // addUser,
   // deleteUser,
-  // getById,
+  getAllById,
   // updateUser,
   // getOption,
   // getNameById,
 };
-//UPDATE `eventSys`.`userTable` SET `firstName` = 'fגלעד', `lastName` = 'fיצחק', `userPhone` = '054226f7344', `userPassword` = 'hostyf' WHERE (`userId` = '3');

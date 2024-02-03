@@ -9,10 +9,10 @@ import { useEffect } from "react";
 function MainRoute(): JSX.Element {
   const nav = useNavigate();
   useEffect(() => {
-    !store.getState().users.user[0]?.userId && nav("/login");
+    !store.getState().users.user[0]?.id && nav("/login");
   }, []);
   store.subscribe(() => {
-    !store.getState().users.user[0]?.userId && nav("/login");
+    !store.getState().users.user[0]?.id && nav("/login");
   });
   return (
     <div className="mainRoute">

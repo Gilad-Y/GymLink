@@ -5,8 +5,9 @@ body,
   padding: 0;
   height: 100%;
   text-align: center;
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(36, 36, 36);
   font-family: "rubik";
+  color: white;
 }
 .p-blue {
   background-color: rgb(50, 76, 239);

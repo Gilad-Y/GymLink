@@ -1,5 +1,5 @@
 export class UserModel {
-  public userId: number;
+  public id: number;
   public firstName: string;
   public lastName: string;
   public email: string;
@@ -10,7 +10,7 @@ export class UserModel {
   public belonging: number;
 
   constructor(
-    userId: number,
+    id: number,
     firstName: string,
     lastName: string,
     email: string,
@@ -20,7 +20,7 @@ export class UserModel {
 
     belonging: number
   ) {
-    this.userId = userId;
+    this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
