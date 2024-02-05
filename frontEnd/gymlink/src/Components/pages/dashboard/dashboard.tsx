@@ -3,30 +3,33 @@ import CardLine from "./cardLine/cardLine";
 import ClientsTable from "./clientsTable/clientsTable";
 import "./dashboard.css";
 import store from "../../../redux/store";
-import axios from "axios";
-import Page404 from "../page404/page404";
-import NoTrainees from "./noTrainees/noTrainees";
+import ToggleButton from "@mui/material/ToggleButton";
+import ProgressGraph from "./progressGraph/progressGraph";
 
 function Dashboard(): JSX.Element {
-  const id = store.getState().users.user[0]?.id;
-  // const [userId, setId] = useState<number>(0);
-  // setId(id);
-  React.useEffect(() => {
-    // const id = store.getState().users.user[0]?.id;
-    // console.log(id);
-    // id &&
-    //   axios
-    //     .get(`http://localhost:4000/api/v1/user/getAllById/${id}`)
-    //     .then((res) => {
-    //       console.log(res.data);
-    //     });
-  }, []);
+  const user = store.getState().users?.user[0];
+  const [adminMode, setAdminMode] = useState<boolean>(false);
   return (
     <div className="dashboard">
       <br />
+      {user?.type == "admin" && (
+        <ToggleButton
+          sx={{ width: "93.5%" }}
+          color="success"
+          value="check"
+          selected={adminMode}
+          onChange={() => {
+            setAdminMode(!adminMode);
+          }}
+        >
+          <div style={{ color: "white" }}>admin mode</div>
+        </ToggleButton>
+      )}
+      <br />
       <CardLine />
       <br />
-      {id ? <ClientsTable id={id} /> : <NoTrainees />}
+      {user?.type == "trainer" || (adminMode && <ClientsTable id={user.id} />)}
+      {user?.type == "trainee" && <ProgressGraph />}
     </div>
   );
 }
