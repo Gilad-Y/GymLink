@@ -5,6 +5,7 @@ import {
   // deleteUser,
   // getAll,
   getAllById,
+  getById,
   // getNameById,
   // getOption,
   logUser,
@@ -37,6 +38,14 @@ router.get(
     const id = +request.params.id;
     console.log(id);
     response.status(200).json(await getAllById(id));
+  }
+);
+router.get(
+  "/getById/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const id = +request.params.id;
+    console.log(id);
+    response.status(200).json(await getById(id));
   }
 );
 router.post(

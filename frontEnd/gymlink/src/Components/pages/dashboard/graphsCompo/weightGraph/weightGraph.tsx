@@ -1,28 +1,31 @@
 import { useEffect, useState } from "react";
-import "./progressGraph.css";
+import "./weightGraph.css";
 import { LineChart } from "@mui/x-charts/LineChart";
-function ProgressGraph(): JSX.Element {
+function WeightGraph(): JSX.Element {
   const [xData, setX] = useState<any[]>([]);
   const [yData, setY] = useState<any[]>([]);
+  const colors = ["purple"];
   useEffect(() => {
     setX([1, 2, 3, 5, 8, 10]);
     setY([2, 5.5, 2, 8.5, 1.5, 5]);
   }, []);
   return (
-    <div className="progressGraph">
+    <div className="weightGraph">
+      <h1>גרף משקלים</h1>
       <LineChart
+        colors={colors}
         xAxis={[{ data: xData }]}
         series={[
           {
             data: yData,
           },
         ]}
-        sx={{ width: "93%", background: "rgb(89, 96, 96)" }}
-        // width={"93.5%"}
+        sx={{ background: "rgb(89, 96, 96)" }}
         height={400}
+        width={700}
       />
     </div>
   );
 }
 
-export default ProgressGraph;
+export default WeightGraph;

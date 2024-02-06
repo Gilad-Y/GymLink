@@ -31,6 +31,13 @@ const getAllById = async (id: number) => {
   const data = await dal_mysql.execute(SQLcmd);
   return data;
 };
+const getById = async (id: number) => {
+  const SQLcmd = `
+  SELECT * FROM users WHERE id  = ${id}
+  `;
+  const data = await dal_mysql.execute(SQLcmd);
+  return data;
+};
 const logUser = async (email: string, password: string) => {
   const SQLcmd = `
   SELECT id,firstName,
@@ -105,6 +112,7 @@ export {
   // addUser,
   // deleteUser,
   getAllById,
+  getById,
   // updateUser,
   // getOption,
   // getNameById,

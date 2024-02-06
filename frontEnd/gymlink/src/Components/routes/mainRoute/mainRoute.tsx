@@ -5,6 +5,10 @@ import Page404 from "../../pages/page404/page404";
 import LogIn from "../../pages/logIn/logIn";
 import store from "../../../redux/store";
 import { useEffect } from "react";
+import Payments from "../../pages/addData/payments/payments";
+import AddWeights from "../../pages/addData/addWeights/addWeights";
+import AddMission from "../../pages/addData/addMission/addMission";
+import AddProgram from "../../pages/addData/addProgram/addProgram";
 
 function MainRoute(): JSX.Element {
   const nav = useNavigate();
@@ -19,6 +23,10 @@ function MainRoute(): JSX.Element {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<LogIn />} />
+        <Route path="/update/payments/:id" element={<Payments />} />
+        <Route path="/update/weight/:id" element={<AddWeights />} />
+        <Route path="/update/missions/:id" element={<AddMission />} />
+        <Route path="/update/program/:id" element={<AddProgram />} />
         <Route path="*" element={<Page404 />} />
       </Routes>
     </div>

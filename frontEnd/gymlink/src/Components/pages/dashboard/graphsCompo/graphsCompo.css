@@ -1,0 +1,15 @@
+.graphsCompo {
+  width: 93.5%;
+  display: flex;
+  justify-content: space-between; /* Align items along the main axis */
+  margin: auto;
+}
+
+/* Adjust margins for the graph components */
+.ProgressGraph {
+  margin-right: 20px; /* Adjust as needed */
+}
+
+.WeightGraph {
+  margin-left: 20px; /* Adjust as needed */
+}
