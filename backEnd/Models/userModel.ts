@@ -1,5 +1,5 @@
 export class UserModel {
-  public userId: number;
+  public id: number;
   public firstName: string;
   public lastName: string;
   public email: string;
@@ -10,24 +10,22 @@ export class UserModel {
   public belonging: number;
 
   constructor(
-    userId: number,
+    id: number,
     firstName: string,
     lastName: string,
     email: string,
     phone: string,
     userPass: string,
     type: string,
-
     belonging: number
   ) {
-    this.userId = userId;
+    this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.phone = phone;
     this.userPass = userPass;
     this.type = type;
-
     this.belonging = belonging;
   }
 
@@ -38,5 +36,26 @@ export class UserModel {
 
   public get _userPass(): string {
     return this.userPass;
+  }
+}
+
+export class trainee extends UserModel {
+  public card: number;
+  public subscription: Date;
+  constructor(
+    id: number,
+    firstName: string,
+    lastName: string,
+    email: string,
+    phone: string,
+    userPass: string,
+    type: string,
+    belonging: number,
+    card: number,
+    subscription: Date
+  ) {
+    super(id, firstName, lastName, email, phone, userPass, type, belonging);
+    this.card = card;
+    this.subscription = subscription;
   }
 }

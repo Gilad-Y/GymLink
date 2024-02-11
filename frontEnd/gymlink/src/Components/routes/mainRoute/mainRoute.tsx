@@ -9,6 +9,7 @@ import Payments from "../../pages/addData/payments/payments";
 import AddWeights from "../../pages/addData/addWeights/addWeights";
 import AddMission from "../../pages/addData/addMission/addMission";
 import AddProgram from "../../pages/addData/addProgram/addProgram";
+import AddTrainee from "../../pages/addData/addTrainee/addTrainee";
 
 function MainRoute(): JSX.Element {
   const nav = useNavigate();
@@ -27,6 +28,7 @@ function MainRoute(): JSX.Element {
         <Route path="/update/weight/:id" element={<AddWeights />} />
         <Route path="/update/missions/:id" element={<AddMission />} />
         <Route path="/update/program/:id" element={<AddProgram />} />
+        <Route path="/update/newTrainee/:id" element={<AddTrainee />} />
         <Route path="*" element={<Page404 />} />
       </Routes>
     </div>

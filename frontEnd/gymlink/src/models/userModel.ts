@@ -17,7 +17,6 @@ export class UserModel {
     phone: string,
     userPass: string,
     type: string,
-
     belonging: number
   ) {
     this.id = id;
@@ -27,7 +26,6 @@ export class UserModel {
     this.phone = phone;
     this.userPass = userPass;
     this.type = type;
-
     this.belonging = belonging;
   }
 
@@ -38,5 +36,26 @@ export class UserModel {
 
   public get _userPass(): string {
     return this.userPass;
+  }
+}
+
+export class trainee extends UserModel {
+  public card: number;
+  public subscription: Date;
+  constructor(
+    id: number,
+    firstName: string,
+    lastName: string,
+    email: string,
+    phone: string,
+    userPass: string,
+    type: string,
+    belonging: number,
+    card: number,
+    subscription: Date
+  ) {
+    super(id, firstName, lastName, email, phone, userPass, type, belonging);
+    this.card = card;
+    this.subscription = subscription;
   }
 }

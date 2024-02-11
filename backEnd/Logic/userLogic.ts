@@ -24,10 +24,32 @@ import dal_mysql from "../Utils/dal_mysql";
 //   // console.log(`${data[0].firstName} ${data[0].lastName}`);
 //   return `${data[0].firstName} ${data[0].lastName}`;
 // };
+
+//SELECT likes_table.*, destination
+// FROM likes_table JOIN vacation_table
+// ON likes_table.vacationCode=vacation_table.vacationCode
+
 const getAllById = async (id: number) => {
-  const SQLcmd = `
-  SELECT * FROM users WHERE belonging  = ${id}
-  `;
+  const SQLcmd =
+    //  `
+    // SELECT * FROM users WHERE belonging  = ${id}
+    // `;
+    `
+    SELECT 
+    users.*, 
+    paymentTable.startingDate,
+    paymentTable.endingDate,
+    paymentTable.card,
+    DATEDIFF(paymentTable.endingDate, CURDATE()) AS days_until_end
+FROM 
+    users
+LEFT JOIN 
+    paymentTable ON users.id = paymentTable.traineeid
+WHERE 
+    users.belonging = ${id};
+
+
+`;
   const data = await dal_mysql.execute(SQLcmd);
   return data;
 };

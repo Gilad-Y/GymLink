@@ -20,7 +20,7 @@ import { visuallyHidden } from "@mui/utils";
 import "./clientsTable.css";
 import axios from "axios";
 import store from "../../../../redux/store";
-import { UserModel } from "../../../../models/userModel";
+import { UserModel, trainee } from "../../../../models/userModel";
 import NoTrainees from "../noTrainees/noTrainees";
 
 interface Data {
@@ -33,13 +33,20 @@ interface Data {
   name: string;
   email: string;
   phone: string;
+  balance: string;
 }
 
-function createData(name: string, email: string, phone: string): Data {
+function createData(
+  name: string,
+  email: string,
+  phone: string,
+  balance: any
+): Data {
   return {
     name,
     email,
     phone,
+    balance,
   };
 }
 // right col,data
@@ -140,6 +147,12 @@ const headCells: readonly HeadCell[] = [
     numeric: true,
     disablePadding: false,
     label: "נייד",
+  },
+  {
+    id: "balance",
+    numeric: true,
+    disablePadding: false,
+    label: "יתרה",
   },
   //   {
   //     id: "carbs",
@@ -295,7 +308,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+          מתאמנים
         </Typography>
       )}
 
@@ -330,11 +343,25 @@ export default function TableSortAndSelection(props: props) {
       .get(`http://localhost:4000/api/v1/user/getAllById/${props.id}`)
       .then((res) => {
         console.log(res.data);
-        const data: Data[] = res.data.map((item: UserModel) =>
+        const data: Data[] = res.data.map((item: any) =>
           createData(
             `${item.firstName} ${item.lastName}`,
             item.email,
-            item.phone
+            item.phone,
+            // item.card ? item.card.toString() : "0"
+            // item.startingDate
+            // ? (item.startingDate - item.endingDate).toString()
+            // : "0"
+
+            item.days_until_end || item.card ? (
+              <div>
+                {item.days_until_end && `ימים ${item.days_until_end} `}
+                <br />
+                {item.card && item.card.toString()}
+              </div>
+            ) : (
+              <div> יש לעדכן תשלום</div>
+            )
           )
         );
         setRows(data);
@@ -480,6 +507,7 @@ export default function TableSortAndSelection(props: props) {
                     </th>
                     <td>{row.email}</td>
                     <td>{row.phone}</td>
+                    <td>{row.balance}</td>
                     {/* <td>{row.carbs}</td>
                   <td>{row.protein}</td> */}
                   </tr>
