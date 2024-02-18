@@ -15,9 +15,9 @@ function UserCard(props: props): JSX.Element {
       .get(`http://localhost:4000/api/v1/user/getById/${props.id}`)
       .then((res) => {
         setUser(res.data[0]);
-        console.log(res.data);
+        // console.log(res.data);
       });
-  }, []);
+  }, [props.id]);
   return (
     <div className="userCard">
       {props.id > 0 && (

@@ -54,6 +54,7 @@ WHERE
   return data;
 };
 const getById = async (id: number) => {
+  console.log(id);
   const SQLcmd = `
   SELECT * FROM users WHERE id  = ${id}
   `;

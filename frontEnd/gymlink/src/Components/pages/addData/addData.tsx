@@ -8,9 +8,6 @@ interface props {
 }
 function AddData(props: props): JSX.Element {
   const nav = useNavigate();
-  const payments = () => {
-    nav(`/update/payments/${props.id}`);
-  };
   const navToPage = (page: string) => {
     console.log(page);
     switch (page) {
