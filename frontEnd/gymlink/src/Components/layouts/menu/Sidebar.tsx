@@ -3,39 +3,33 @@ import GlobalStyles from "@mui/joy/GlobalStyles";
 import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
-import Card from "@mui/joy/Card";
-import Chip from "@mui/joy/Chip";
 import Divider from "@mui/joy/Divider";
 import IconButton from "@mui/joy/IconButton";
 import Input from "@mui/joy/Input";
-import LinearProgress from "@mui/joy/LinearProgress";
 import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
 import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
 import ListItemContent from "@mui/joy/ListItemContent";
 import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
-import Stack from "@mui/joy/Stack";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
 import AssignmentRoundedIcon from "@mui/icons-material/AssignmentRounded";
-import QuestionAnswerRoundedIcon from "@mui/icons-material/QuestionAnswerRounded";
 import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
 import SupportRoundedIcon from "@mui/icons-material/SupportRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import BrightnessAutoRoundedIcon from "@mui/icons-material/BrightnessAutoRounded";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import ColorSchemeToggle from "./ColorSchemeToggle";
 import { closeSidebar } from "./utils";
-import AccountButton from "./accountButton/accountButton";
 import store from "../../../redux/store";
 import { logOutUser } from "../../../redux/usersReducer";
 import { UserModel } from "../../../models/userModel";
+import { useNavigate } from "react-router-dom";
 
 function Toggler({
   defaultExpanded = false,
@@ -76,7 +70,27 @@ const logOut = () => {
 
 export default function Sidebar() {
   const [user, setUser] = React.useState<UserModel>();
-
+  const nav = useNavigate();
+  const navToPage = (page: string) => {
+    console.log(page);
+    switch (page) {
+      case "payments":
+        nav(`/update/payments/${user?.id}`);
+        break;
+      case "mission":
+        nav(`/update/missions/${user?.id}`);
+        break;
+      case "weights":
+        nav(`/update/weight/${user?.id}`);
+        break;
+      case "program":
+        nav(`/update/program/${user?.id}`);
+        break;
+      case "trainee":
+        nav(`/update/newTrainee/${user?.id}`);
+        break;
+    }
+  };
   store.subscribe(() => {
     setUser(store.getState().users.user[0]);
   });
@@ -92,16 +106,18 @@ export default function Sidebar() {
         },
         transition: "transform 0.4s, width 0.4s",
         zIndex: 10000,
-        height: "100dvh",
+        height: "100vh",
         width: "var(--Sidebar-width)",
         top: 0,
-        p: 2,
+        // p:2,
         flexShrink: 0,
         display: "flex",
         flexDirection: "column",
         gap: 2,
         borderRight: "1px solid",
         borderColor: "divider",
+        paddingBottom: 0,
+        // p:0,
       }}
     >
       <GlobalStyles
@@ -138,9 +154,10 @@ export default function Sidebar() {
           <BrightnessAutoRoundedIcon />
         </IconButton>
         <Typography level="title-lg">gym Link</Typography>
+
         <ColorSchemeToggle sx={{ ml: "auto" }} />
       </Box>
-      {user && (
+      {user ? (
         <>
           <Input
             size="sm"
@@ -168,10 +185,14 @@ export default function Sidebar() {
               }}
             >
               <ListItem>
-                <ListItemButton>
+                <ListItemButton
+                  onClick={() => {
+                    nav("/");
+                  }}
+                >
                   <HomeRoundedIcon />
                   <ListItemContent>
-                    <Typography level="title-sm">Home</Typography>
+                    <Typography level="title-sm">בית</Typography>
                   </ListItemContent>
                 </ListItemButton>
               </ListItem>
@@ -200,7 +221,7 @@ export default function Sidebar() {
                     <ListItemButton onClick={() => setOpen(!open)}>
                       <AssignmentRoundedIcon />
                       <ListItemContent>
-                        <Typography level="title-sm">Tasks</Typography>
+                        <Typography level="title-sm">פעולות</Typography>
                       </ListItemContent>
                       <KeyboardArrowDownIcon
                         sx={{ transform: open ? "rotate(180deg)" : "none" }}
@@ -210,22 +231,55 @@ export default function Sidebar() {
                 >
                   <List sx={{ gap: 0.5 }}>
                     <ListItem sx={{ mt: 0.5 }}>
-                      <ListItemButton>All tasks</ListItemButton>
+                      <ListItemButton
+                        onClick={() => {
+                          navToPage("payments");
+                        }}
+                      >
+                        עדכן תשלום
+                      </ListItemButton>
                     </ListItem>
                     <ListItem>
-                      <ListItemButton>Backlog</ListItemButton>
+                      <ListItemButton
+                        onClick={() => {
+                          navToPage("mission");
+                        }}
+                      >
+                        עדכן משימות
+                      </ListItemButton>
                     </ListItem>
                     <ListItem>
-                      <ListItemButton>In progress</ListItemButton>
+                      <ListItemButton
+                        onClick={() => {
+                          navToPage("weights");
+                        }}
+                      >
+                        עדכן משקלים
+                      </ListItemButton>
                     </ListItem>
                     <ListItem>
-                      <ListItemButton>Done</ListItemButton>
+                      <ListItemButton
+                        onClick={() => {
+                          navToPage("program");
+                        }}
+                      >
+                        עדכן תוכנית למתאמן
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemButton
+                        onClick={() => {
+                          navToPage("trainee");
+                        }}
+                      >
+                        צרף מתאמן חדש
+                      </ListItemButton>
                     </ListItem>
                   </List>
                 </Toggler>
               </ListItem>
 
-              <ListItem>
+              {/* <ListItem>
                 <ListItemButton
                   role="menuitem"
                   component="a"
@@ -239,41 +293,46 @@ export default function Sidebar() {
                     4
                   </Chip>
                 </ListItemButton>
-              </ListItem>
+              </ListItem> */}
 
-              <ListItem nested>
-                <Toggler
-                  renderToggle={({ open, setOpen }) => (
-                    <ListItemButton onClick={() => setOpen(!open)}>
-                      <GroupRoundedIcon />
-                      <ListItemContent>
-                        <Typography level="title-sm">Users</Typography>
-                      </ListItemContent>
-                      <KeyboardArrowDownIcon
-                        sx={{ transform: open ? "rotate(180deg)" : "none" }}
-                      />
-                    </ListItemButton>
-                  )}
-                >
-                  <List sx={{ gap: 0.5 }}>
-                    <ListItem sx={{ mt: 0.5 }}>
-                      <ListItemButton
-                        role="menuitem"
-                        component="a"
-                        href="/joy-ui/getting-started/templates/profile-dashboard/"
-                      >
-                        My profile
+              {user.type == "admin" && (
+                <ListItem nested>
+                  <Toggler
+                    renderToggle={({ open, setOpen }) => (
+                      <ListItemButton onClick={() => setOpen(!open)}>
+                        <GroupRoundedIcon />
+                        <ListItemContent>
+                          <Typography level="title-sm">תפריט אדמין</Typography>
+                        </ListItemContent>
+                        <KeyboardArrowDownIcon
+                          sx={{ transform: open ? "rotate(180deg)" : "none" }}
+                        />
                       </ListItemButton>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemButton>Create a new user</ListItemButton>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemButton>Roles & permission</ListItemButton>
-                    </ListItem>
-                  </List>
-                </Toggler>
-              </ListItem>
+                    )}
+                  >
+                    <List sx={{ gap: 0.5 }}>
+                      <ListItem sx={{ mt: 0.5 }}>
+                        <ListItemButton
+                          role="menuitem"
+                          component="a"
+                          href="/joy-ui/getting-started/templates/profile-dashboard/"
+                          onClick={() => {}}
+                        >
+                          הוסף מאמן
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemButton onClick={() => {}}>
+                          נהל משתמשים
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemButton>Roles & permission</ListItemButton>
+                      </ListItem>
+                    </List>
+                  </Toggler>
+                </ListItem>
+              )}
             </List>
 
             <List
@@ -289,28 +348,40 @@ export default function Sidebar() {
               <ListItem>
                 <ListItemButton>
                   <SupportRoundedIcon />
-                  Support
+                  תמיכה
                 </ListItemButton>
               </ListItem>
               <ListItem>
                 <ListItemButton>
                   <SettingsRoundedIcon />
-                  Settings
+                  הגדרות
                 </ListItemButton>
               </ListItem>
             </List>
 
             <Divider />
-            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1,
+                alignItems: "center",
+              }}
+            >
               <Avatar color="primary" variant="soft">
                 {`${user.firstName[0]} ${user.lastName[0]}`}
               </Avatar>
-              <Box sx={{ minWidth: 0, flex: 1 }}>
+              <Box
+                sx={{
+                  minWidth: 0,
+                  flex: 1,
+                }}
+              >
                 <Typography level="title-sm">{`${user.firstName} ${user.lastName}`}</Typography>
                 {/* <Typography level="body-xs">siriwatk@test.com</Typography> */}
               </Box>
               <IconButton
                 size="sm"
+                // sx={{ marginTop: -2 }}
                 variant="plain"
                 color="neutral"
                 onClick={() => {
@@ -322,6 +393,10 @@ export default function Sidebar() {
             </Box>
           </Box>
         </>
+      ) : (
+        <Button variant="solid" color="success">
+          להתחברות
+        </Button>
       )}
     </Sheet>
   );

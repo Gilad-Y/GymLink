@@ -21,7 +21,10 @@ function UserCard(props: props): JSX.Element {
   return (
     <div className="userCard">
       {props.id > 0 && (
-        <Card variant="outlined" sx={{ width: 250, margin: "auto" }}>
+        <Card
+          variant="outlined"
+          sx={{ width: 250, margin: "auto", borderRadius: "16px" }}
+        >
           <CardContent>
             <h1>{`${user?.firstName} ${user?.lastName}`}</h1>
             <div>{`${user?.email}`}</div>

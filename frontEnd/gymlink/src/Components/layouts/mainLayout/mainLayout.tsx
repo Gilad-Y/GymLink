@@ -11,10 +11,8 @@ function MainLayout(): JSX.Element {
       {/* <header>
         <Header />
       </header> */}
-      <menu>
-        <CssVarsProvider>
-          <Sidebar />
-        </CssVarsProvider>
+      <menu className="menu">
+        <Menu />
       </menu>
       <main>
         <MainRoute />

@@ -20,8 +20,23 @@ function TraineesList(props: Props): JSX.Element {
     axios
       .get(`http://localhost:4000/api/v1/user/getAllById/${props.id}`)
       .then((res) => {
-        const optionsArr: UserModel[] = res.data;
-        setOptions(optionsArr);
+        const fetchedOptions: UserModel[] = res.data;
+        const uniqueOptions: UserModel[] = [];
+
+        // Keep track of encountered option IDs
+        const encounteredIds: Set<number> = new Set();
+
+        // Iterate through fetched options
+        fetchedOptions.forEach((option) => {
+          // If the ID hasn't been encountered, add the option to uniqueOptions
+          if (!encounteredIds.has(option.id)) {
+            uniqueOptions.push(option);
+            encounteredIds.add(option.id);
+          }
+        });
+
+        // Set the options state with unique options
+        setOptions((prevOptions) => [...prevOptions, ...uniqueOptions]);
       });
   }, [props.id]);
 
@@ -32,10 +47,11 @@ function TraineesList(props: Props): JSX.Element {
 
   return (
     <div className="traineesList">
-      <h1>בחר מתאמן</h1>
       <Box sx={{ minWidth: 120, width: 200, margin: "auto" }}>
         <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">בחר מתאמן</InputLabel>
+          <InputLabel id="demo-simple-select-label" sx={{ color: "white" }}>
+            בחר מתאמן
+          </InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"

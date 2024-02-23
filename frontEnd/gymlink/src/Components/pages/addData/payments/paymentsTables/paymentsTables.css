@@ -1,0 +1,12 @@
+.tables {
+  display: flex;
+}
+
+.table {
+  flex: 1; /* This will make each table take equal space */
+  margin-right: 10px; /* Adjust the margin between tables */
+}
+
+.table:last-child {
+  margin-right: 0; /* Remove margin from the last table */
+}

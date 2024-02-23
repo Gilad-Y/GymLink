@@ -28,7 +28,21 @@ import dal_mysql from "../Utils/dal_mysql";
 //SELECT likes_table.*, destination
 // FROM likes_table JOIN vacation_table
 // ON likes_table.vacationCode=vacation_table.vacationCode
-
+const getPaymentsById = async (id: number) => {
+  const SQLcmd = `  
+SELECT id,startingDate,endingDate,card,cardLeft FROM GymLink.paymentTable WHERE traineeId = ${id} AND card IS NULL
+`;
+  const data = await dal_mysql.execute(SQLcmd);
+  const SQLcmd2 = `  
+SELECT id,startingDate,endingDate,card,cardLeft FROM GymLink.paymentTable WHERE traineeId = ${id} AND card IS NOT NULL
+`;
+  const data2 = await dal_mysql.execute(SQLcmd2);
+  if ((data2.length || data.length) > 0) {
+    return [data, data2];
+  } else {
+    return 0;
+  }
+};
 const getAllById = async (id: number) => {
   const SQLcmd =
     //  `
@@ -54,7 +68,6 @@ WHERE
   return data;
 };
 const getById = async (id: number) => {
-  console.log(id);
   const SQLcmd = `
   SELECT * FROM users WHERE id  = ${id}
   `;
@@ -136,6 +149,7 @@ export {
   // deleteUser,
   getAllById,
   getById,
+  getPaymentsById,
   // updateUser,
   // getOption,
   // getNameById,

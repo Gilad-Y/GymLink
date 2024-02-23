@@ -45,7 +45,7 @@ function LogIn(): JSX.Element {
   };
   return (
     <div className="logIn">
-      <Container component="main" maxWidth="lg">
+      <Container component="main">
         <Box
           sx={{
             marginTop: 8,

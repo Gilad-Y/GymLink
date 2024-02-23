@@ -28,7 +28,7 @@ const style = {
 
 function Dashboard(): JSX.Element {
   const user = store.getState().users?.user[0];
-  const [adminMode, setAdminMode] = useState<boolean>(false);
+  // const [adminMode, setAdminMode] = useState<boolean>(false);
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -38,7 +38,7 @@ function Dashboard(): JSX.Element {
       <br />
 
       <div className="buttons">
-        {user?.type == "admin" && (
+        {/* {user?.type == "admin" && (
           <>
             <ToggleButton
               // sx={{ width: "93.5%" }}
@@ -53,14 +53,14 @@ function Dashboard(): JSX.Element {
             </ToggleButton>
             <Button>הוסף מאמן</Button>
           </>
-        )}
-        <Button onClick={handleOpen}>הזנת נתונים</Button>
+        )} */}
+        {/* <Button onClick={handleOpen}>הזנת נתונים</Button> */}
       </div>
       {/* )} */}
       <br />
       <CardLine />
       <br />
-      {user?.type == "trainer" || (adminMode && <ClientsTable id={user.id} />)}
+      {user?.type != "trainee" && <ClientsTable id={user.id} />}
       {user?.type == "trainee" && <GraphsCompo />}
       <Modal
         aria-labelledby="transition-modal-title"

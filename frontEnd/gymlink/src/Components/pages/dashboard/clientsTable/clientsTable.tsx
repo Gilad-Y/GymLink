@@ -442,7 +442,8 @@ export default function TableSortAndSelection(props: props) {
       <EnhancedTableToolbar numSelected={selected.length} />
       {rows.length > 0 ? (
         <Table
-          aria-labelledby="tableTitle"
+          aria-label="striped table"
+          stripe={"odd"}
           hoverRow
           sx={{
             "--TableCell-headBackground": "transparent",
