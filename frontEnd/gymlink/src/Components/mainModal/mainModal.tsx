@@ -25,7 +25,9 @@ function MainModal(props: MainModalProps): JSX.Element {
       </Button> */}
       <Modal open={props.open} onClose={props.onClose}>
         <ModalDialog>
-          <ECards data={props.data} onClose={props.onClose} />
+          {props.type === "eCards" && (
+            <ECards data={props.data} onClose={props.onClose} />
+          )}
         </ModalDialog>
       </Modal>
     </>
