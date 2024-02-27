@@ -38,14 +38,6 @@ function CardCompo(props: itemProps): JSX.Element {
             <Typography level="h2">{props.stat}</Typography>
           </CardContent>
         </CardContent>
-        {/* <CardActions>
-          <Button variant="soft" size="sm">
-            Add to Watchlist
-          </Button>
-          <Button variant="solid" size="sm">
-            See breakdown
-          </Button>
-        </CardActions> */}
       </Card>
     </div>
   );

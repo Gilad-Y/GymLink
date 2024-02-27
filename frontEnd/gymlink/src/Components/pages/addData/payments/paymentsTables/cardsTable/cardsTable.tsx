@@ -6,12 +6,19 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/joy/IconButton";
 import Button from "@mui/joy/Button";
+import MainModal from "../../../../../mainModal/mainModal";
 interface Props {
   data: any;
 }
 
 function CardsTable(props: Props): JSX.Element {
   const [rows, setRows] = React.useState<[]>([]);
+  const [editRow, setEdit] = React.useState();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+
+  const handleModalToggle = () => {
+    setModalOpen((prev) => !prev); // Toggle the modal open/close state
+  };
 
   React.useEffect(() => {
     setRows(props.data[0]);
@@ -24,8 +31,10 @@ function CardsTable(props: Props): JSX.Element {
     const year = date.getFullYear().toString().slice(2);
     return `${day}-${month}-${year}`;
   }
-  const editLine = (id: number) => {
-    console.log(id);
+  const editLine = (row: any) => {
+    row.startingDate = formatDate(row.startingDate);
+    setEdit(row);
+    handleModalToggle();
   };
   const deleteLine = (id: number) => {
     console.log(id);
@@ -56,13 +65,13 @@ function CardsTable(props: Props): JSX.Element {
                     <td>
                       <IconButton
                         aria-label="delete"
-                        onClick={() => deleteLine(row.id)}
+                        onClick={() => deleteLine(row)}
                       >
                         <DeleteIcon />
                       </IconButton>
                       <IconButton
                         aria-label="edit"
-                        onClick={() => editLine(row.id)}
+                        onClick={() => editLine(row)}
                       >
                         <EditIcon />
                       </IconButton>
@@ -78,6 +87,12 @@ function CardsTable(props: Props): JSX.Element {
           </div>
         </>
       )}
+      <MainModal
+        type={"eCards"}
+        open={modalOpen}
+        onClose={handleModalToggle}
+        data={editRow && editRow}
+      />
     </div>
   );
 }

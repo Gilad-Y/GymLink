@@ -1,18 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import CardLine from "./cardLine/cardLine";
 import ClientsTable from "./clientsTable/clientsTable";
 import "./dashboard.css";
 import store from "../../../redux/store";
-import ToggleButton from "@mui/material/ToggleButton";
 import GraphsCompo from "./graphsCompo/graphsCompo";
-import { Button } from "@mui/joy";
 
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 
-import Typography from "@mui/material/Typography";
 import AddData from "../addData/addData";
 const style = {
   position: "absolute" as "absolute",
@@ -36,7 +33,6 @@ function Dashboard(): JSX.Element {
   return (
     <div className="dashboard">
       <br />
-
       <div className="buttons">
         {/* {user?.type == "admin" && (
           <>
@@ -60,28 +56,8 @@ function Dashboard(): JSX.Element {
       <br />
       <CardLine />
       <br />
-      {user?.type != "trainee" && <ClientsTable id={user.id} />}
+      {user?.type != "trainee" && <ClientsTable id={user?.id} />}
       {user?.type == "trainee" && <GraphsCompo />}
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Fade in={open}>
-          <Box sx={style}>
-            <h1>הוסף נתונים</h1>
-            <AddData closeModal={handleClose} id={user?.id} />
-          </Box>
-        </Fade>
-      </Modal>
     </div>
   );
 }

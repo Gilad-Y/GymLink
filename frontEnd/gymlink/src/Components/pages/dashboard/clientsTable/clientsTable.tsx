@@ -20,7 +20,6 @@ import { visuallyHidden } from "@mui/utils";
 import "./clientsTable.css";
 import axios from "axios";
 import store from "../../../../redux/store";
-import { UserModel, trainee } from "../../../../models/userModel";
 import NoTrainees from "../noTrainees/noTrainees";
 
 interface Data {
@@ -339,33 +338,34 @@ export default function TableSortAndSelection(props: props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState<Data[]>([]);
   React.useEffect(() => {
-    axios
-      .get(`http://localhost:4000/api/v1/user/getAllById/${props.id}`)
-      .then((res) => {
-        console.log(res.data);
-        const data: Data[] = res.data.map((item: any) =>
-          createData(
-            `${item.firstName} ${item.lastName}`,
-            item.email,
-            item.phone,
-            // item.card ? item.card.toString() : "0"
-            // item.startingDate
-            // ? (item.startingDate - item.endingDate).toString()
-            // : "0"
+    props.id &&
+      axios
+        .get(`http://localhost:4000/api/v1/user/getAllById/${props.id}`)
+        .then((res) => {
+          console.log(res.data);
+          const data: Data[] = res.data.map((item: any) =>
+            createData(
+              `${item.firstName} ${item.lastName}`,
+              item.email,
+              item.phone,
+              // item.card ? item.card.toString() : "0"
+              // item.startingDate
+              // ? (item.startingDate - item.endingDate).toString()
+              // : "0"
 
-            item.days_until_end || item.card ? (
-              <div>
-                {item.days_until_end && `ימים ${item.days_until_end} `}
-                <br />
-                {item.card && item.card.toString()}
-              </div>
-            ) : (
-              <div> יש לעדכן תשלום</div>
+              item.days_until_end || item.card ? (
+                <div>
+                  {item.days_until_end && `ימים ${item.days_until_end} `}
+                  <br />
+                  {item.card && item.card.toString()}
+                </div>
+              ) : (
+                <div> יש לעדכן תשלום</div>
+              )
             )
-          )
-        );
-        setRows(data);
-      });
+          );
+          setRows(data);
+        });
   }, [props.id]); // Fetch data when id changes
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,

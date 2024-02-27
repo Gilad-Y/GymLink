@@ -23,7 +23,6 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import BrightnessAutoRoundedIcon from "@mui/icons-material/BrightnessAutoRounded";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-
 import ColorSchemeToggle from "./ColorSchemeToggle";
 import { closeSidebar } from "./utils";
 import store from "../../../redux/store";
@@ -315,7 +314,6 @@ export default function Sidebar() {
                         <ListItemButton
                           role="menuitem"
                           component="a"
-                          href="/joy-ui/getting-started/templates/profile-dashboard/"
                           onClick={() => {}}
                         >
                           הוסף מאמן
