@@ -7,22 +7,31 @@ import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/joy/IconButton";
 import Button from "@mui/joy/Button";
 import MainModal from "../../../../../mainModal/mainModal";
+import axios from "axios";
 interface Props {
   data: any;
+  refFn: () => void;
 }
 
 function CardsTable(props: Props): JSX.Element {
   const [rows, setRows] = React.useState<[]>([]);
   const [editRow, setEdit] = React.useState();
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-
+  const [AddModalOpen, setAddOpen] = React.useState<boolean>(false);
+  const [id, setId] = React.useState<number>();
   const handleModalToggle = () => {
+    props.refFn();
     setModalOpen((prev) => !prev); // Toggle the modal open/close state
+  };
+  const handleAddToggle = () => {
+    props.refFn();
+    setAddOpen((prev) => !prev); // Toggle the modal open/close state
   };
 
   React.useEffect(() => {
     setRows(props.data[0]);
-    // console.log(props.data[0]);
+    setId(props.data[0][0].id);
+    // console.log(props.data[0][0].id);
   }, [props.data]);
   function formatDate(dateString: string) {
     const date = new Date(dateString);
@@ -38,6 +47,11 @@ function CardsTable(props: Props): JSX.Element {
   };
   const deleteLine = (id: number) => {
     console.log(id);
+    axios
+      .delete(`http://localhost:4000/api/v1/user/deleteCard/${id}`)
+      .then(() => {
+        props.refFn();
+      });
   };
   return (
     <div className="cardsTable">
@@ -65,7 +79,7 @@ function CardsTable(props: Props): JSX.Element {
                     <td>
                       <IconButton
                         aria-label="delete"
-                        onClick={() => deleteLine(row)}
+                        onClick={() => deleteLine(row.id)}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -83,7 +97,15 @@ function CardsTable(props: Props): JSX.Element {
           </Sheet>
           <br />
           <div className="buttonLine">
-            <Button color="success"> הוסף רשומה</Button>
+            <Button
+              color="success"
+              onClick={() => {
+                handleAddToggle();
+              }}
+            >
+              {" "}
+              הוסף רשומה
+            </Button>
           </div>
         </>
       )}
@@ -92,6 +114,12 @@ function CardsTable(props: Props): JSX.Element {
         open={modalOpen}
         onClose={handleModalToggle}
         data={editRow && editRow}
+      />
+      <MainModal
+        type={"AddCards"}
+        open={AddModalOpen}
+        onClose={handleAddToggle}
+        data={id}
       />
     </div>
   );

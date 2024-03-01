@@ -10,6 +10,9 @@ import {
   // getOption,
   logUser,
   getPaymentsById,
+  addCard,
+  deleteCard,
+  updateCard,
   // updateUser,
 } from "../Logic/userLogic";
 
@@ -38,7 +41,7 @@ router.get(
   async (request: Request, response: Response, next: NextFunction) => {
     const id = +request.params.id;
 
-    response.status(200).json(await getAllById(id));
+    id && response.status(200).json(await getAllById(id));
   }
 );
 router.get(
@@ -77,26 +80,25 @@ router.post(
 //     }
 //   }
 // );
-// router.post(
-//   "/addUser",
-//   async (request: Request, response: Response, next: NextFunction) => {
-//     const user: any = request.body;
-//     response.status(201).json(await addUser(user));
-//   }
-// );
-// router.delete(
-//   "/deleteUser/:id",
-//   async (request: Request, response: Response, next: NextFunction) => {
-//     const id = +request.params.id;
-//     response.status(200).json(await deleteUser(id));
-//   }
-// );
-// router.put(
-//   "/updateUserById/:id",
-//   async (request: Request, response: Response, next: NextFunction) => {
-//     const id = +request.params.id;
-//     const user = request.body;
-//     response.status(200).json(await updateUser(id, user.data));
-//   }
-// );
+router.post(
+  "/addCard",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const card: any = request.body;
+    response.status(201).json(await addCard(card));
+  }
+);
+router.delete(
+  "/deleteCard/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const id = +request.params.id;
+    response.status(200).json(await deleteCard(id));
+  }
+);
+router.put(
+  "/updateCard",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const card = request.body;
+    response.status(200).json(await updateCard(card));
+  }
+);
 export default router;

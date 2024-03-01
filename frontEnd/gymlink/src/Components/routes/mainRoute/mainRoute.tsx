@@ -10,12 +10,13 @@ import AddWeights from "../../pages/addData/addWeights/addWeights";
 import AddMission from "../../pages/addData/addMission/addMission";
 import AddProgram from "../../pages/addData/addProgram/addProgram";
 import AddTrainee from "../../pages/addData/addTrainee/addTrainee";
+import TraineePage from "../../traineePage/traineePage";
 
 function MainRoute(): JSX.Element {
   const nav = useNavigate();
   useEffect(() => {
     !store.getState().users.user[0]?.id && nav("/login");
-  }, []);
+  }, [store]);
   store.subscribe(() => {
     !store.getState().users.user[0]?.id && nav("/login");
   });
@@ -29,6 +30,7 @@ function MainRoute(): JSX.Element {
         <Route path="/update/missions/:id" element={<AddMission />} />
         <Route path="/update/program/:id" element={<AddProgram />} />
         <Route path="/update/newTrainee/:id" element={<AddTrainee />} />
+        <Route path="/traineePage/:id" element={<TraineePage />} />
         <Route path="*" element={<Page404 />} />
       </Routes>
     </div>

@@ -8,6 +8,7 @@ interface props {
 }
 function PaymentsTables(props: props): JSX.Element {
   const [tableData, setData] = useState();
+  const [refresh, setRef] = useState<boolean>(false);
   useEffect(() => {
     axios
       .get(`http://localhost:4000/api/v1/user/getPaymentsById/${props.id}`)
@@ -15,16 +16,19 @@ function PaymentsTables(props: props): JSX.Element {
         // console.log(res.data);
         setData(res.data);
       });
-  }, [props.id]);
+  }, [props.id, refresh]);
+  const refreshDate = () => {
+    setRef(!refresh);
+  };
   return (
     <div className="paymentsTables">
       {tableData && (
         <div className="tables">
           <div className="table">
-            <CardsTable data={[tableData[1]]} />
+            <CardsTable data={[tableData[1]]} refFn={refreshDate} />
           </div>
           <div className="table">
-            <MembershipsTable data={[tableData[0]]} />
+            <MembershipsTable data={[tableData[0]]} refFn={refreshDate} />
           </div>
         </div>
       )}

@@ -45,6 +45,7 @@ SELECT id,startingDate,endingDate,card,cardLeft FROM GymLink.paymentTable WHERE 
 };
 const getAllById = async (id: number) => {
   const SQLcmd =
+    //NEED TO REMOVE PASSWORD
     //  `
     // SELECT * FROM users WHERE belonging  = ${id}
     // `;
@@ -54,6 +55,7 @@ const getAllById = async (id: number) => {
     paymentTable.startingDate,
     paymentTable.endingDate,
     paymentTable.card,
+    paymentTable.cardLeft,
     DATEDIFF(paymentTable.endingDate, CURDATE()) AS days_until_end
 FROM 
     users
@@ -75,14 +77,43 @@ const getById = async (id: number) => {
   return data;
 };
 const logUser = async (email: string, password: string) => {
+  try {
+    const SQLcmd = `
+      SELECT id, firstName, lastName, email, phone, type, belonging
+      FROM users 
+      WHERE email='${email}' AND userPass='${password}'
+    `;
+    const data = await dal_mysql.execute(SQLcmd);
+    return data;
+  } catch (error) {
+    console.error("Error while executing SQL query:", error);
+    throw new Error("An error occurred while logging in");
+  }
+};
+
+const addCard = async (card: any) => {
   const SQLcmd = `
-  SELECT id,firstName,
-  lastName,email,phone,type,belonging
-  FROM users WHERE email='${email}' AND userPass='${password}'
+INSERT INTO paymentTable ( coachId, traineeId, 
+startingDate, card, cardLeft
+) VALUES (
+   ${card.coachId}, ${card.traineeId}, '${card.startingDate}', ${card.card}, ${card.cardLeft});
+
+`;
+  const data: OkPacket = await dal_mysql.execute(SQLcmd);
+  card.id = data.insertId;
+  return [card];
+};
+
+const deleteCard = async (id: number) => {
+  const SQLcmd = `
+   DELETE FROM paymentTable WHERE (id = ${id});
   `;
   const data = await dal_mysql.execute(SQLcmd);
   return data;
 };
+
+//UPDATE `GymLink`.`paymentTable` SET `startingDate` = '2024-03-02', `card` = '14' WHERE (`id` = '5');
+
 // const checkNum = async (phone: number | undefined) => {
 //   const SQLcmd = `
 //   SELECT * from userTable WHERE userPhone='0${phone}'
@@ -131,6 +162,17 @@ const logUser = async (email: string, password: string) => {
 //     return true; // User has been successfully deleted
 //   }
 // };
+const updateCard = async (card: any) => {
+  const SQLcmd = `
+  UPDATE paymentTable SET 
+  startingDate = '${card.startingDate}', 
+  card = ${card.card}, 
+  cardLeft = ${card.cardLeft}
+  WHERE id = ${+card.id}`;
+
+  const data = await dal_mysql.execute(SQLcmd);
+  return data.affectedRows;
+};
 
 // const updateUser = async (id: number, user: UserModel) => {
 //   const SQLcmd = `
@@ -150,6 +192,9 @@ export {
   getAllById,
   getById,
   getPaymentsById,
+  addCard,
+  deleteCard,
+  updateCard,
   // updateUser,
   // getOption,
   // getNameById,

@@ -16,6 +16,7 @@ import axios from "axios";
 import store from "../../../redux/store";
 import { logInUser } from "../../../redux/usersReducer";
 import { useNavigate } from "react-router-dom";
+import logIngPic from "../../../media/logingpic.jpg";
 
 function LogIn(): JSX.Element {
   const nav = useNavigate();
@@ -27,11 +28,9 @@ function LogIn(): JSX.Element {
   } = useForm<UserModel>();
   const logUser = (data: UserModel) => {
     document.body.style.cursor = "wait";
-    console.log(data);
     axios
       .post("http://localhost:4000/api/v1/user/logUser", data)
       .then((res) => {
-        console.log(res.data);
         store.dispatch(logInUser(res.data));
         nav("/");
       })
@@ -59,8 +58,7 @@ function LogIn(): JSX.Element {
               sm={4}
               md={7}
               sx={{
-                backgroundImage:
-                  "url(https://trainstationgym.co.za/wp-content/uploads/2021/06/Banner-pic-2.jpg)",
+                backgroundImage: `url(${logIngPic})`,
                 backgroundRepeat: "no-repeat",
                 backgroundColor: (t) =>
                   t.palette.mode === "light"

@@ -9,6 +9,7 @@ import Button from "@mui/joy/Button";
 
 interface props {
   data: any[];
+  refFn: () => void;
 }
 function MembershipsTable(props: props): JSX.Element {
   const [rows, setRows] = React.useState<[]>([]);

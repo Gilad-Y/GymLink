@@ -90,10 +90,10 @@ export default function Sidebar() {
         break;
     }
   };
-  store.subscribe(() => {
-    setUser(store.getState().users.user[0]);
-  });
 
+  React.useEffect(() => {
+    setUser(store.getState().users.user[0]);
+  }, [store.getState()]);
   return (
     <Sheet
       className="Sidebar"

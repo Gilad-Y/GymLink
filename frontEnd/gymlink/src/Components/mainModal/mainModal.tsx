@@ -5,6 +5,7 @@ import Button from "@mui/joy/Button";
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
 import ECards from "./cards/eCards/eCards";
+import AddCard from "../pages/addData/payments/paymentsTables/cardsTable/addCard/addCard";
 
 interface MainModalProps {
   open: boolean;
@@ -23,10 +24,18 @@ function MainModal(props: MainModalProps): JSX.Element {
       >
         {props.type}
       </Button> */}
-      <Modal open={props.open} onClose={props.onClose}>
+      <Modal
+        open={props.open}
+        onClose={() => {
+          props.onClose();
+        }}
+      >
         <ModalDialog>
           {props.type === "eCards" && (
             <ECards data={props.data} onClose={props.onClose} />
+          )}
+          {props.type === "AddCards" && (
+            <AddCard id={props.data} onClose={props.onClose} />
           )}
         </ModalDialog>
       </Modal>
