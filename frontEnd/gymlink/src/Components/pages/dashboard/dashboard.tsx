@@ -4,6 +4,8 @@ import store from "../../../redux/store";
 import GraphsCompo from "./graphsCompo/graphsCompo";
 
 import TraineeTable from "./traineeTable/traineeTable";
+import TraineeDashboard from "./traineeDashboard/traineeDashboard";
+import CoachDashboard from "./coachDashboard/coachDashboard";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -28,8 +30,8 @@ function Dashboard(): JSX.Element {
       <br />
       <CardLine />
       <br />
-      {user?.type != "trainee" && <TraineeTable id={user?.id} />}
-      {user?.type == "trainee" && <GraphsCompo />}
+      {user?.type != "trainee" && <CoachDashboard id={user?.id} />}
+      {user?.type == "trainee" && <TraineeDashboard />}
     </div>
   );
 }

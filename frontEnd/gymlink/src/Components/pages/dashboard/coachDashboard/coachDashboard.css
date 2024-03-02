@@ -1,0 +1,4 @@
+.coachDashboard {
+  display: flex;
+  flex-wrap: wrap;
+}
