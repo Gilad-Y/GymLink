@@ -16,7 +16,6 @@ function MissionStatus(props: props): JSX.Element {
       axios
         .get(`http://localhost:4000/api/v1/mission/getStatus/${props.id}`)
         .then((res: any) => {
-          console.log(res.data[0].status);
           setStatus(res.data[0].status);
         });
   }, [props.id]);

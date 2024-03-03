@@ -16,7 +16,7 @@ function MainRoute(): JSX.Element {
   const nav = useNavigate();
   useEffect(() => {
     !store.getState().users.user[0]?.id && nav("/login");
-  }, [store]);
+  }, [nav]);
   store.subscribe(() => {
     !store.getState().users.user[0]?.id && nav("/login");
   });

@@ -2,7 +2,6 @@ import "./missionTable.css";
 import * as React from "react";
 import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
-import NoTrainees from "../noTrainees/noTrainees";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NoMissions from "../noMissions/noMissions";
@@ -12,16 +11,18 @@ interface props {
 }
 function MissionTable(props: props): JSX.Element {
   const [missions, setMission] = React.useState<any[]>([]);
+
   React.useEffect(() => {
-    axios
-      .get(
-        `http://localhost:4000/api/v1/mission/getAllMissionsForCoachByNumber/${props.id}`
-      )
-      .then((res: any) => {
-        console.log(res.data);
-        setMission(res.data);
-      });
-  }, []);
+    props.id &&
+      axios
+        .get(
+          `http://localhost:4000/api/v1/mission/getAllMissionsForCoachByNumber/${props.id}`
+        )
+        .then((res: any) => {
+          console.log(res.data);
+          setMission(res.data);
+        });
+  }, [props.id]);
   return (
     <div className="missionTable">
       {missions.length > 0 ? (

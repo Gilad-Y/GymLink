@@ -42,10 +42,6 @@ function ECards(props: Props): JSX.Element {
     return `${year}-${month}-${day}`; // Format the date as "YYYY-MM-DD"
   };
 
-  React.useEffect(() => {
-    console.log(props.data);
-  }, []);
-
   return (
     <div className="eCards">
       <DialogTitle>ערוך פרטי תשלום</DialogTitle>

@@ -7,6 +7,7 @@ import ModalDialog from "@mui/joy/ModalDialog";
 import ECards from "./cards/eCards/eCards";
 import AddCard from "../pages/addData/payments/paymentsTables/cardsTable/addCard/addCard";
 import AddMission from "./missions/addMission/addMission";
+import EditMission from "./missions/editMission/editMission";
 
 interface MainModalProps {
   open: boolean;
@@ -38,8 +39,11 @@ function MainModal(props: MainModalProps): JSX.Element {
           {props.type === "AddCards" && (
             <AddCard id={props.data} onClose={props.onClose} />
           )}
-          {props.type === "addMIssion" && (
+          {props.type === "addMission" && (
             <AddMission data={props.data} onClose={props.onClose} />
+          )}
+          {props.type === "editMission" && (
+            <EditMission data={props.data} onClose={props.onClose} />
           )}
         </ModalDialog>
       </Modal>

@@ -86,13 +86,13 @@ router.post(
     response.status(201).json(await missionLogic.addMission(mission));
   }
 );
-// router.delete(
-//   "/deleteCard/:id",
-//   async (request: Request, response: Response, next: NextFunction) => {
-//     const id = +request.params.id;
-//     response.status(200).json(await deleteCard(id));
-//   }
-// );
+router.delete(
+  "/deleteMission/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const id = +request.params.id;
+    response.status(200).json(await missionLogic.deleteMission(id));
+  }
+);
 router.put(
   "/updateStatus/:id",
   async (request: Request, response: Response, next: NextFunction) => {

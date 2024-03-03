@@ -67,10 +67,15 @@ const updateStatus = async (id: number, status: boolean) => {
   UPDATE missions SET status = ${!status} WHERE (id = ${id});
   `;
   const data = await dal_mysql.execute(SQLcmd);
-  console.log(!status);
   return !status;
 };
-
+const deleteMission = async (id: number) => {
+  const SQLcmd = `
+   DELETE FROM missions WHERE (id = ${id});
+  `;
+  const data = await dal_mysql.execute(SQLcmd);
+  return data;
+};
 // const getPaymentsById = async (id: number) => {
 //   const SQLcmd = `
 // SELECT id,startingDate,endingDate,card,cardLeft FROM GymLink.paymentTable WHERE traineeId = ${id} AND card IS NULL
@@ -221,4 +226,5 @@ export {
   getAllMissionsForCoachByNumbers,
   updateStatus,
   getMissionStatusById,
+  deleteMission,
 };

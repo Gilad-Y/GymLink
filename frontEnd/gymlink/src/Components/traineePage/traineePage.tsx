@@ -22,6 +22,7 @@ function TraineePage(): JSX.Element {
       {params.id}
       <br />
       <Button
+        color="success"
         onClick={() => {
           handleModalToggle();
         }}
@@ -31,7 +32,7 @@ function TraineePage(): JSX.Element {
       <MainModal
         open={modalOpen}
         onClose={handleModalToggle}
-        type={"addMIssion"}
+        type={"addMission"}
         data={data}
       ></MainModal>
     </div>
