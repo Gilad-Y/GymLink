@@ -12,11 +12,13 @@ import { missionModel } from "../../../../models/missionModel";
 import Textarea from "@mui/joy/Textarea";
 import TraineesList from "../../../pages/addData/traineesList/traineesList";
 import store from "../../../../redux/store";
+import Switch from '@mui/joy/Switch';
 interface props {
   data?: any;
   onClose: () => void;
 }
 function AddMission(props: props): JSX.Element {
+  const [disableDate, setDisable] = React.useState<boolean>(false);
   const [today] = React.useState(() => {
     // Get today's date in the format YYYY-MM-DD
     return new Date().toISOString().split("T")[0];
@@ -74,15 +76,36 @@ function AddMission(props: props): JSX.Element {
               <Textarea {...register("content")} required sx={{ mb: 1 }} />
             </FormControl>
             <FormControl>
-              <FormLabel> תאריך לביצוע-לא חובה</FormLabel>
-              <Input
-                type="date"
-                slotProps={{
-                  input: {},
-                }}
-                {...register("lastDate")}
+            <FormLabel> 
+              <Switch
+              defaultChecked={disableDate}
+              onChange={()=>{
+                setDisable(!disableDate)
+                
+              }}
+              
+              
               />
-            </FormControl>
+              תאריך לביצוע
+              
+               {/* <Typography component="label" startDecorator={<Switch  defaultChecked={disableDate}
+              onChange={()=>{
+                setDisable(!disableDate)
+              }} sx={{ ml: 1 }} />}>
+                 Turn alarm on
+                </Typography> */}
+              </FormLabel>
+            <Input
+              type="date"
+              slotProps={{
+                input: {},
+              }}
+              {...register("lastDate")}
+              disabled={!disableDate}
+              id="myInput" 
+              // ref={inputRef} 
+            />
+          </FormControl>
             <Button type="submit" color="success">
               עדכן
             </Button>

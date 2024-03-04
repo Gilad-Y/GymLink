@@ -26,10 +26,9 @@ function AddMission(): JSX.Element {
         `http://localhost:4000/api/v1/mission/getAllMissionsForCoach/${params.id}`
       )
       .then((res: any) => {
-        console.log(res.data);
         setMission(res.data);
       });
-  }, [ref]);
+  }, [params.id, ref]);
   const handleModalToggle = () => {
     // props.refFn();
     setModalOpen((prev) => !prev); // Toggle the modal open/close state
@@ -39,6 +38,9 @@ function AddMission(): JSX.Element {
     setRefresh(!ref);
     setAddOpen((prev) => !prev); // Toggle the modal open/close state
   };
+  const refreshStatus=()=>{
+    setRefresh((prev) => !prev)
+  }
   function formatDate(dateString: string) {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, "0");
@@ -50,13 +52,17 @@ function AddMission(): JSX.Element {
     // if (typeof mission.lastDate == "string") {
     //   mission.lastDate = formatDate(mission.lastDate);
     // }
-    mission.lastDate = formatDate(mission.lastDate);
-    console.log(formatDate(mission.lastDate));
+    // console.log((typeof mission.lastDate));
+    if(typeof (mission.lastDate) == "string"){
+     mission.lastDate = formatDate(mission.lastDate);
+    }else{
+      mission.lastDate=undefined
+    }
+    
     setEdit(mission);
     handleModalToggle();
   };
   const deleteLine = (id: number) => {
-    console.log(id);
     axios
       .delete(`http://localhost:4000/api/v1/mission/deleteMission/${id}`)
       .then(() => {
@@ -89,7 +95,7 @@ function AddMission(): JSX.Element {
                       {mission.lastDate ? formatDate(mission.lastDate) : "-"}
                     </td>
                     <td>
-                      <MissionStatus id={+mission.id} />
+                      <MissionStatus id={+mission.id} ferFn={refreshStatus } />
                     </td>
                     <td>
                       <IconButton

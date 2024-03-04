@@ -8,6 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { pink } from "@mui/material/colors";
 interface props {
   id: number;
+  ferFn:()=>void
 }
 function MissionStatus(props: props): JSX.Element {
   const [missionStatus, setStatus] = useState("");
@@ -26,6 +27,7 @@ function MissionStatus(props: props): JSX.Element {
       })
       .then((res: any) => {
         setStatus(res.data);
+        props.ferFn()
       });
   };
   return (
