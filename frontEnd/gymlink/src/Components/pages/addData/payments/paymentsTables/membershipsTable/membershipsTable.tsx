@@ -6,19 +6,31 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/joy/IconButton";
 import Button from "@mui/joy/Button";
+import axios from "axios";
+import MainModal from "../../../../../mainModal/mainModal";
 
 interface props {
   data: any[];
   refFn: () => void;
+  id:number
 }
 function MembershipsTable(props: props): JSX.Element {
-  const [rows, setRows] = React.useState<[]>([]);
+  const [rows, setRows] = React.useState<any[]>([]);
+  const [editRow, setEdit] = React.useState();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [AddModalOpen, setAddOpen] = React.useState<boolean>(false);
+   const [id, setId] = React.useState<number>(
+    ()=>props.id
+   );
   React.useEffect(() => {
-    setRows(props.data[0]);
-    console.log(props.data[0]);
+     if(props.data!==undefined) {
+    setRows(props.data)
+    // setId(props.data[0].id)
+    }
+    console.log(props.data);
   }, [props.data]);
   function formatDate(dateString: string) {
-    const date = new Date(dateString);
+    const date = new Date(dateString)
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear().toString().slice(2);
@@ -29,18 +41,31 @@ function MembershipsTable(props: props): JSX.Element {
     console.log(id);
   };
   const deleteLine = (id: number) => {
-    console.log(id);
+    axios
+      .delete(`http://localhost:4000/api/v1/user/deleteMembership/${id}`)
+      .then(() => {
+        props.refFn();
+      });
+  };
+  const handleModalToggle = () => {
+    props.refFn();
+    setModalOpen((prev) => !prev); // Toggle the modal open/close state
+  };
+  const handleAddToggle = () => {
+    props.refFn();
+    setAddOpen((prev) => !prev); // Toggle the modal open/close state
   };
   return (
     <div className="membershipsTable">
-      {rows.length > 0 && (
-        <>
+     
           <h1>ליווי אונליין</h1>
+          {props.data.length>0 &&(
+      <>
           <Sheet>
             <Table aria-label="striped table" stripe={"odd"}>
               <thead>
                 <tr>
-                  <th style={{ width: "40%" }}>פריט</th>
+                  
                   <th>תאריך התחלה</th>
                   <th>תאריך סיום</th>
                   <th>פעולות</th>
@@ -49,7 +74,7 @@ function MembershipsTable(props: props): JSX.Element {
               <tbody>
                 {rows.map((row: any) => (
                   <tr key={row.id}>
-                    <td>{row.id}</td>
+                    
                     <td>{formatDate(row.startingDate)}</td>
                     <td>{formatDate(row.endingDate)}</td>
                     <td>
@@ -70,13 +95,26 @@ function MembershipsTable(props: props): JSX.Element {
                 ))}
               </tbody>
             </Table>
-          </Sheet>
+          </Sheet>  
+           </>
+      )}
           <br />
           <div className="buttonLine">
-            <Button color="success"> הוסף רשומה</Button>
+            <Button color="success"
+            onClick={handleAddToggle}> הוסף רשומה</Button>
           </div>
-        </>
-      )}
+     <MainModal
+        type={"eMembership"}
+        open={modalOpen}
+        onClose={handleModalToggle}
+        data={editRow && editRow}
+      />
+      <MainModal
+        type={"addMembership"}
+        open={AddModalOpen}
+        onClose={handleAddToggle}
+        data={id}
+      />
     </div>
   );
 }

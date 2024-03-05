@@ -27,7 +27,24 @@ router.get(
     response.status(200).json(await missionLogic.getMissionStatusById(id));
   }
 );
+router.put(
+  "/updateMission/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    try {
+      const id = +request.params.id;
+      const  mission  = request.body; // Assuming missionStatus is the property you want to update
 
+      // Call missionLogic.updateStatus with the id and missionStatus
+    await missionLogic.updateMission(id, mission);
+
+      response.status(201).json()
+    } catch (error) {
+      // Handle errors
+      console.error("Error updating mission status:", error);
+      response.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
 // router.get(
 //   "/getNameById/:id",
 //   async (request: Request, response: Response, next: NextFunction) => {
@@ -101,9 +118,9 @@ router.put(
       const { missionStatus } = request.body; // Assuming missionStatus is the property you want to update
 
       // Call missionLogic.updateStatus with the id and missionStatus
-      const updatedMission = await missionLogic.updateStatus(id, missionStatus);
+await missionLogic.updateStatus(id, missionStatus);
 
-      response.status(200).json(updatedMission);
+      response.status(201).json()
     } catch (error) {
       // Handle errors
       console.error("Error updating mission status:", error);

@@ -47,7 +47,7 @@ function MissionTable(props: props): JSX.Element {
                     <td>{mission.status_1_count + mission.status_1_count}</td>
                   </tr>
                 ))}
-              </tbody>
+              </tbody> 
             </Table>
           </Sheet>
           <br />

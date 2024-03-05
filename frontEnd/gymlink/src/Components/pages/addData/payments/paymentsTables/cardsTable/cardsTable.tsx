@@ -11,6 +11,7 @@ import axios from "axios";
 interface Props {
   data: any;
   refFn: () => void;
+  id:number
 }
 
 function CardsTable(props: Props): JSX.Element {
@@ -18,7 +19,9 @@ function CardsTable(props: Props): JSX.Element {
   const [editRow, setEdit] = React.useState();
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [AddModalOpen, setAddOpen] = React.useState<boolean>(false);
-  const [id, setId] = React.useState<number>();
+  const [id, setId] = React.useState<number>(
+    ()=> props.data
+  );
   const handleModalToggle = () => {
     props.refFn();
     setModalOpen((prev) => !prev); // Toggle the modal open/close state
@@ -29,9 +32,11 @@ function CardsTable(props: Props): JSX.Element {
   };
 
   React.useEffect(() => {
-    setRows(props.data[0]);
-    setId(props.data[0][0].id);
-    // console.log(props.data[0][0].id);
+    if(props.data!==undefined) {
+    setRows(props.data)
+    // setId(props.data[0].id)
+    }
+    console.log(props.data)
   }, [props.data]);
   function formatDate(dateString: string) {
     const date = new Date(dateString);
@@ -55,14 +60,14 @@ function CardsTable(props: Props): JSX.Element {
   };
   return (
     <div className="cardsTable">
-      {rows.length > 0 && (
+          <h1>כרטיסיות אימונים</h1>  
+           {props.data.length>0 && (
         <>
-          <h1>כרטיסיות אימונים</h1>
           <Sheet>
             <Table aria-label="striped table" stripe={"odd"}>
               <thead>
                 <tr>
-                  <th style={{ width: "40%" }}>פריט</th>
+                  
                   <th>כמות כרטיסייה</th>
                   <th>יתרת כרטיסייה</th>
                   <th>תאריך רכישה</th>
@@ -72,7 +77,7 @@ function CardsTable(props: Props): JSX.Element {
               <tbody>
                 {rows.map((row: any) => (
                   <tr key={row.id}>
-                    <td>{row.id}</td>
+                    
                     <td>{row.card}</td>
                     <td>{row.cardLeft}</td>
                     <td>{formatDate(row.startingDate)}</td>
@@ -94,7 +99,8 @@ function CardsTable(props: Props): JSX.Element {
                 ))}
               </tbody>
             </Table>
-          </Sheet>
+          </Sheet></>
+      )}
           <br />
           <div className="buttonLine">
             <Button
@@ -107,8 +113,7 @@ function CardsTable(props: Props): JSX.Element {
               הוסף רשומה
             </Button>
           </div>
-        </>
-      )}
+        
       <MainModal
         type={"eCards"}
         open={modalOpen}
@@ -116,7 +121,7 @@ function CardsTable(props: Props): JSX.Element {
         data={editRow && editRow}
       />
       <MainModal
-        type={"AddCards"}
+        type={"addCards"}
         open={AddModalOpen}
         onClose={handleAddToggle}
         data={id}

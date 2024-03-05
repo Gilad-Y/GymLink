@@ -29,9 +29,9 @@ function AddCard(props: props): JSX.Element {
       props.onClose();
     });
   };
-  React.useEffect(() => {
-    console.log(props.id);
-  }, []);
+  // React.useEffect(() => {
+  //   console.log(props.id);
+  // }, []);
   return (
     <div className="addCard">
       <DialogTitle>הוסף כרטיסיה חדשה</DialogTitle>

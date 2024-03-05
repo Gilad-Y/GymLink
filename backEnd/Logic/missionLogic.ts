@@ -69,6 +69,16 @@ const updateStatus = async (id: number, status: boolean) => {
   const data = await dal_mysql.execute(SQLcmd);
   return !status;
 };
+const updateMission = async (id: number, mission: missionModel) => {
+  const SQLcmd = mission.lastDate!==null?
+  `
+UPDATE missions SET content = '${mission.content}', lastDate = '${mission.lastDate}' WHERE (id = ${id})
+  `:`
+UPDATE missions SET content = '${mission.content}', lastDate = ${null} WHERE (id = ${id})
+  `;
+  const data = await dal_mysql.execute(SQLcmd);
+  return true;
+};
 const deleteMission = async (id: number) => {
   const SQLcmd = `
    DELETE FROM missions WHERE (id = ${id});
@@ -227,4 +237,5 @@ export {
   updateStatus,
   getMissionStatusById,
   deleteMission,
+  updateMission,
 };

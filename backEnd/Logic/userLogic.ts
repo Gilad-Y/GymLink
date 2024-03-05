@@ -29,19 +29,19 @@ import dal_mysql from "../Utils/dal_mysql";
 // FROM likes_table JOIN vacation_table
 // ON likes_table.vacationCode=vacation_table.vacationCode
 const getPaymentsById = async (id: number) => {
-  const SQLcmd = `  
+  const SQLcmdForMembership = `  
 SELECT id,startingDate,endingDate,card,cardLeft FROM GymLink.paymentTable WHERE traineeId = ${id} AND card IS NULL
 `;
-  const data = await dal_mysql.execute(SQLcmd);
-  const SQLcmd2 = `  
+  const membershipData = await dal_mysql.execute(SQLcmdForMembership);
+  const SQLcmdForCards = `  
 SELECT id,startingDate,endingDate,card,cardLeft FROM GymLink.paymentTable WHERE traineeId = ${id} AND card IS NOT NULL
 `;
-  const data2 = await dal_mysql.execute(SQLcmd2);
-  if ((data2.length || data.length) > 0) {
-    return [data, data2];
-  } else {
-    return 0;
-  }
+  const cardsData = await dal_mysql.execute(SQLcmdForCards);
+  // if ((cardsData.length || membershipData.length) > 0) {
+    return {membershipData,cardsData};
+  // } else {
+  //   return 0;
+  // }
 };
 const getAllById = async (id: number) => {
   const SQLcmd =
@@ -105,6 +105,13 @@ startingDate, card, cardLeft
 };
 
 const deleteCard = async (id: number) => {
+  const SQLcmd = `
+   DELETE FROM paymentTable WHERE (id = ${id});
+  `;
+  const data = await dal_mysql.execute(SQLcmd);
+  return data;
+};
+const deleteMembership = async (id: number) => {
   const SQLcmd = `
    DELETE FROM paymentTable WHERE (id = ${id});
   `;
@@ -195,6 +202,7 @@ export {
   addCard,
   deleteCard,
   updateCard,
+  deleteMembership,
   // updateUser,
   // getOption,
   // getNameById,

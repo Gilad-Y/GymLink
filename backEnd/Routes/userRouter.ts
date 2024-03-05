@@ -13,6 +13,7 @@ import {
   addCard,
   deleteCard,
   updateCard,
+  deleteMembership,
   // updateUser,
 } from "../Logic/userLogic";
 
@@ -50,7 +51,7 @@ router.get(
     const id = +request.params.id;
 
     const data = await getPaymentsById(id);
-    data ? response.status(200).json(data) : response.status(204).json("");
+    data ? response.status(200).json(data) : response.status(204).json(null);
   }
 );
 router.get(
@@ -92,6 +93,13 @@ router.delete(
   async (request: Request, response: Response, next: NextFunction) => {
     const id = +request.params.id;
     response.status(200).json(await deleteCard(id));
+  }
+);
+router.delete(
+  "/deleteMembership/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const id = +request.params.id;
+    response.status(200).json(await deleteMembership(id));
   }
 );
 router.put(

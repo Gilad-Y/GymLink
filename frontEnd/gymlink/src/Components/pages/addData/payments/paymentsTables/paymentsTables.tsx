@@ -3,32 +3,39 @@ import "./paymentsTables.css";
 import axios from "axios";
 import CardsTable from "./cardsTable/cardsTable";
 import MembershipsTable from "./membershipsTable/membershipsTable";
+import { Button } from "@mui/joy";
 interface props {
   id: number;
 }
 function PaymentsTables(props: props): JSX.Element {
-  const [tableData, setData] = useState();
+  const [cardsData, setCards] = useState<any>([]);
+  const [membershipData, setMembership] = useState<any>([]);
   const [refresh, setRef] = useState<boolean>(false);
   useEffect(() => {
     axios
       .get(`http://localhost:4000/api/v1/user/getPaymentsById/${props.id}`)
       .then((res) => {
         // console.log(res.data);
-        setData(res.data);
+        setMembership(res.data.membershipData);
+        setCards(res.data.cardsData);
+        console.log(membershipData,cardsData)
       });
   }, [props.id, refresh]);
   const refreshDate = () => {
     setRef(!refresh);
   };
+  const showData=()=>{
+    console.log(cardsData,membershipData)
+  }
   return (
     <div className="paymentsTables">
-      {tableData && (
+      {props.id>0 && (
         <div className="tables">
           <div className="table">
-            <CardsTable data={[tableData[1]]} refFn={refreshDate} />
+            {<CardsTable data={cardsData} refFn={refreshDate} id={props.id}/>}
           </div>
           <div className="table">
-            <MembershipsTable data={[tableData[0]]} refFn={refreshDate} />
+           <MembershipsTable data={membershipData} refFn={refreshDate} id={props.id} />
           </div>
         </div>
       )}
