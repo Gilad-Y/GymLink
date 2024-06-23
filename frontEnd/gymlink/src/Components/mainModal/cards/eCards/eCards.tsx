@@ -25,7 +25,6 @@ function ECards(props: Props): JSX.Element {
   // Function to handle form submission
   const editPayment = (data: any) => {
     data.id = props.data.id;
-    console.log(data);
     axios
       .put(`http://localhost:4000/api/v1/user/updateCard`, data)
       .then((res: any) => {

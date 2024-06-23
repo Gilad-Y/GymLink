@@ -21,13 +21,6 @@ interface MainModalProps {
 function MainModal(props: MainModalProps): JSX.Element {
   return (
     <>
-      {/* <Button
-        variant="outlined"
-        color="neutral"
-        onClick={props.onClose} // Toggle the modal open/close state from the parent
-      >
-        {props.type}
-      </Button> */}
       <Modal
         open={props.open}
         onClose={() => {
@@ -40,9 +33,9 @@ function MainModal(props: MainModalProps): JSX.Element {
           )}
           {props.type === "addCards" && (
             <AddCard id={props.data} onClose={props.onClose} />
-          )}{props.type === "eMembership" && (
-            // <EMembership data={props.data} onClose={props.onClose} />
-            <></>
+          )}
+          {props.type === "eMembership" && (
+            <EMembership row={props.data} onClose={props.onClose} />
           )}
           {props.type === "addMembership" && (
             <AddMembership id={props.data} onClose={props.onClose} />

@@ -12,33 +12,32 @@ import MainModal from "../../../../../mainModal/mainModal";
 interface props {
   data: any[];
   refFn: () => void;
-  id:number
+  id: number;
 }
 function MembershipsTable(props: props): JSX.Element {
   const [rows, setRows] = React.useState<any[]>([]);
   const [editRow, setEdit] = React.useState();
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [AddModalOpen, setAddOpen] = React.useState<boolean>(false);
-   const [id, setId] = React.useState<number>(
-    ()=>props.id
-   );
+  const [id, setId] = React.useState<number>(() => props.id);
   React.useEffect(() => {
-     if(props.data!==undefined) {
-    setRows(props.data)
-    // setId(props.data[0].id)
+    if (props.data !== undefined) {
+      setRows(props.data);
+      // setId(props.data[0].id)
     }
-    console.log(props.data);
   }, [props.data]);
   function formatDate(dateString: string) {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear().toString().slice(2);
 
     return `${day}-${month}-${year}`;
   }
-  const editLine = (id: number) => {
-    console.log(id);
+  const editLine = (row: any) => {
+    // console.log(id);
+    setEdit(row);
+    handleModalToggle();
   };
   const deleteLine = (id: number) => {
     axios
@@ -57,15 +56,13 @@ function MembershipsTable(props: props): JSX.Element {
   };
   return (
     <div className="membershipsTable">
-     
-          <h1>ליווי אונליין</h1>
-          {props.data.length>0 &&(
-      <>
+      <h1>ליווי אונליין</h1>
+      {props.data.length > 0 && (
+        <>
           <Sheet>
             <Table aria-label="striped table" stripe={"odd"}>
               <thead>
                 <tr>
-                  
                   <th>תאריך התחלה</th>
                   <th>תאריך סיום</th>
                   <th>פעולות</th>
@@ -74,7 +71,6 @@ function MembershipsTable(props: props): JSX.Element {
               <tbody>
                 {rows.map((row: any) => (
                   <tr key={row.id}>
-                    
                     <td>{formatDate(row.startingDate)}</td>
                     <td>{formatDate(row.endingDate)}</td>
                     <td>
@@ -86,7 +82,7 @@ function MembershipsTable(props: props): JSX.Element {
                       </IconButton>
                       <IconButton
                         aria-label="edit"
-                        onClick={() => editLine(row.id)}
+                        onClick={() => editLine(row)}
                       >
                         <EditIcon />
                       </IconButton>
@@ -95,15 +91,17 @@ function MembershipsTable(props: props): JSX.Element {
                 ))}
               </tbody>
             </Table>
-          </Sheet>  
-           </>
+          </Sheet>
+        </>
       )}
-          <br />
-          <div className="buttonLine">
-            <Button color="success"
-            onClick={handleAddToggle}> הוסף רשומה</Button>
-          </div>
-     <MainModal
+      <br />
+      <div className="buttonLine">
+        <Button color="success" onClick={handleAddToggle}>
+          {" "}
+          הוסף רשומה
+        </Button>
+      </div>
+      <MainModal
         type={"eMembership"}
         open={modalOpen}
         onClose={handleModalToggle}

@@ -8,10 +8,11 @@ import IconButton from "@mui/joy/IconButton";
 import Button from "@mui/joy/Button";
 import MainModal from "../../../../../mainModal/mainModal";
 import axios from "axios";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 interface Props {
   data: any;
   refFn: () => void;
-  id:number
+  id: number;
 }
 
 function CardsTable(props: Props): JSX.Element {
@@ -19,9 +20,7 @@ function CardsTable(props: Props): JSX.Element {
   const [editRow, setEdit] = React.useState();
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [AddModalOpen, setAddOpen] = React.useState<boolean>(false);
-  const [id, setId] = React.useState<number>(
-    ()=> props.data
-  );
+  const [id, setId] = React.useState<number>(() => props.data[0].id);
   const handleModalToggle = () => {
     props.refFn();
     setModalOpen((prev) => !prev); // Toggle the modal open/close state
@@ -30,13 +29,21 @@ function CardsTable(props: Props): JSX.Element {
     props.refFn();
     setAddOpen((prev) => !prev); // Toggle the modal open/close state
   };
-
-  React.useEffect(() => {
-    if(props.data!==undefined) {
-    setRows(props.data)
-    // setId(props.data[0].id)
+  const executeCard = (card: any) => {
+    if (card.cardLeft > 0) {
+      card.cardLeft = card.cardLeft - 1;
+      axios
+        .put(`http://localhost:4000/api/v1/user/executeCard/${card.id}`, card)
+        .then((res: any) => {
+          props.refFn();
+        });
     }
-    console.log(props.data)
+  };
+  React.useEffect(() => {
+    if (props.data !== undefined) {
+      setRows(props.data);
+      // setId(props.data[0].id)
+    }
   }, [props.data]);
   function formatDate(dateString: string) {
     const date = new Date(dateString);
@@ -60,14 +67,13 @@ function CardsTable(props: Props): JSX.Element {
   };
   return (
     <div className="cardsTable">
-          <h1>כרטיסיות אימונים</h1>  
-           {props.data.length>0 && (
+      <h1>כרטיסיות אימונים</h1>
+      {props.data.length > 0 && (
         <>
           <Sheet>
             <Table aria-label="striped table" stripe={"odd"}>
               <thead>
                 <tr>
-                  
                   <th>כמות כרטיסייה</th>
                   <th>יתרת כרטיסייה</th>
                   <th>תאריך רכישה</th>
@@ -77,7 +83,6 @@ function CardsTable(props: Props): JSX.Element {
               <tbody>
                 {rows.map((row: any) => (
                   <tr key={row.id}>
-                    
                     <td>{row.card}</td>
                     <td>{row.cardLeft}</td>
                     <td>{formatDate(row.startingDate)}</td>
@@ -94,26 +99,30 @@ function CardsTable(props: Props): JSX.Element {
                       >
                         <EditIcon />
                       </IconButton>
+                      <IconButton onClick={() => executeCard(row)}>
+                        <ConfirmationNumberIcon color="warning" />
+                      </IconButton>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
-          </Sheet></>
+          </Sheet>
+        </>
       )}
-          <br />
-          <div className="buttonLine">
-            <Button
-              color="success"
-              onClick={() => {
-                handleAddToggle();
-              }}
-            >
-              {" "}
-              הוסף רשומה
-            </Button>
-          </div>
-        
+      <br />
+      <div className="buttonLine">
+        <Button
+          color="success"
+          onClick={() => {
+            handleAddToggle();
+          }}
+        >
+          {" "}
+          הוסף רשומה
+        </Button>
+      </div>
+
       <MainModal
         type={"eCards"}
         open={modalOpen}

@@ -14,6 +14,9 @@ import {
   deleteCard,
   updateCard,
   deleteMembership,
+  updateMembership,
+  addMembership,
+  executeCard,
   // updateUser,
 } from "../Logic/userLogic";
 
@@ -88,6 +91,13 @@ router.post(
     response.status(201).json(await addCard(card));
   }
 );
+router.post(
+  "/addMembership",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const membership: any = request.body;
+    response.status(201).json(await addMembership(membership));
+  }
+);
 router.delete(
   "/deleteCard/:id",
   async (request: Request, response: Response, next: NextFunction) => {
@@ -107,6 +117,21 @@ router.put(
   async (request: Request, response: Response, next: NextFunction) => {
     const card = request.body;
     response.status(200).json(await updateCard(card));
+  }
+);
+router.put(
+  "/executeCard/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const id = +request.params.id;
+    const cardLeft = request.body.cardLeft;
+    response.status(200).json(await executeCard(id, cardLeft));
+  }
+);
+router.put(
+  "/updateMembership",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const membership = request.body;
+    response.status(200).json(await updateMembership(membership));
   }
 );
 export default router;

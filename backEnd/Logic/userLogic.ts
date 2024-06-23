@@ -38,7 +38,7 @@ SELECT id,startingDate,endingDate,card,cardLeft FROM GymLink.paymentTable WHERE 
 `;
   const cardsData = await dal_mysql.execute(SQLcmdForCards);
   // if ((cardsData.length || membershipData.length) > 0) {
-    return {membershipData,cardsData};
+  return { membershipData, cardsData };
   // } else {
   //   return 0;
   // }
@@ -102,6 +102,18 @@ startingDate, card, cardLeft
   const data: OkPacket = await dal_mysql.execute(SQLcmd);
   card.id = data.insertId;
   return [card];
+};
+const addMembership = async (membership: any) => {
+  const SQLcmd = `
+INSERT INTO paymentTable ( coachId, traineeId, 
+startingDate, endingDate
+) VALUES (
+   ${membership.coachId}, ${membership.traineeId}, '${membership.startingDate}', '${membership.endingDate}');
+
+`;
+  const data: OkPacket = await dal_mysql.execute(SQLcmd);
+  membership.id = data.insertId;
+  return [membership];
 };
 
 const deleteCard = async (id: number) => {
@@ -180,6 +192,26 @@ const updateCard = async (card: any) => {
   const data = await dal_mysql.execute(SQLcmd);
   return data.affectedRows;
 };
+const updateMembership = async (membership: any) => {
+  const SQLcmd = `
+  UPDATE paymentTable SET 
+  startingDate = '${membership.startingDate}', 
+  endingDate = '${membership.endingDate}', 
+  WHERE id = ${+membership.id}`;
+
+  const data = await dal_mysql.execute(SQLcmd);
+  return data.affectedRows;
+};
+const executeCard = async (id: number, cardLeft: number) => {
+  const SQLcmd = `
+  UPDATE paymentTable SET 
+  cardLeft = ${cardLeft}
+  WHERE id = ${id}`;
+
+  const data = await dal_mysql.execute(SQLcmd);
+  return data.affectedRows;
+  // return true;
+};
 
 // const updateUser = async (id: number, user: UserModel) => {
 //   const SQLcmd = `
@@ -193,9 +225,11 @@ const updateCard = async (card: any) => {
 export {
   // getAll,
   logUser,
+  executeCard,
   // checkNum,
   // addUser,
   // deleteUser,
+  updateMembership,
   getAllById,
   getById,
   getPaymentsById,
@@ -203,6 +237,7 @@ export {
   deleteCard,
   updateCard,
   deleteMembership,
+  addMembership,
   // updateUser,
   // getOption,
   // getNameById,

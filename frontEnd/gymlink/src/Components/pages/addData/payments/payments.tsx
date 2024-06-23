@@ -9,7 +9,6 @@ function Payments(): JSX.Element {
   const [traineeId, setId] = useState<number>(0);
   const params = useParams();
   const getTrainee = (trainee: any) => {
-    // console.log(trainee);
     setId(trainee);
   };
   return (

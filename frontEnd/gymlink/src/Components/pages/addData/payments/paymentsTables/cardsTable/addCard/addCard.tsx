@@ -20,7 +20,6 @@ function AddCard(props: props): JSX.Element {
   });
   const { handleSubmit, register } = useForm();
   const addCard = (data: any) => {
-    data.id = props.id;
     data.cardLeft = data.card;
     data.traineeId = props.id;
     data.coachId = store.getState().users.user[0].id;
