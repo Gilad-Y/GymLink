@@ -1,11 +1,11 @@
 import "./noTrainees.css";
 
-function NoTrainees(): JSX.Element {
+function NoTrainees(): React.JSX.Element {
   return (
     <div className="noTrainees">
-      you have no trainees
+      <h1>you have no trainees</h1>
       <br />
-      want to add right now?
+      <h1>want to add right now?</h1>
     </div>
   );
 }

@@ -1,9 +1,20 @@
 .dashboard {
-  height: 100%;
-  width: 100%;
-}
-.buttons {
-  width: 93.5%;
   display: flex;
-  justify-content: space-around;
+  justify-content: center; /* Horizontally center */
+  align-items: flex-start; /* Align to the top */
+  height: 100vh; /* Full viewport height */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove padding */
+}
+
+.centered-container {
+  width: 100%; /* Full width */
+  max-width: 1200px; /* Limit the max-width for larger screens */
+  display: flex;
+  flex-direction: column; /* Stack components vertically */
+  align-items: center; /* Center items horizontally inside the container */
+}
+
+.centered-container > * {
+  margin-bottom: 20px; /* Add space between components */
 }

@@ -1,0 +1,27 @@
+.register {
+  color: black; /* Set text color to black */
+}
+
+.register .form-input {
+  color: black; /* Ensure form input text is black */
+}
+
+.register .MuiInputLabel-root {
+  color: black; /* Ensure input labels are black */
+}
+
+.register .MuiFormControlLabel-label {
+  color: black; /* Ensure checkbox labels are black */
+}
+
+.register .MuiLink-root {
+  color: black; /* Ensure links are black */
+}
+
+.register .MuiOutlinedInput-root {
+  color: black; /* Ensure typed text in input fields is black */
+}
+
+.register .MuiOutlinedInput-input {
+  color: black; /* Ensure typed text in input fields is black */
+}

@@ -6,12 +6,12 @@ import React, { useEffect, useState } from "react";
 import { missionModel } from "../../models/missionModel";
 import store from "../../redux/store";
 
-function TraineePage(): JSX.Element {
+function TraineePage(): React.JSX.Element {
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [data, setData] = useState<any>();
   const params = useParams();
   useEffect(() => {
-    const dataToModal = [store.getState().users.user[0].id, params.id];
+    const dataToModal = [store.getState().users.user, params.id];
     setData(dataToModal);
   }, []);
   const handleModalToggle = () => {

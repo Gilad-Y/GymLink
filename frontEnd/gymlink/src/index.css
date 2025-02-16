@@ -4,10 +4,12 @@ body,
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%;
   text-align: center;
   background-color: rgb(36, 36, 36);
   /* font-family: "rubik"; */
   color: white;
+  overflow: hidden;
 }
 .p-blue {
   background-color: rgb(50, 76, 239);

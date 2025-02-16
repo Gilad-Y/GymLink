@@ -1,7 +1,7 @@
 import { UserModel } from "../models/userModel";
 
 export class UserState {
-  public user: UserModel[] = [];
+  public user: UserModel | null = null;
 }
 
 export enum UserActionType {
@@ -42,13 +42,13 @@ export const UserReducer = (
   const newState: UserState = { ...currentState };
   switch (action.type) {
     case UserActionType.addUser:
-      newState.user.push(action.payload);
+      newState.user = action.payload;
       break;
     case UserActionType.logInUser:
       newState.user = action.payload;
       break;
     case UserActionType.logOutUser:
-      newState.user = [];
+      newState.user = null;
       break;
   }
   return newState;

@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 
 //error->modal
-import { RouteNotFound } from "../Models/Clients-Errors";
+import { RouteNotFound } from "../Models/oldModals/Clients-Errors";
 
 //middle ware function
 const ErrorHandler = (
@@ -15,4 +15,3 @@ const ErrorHandler = (
 };
 
 export default ErrorHandler;
-

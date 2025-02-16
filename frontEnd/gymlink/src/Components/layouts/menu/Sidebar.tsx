@@ -13,7 +13,6 @@ import ListItemContent from "@mui/joy/ListItemContent";
 import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
 import AssignmentRoundedIcon from "@mui/icons-material/AssignmentRounded";
@@ -27,8 +26,7 @@ import ColorSchemeToggle from "./ColorSchemeToggle";
 import { closeSidebar } from "./utils";
 import store from "../../../redux/store";
 import { logOutUser } from "../../../redux/usersReducer";
-import { UserModel } from "../../../models/userModel";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Toggler({
   defaultExpanded = false,
@@ -45,7 +43,7 @@ function Toggler({
   const [open, setOpen] = React.useState(defaultExpanded);
 
   return (
-    <React.Fragment>
+    <>
       {renderToggle({ open, setOpen })}
       <Box
         sx={{
@@ -59,7 +57,7 @@ function Toggler({
       >
         {children}
       </Box>
-    </React.Fragment>
+    </>
   );
 }
 
@@ -68,32 +66,32 @@ const logOut = () => {
 };
 
 export default function Sidebar() {
-  const [user, setUser] = React.useState<UserModel>();
   const nav = useNavigate();
-  const navToPage = (page: string) => {
-    console.log(page);
-    switch (page) {
-      case "payments":
-        nav(`/update/payments/${user?.id}`);
-        break;
-      case "mission":
-        nav(`/update/missions/${user?.id}`);
-        break;
-      case "weights":
-        nav(`/update/weight/${user?.id}`);
-        break;
-      case "program":
-        nav(`/update/program/${user?.id}`);
-        break;
-      case "trainee":
-        nav(`/update/newTrainee/${user?.id}`);
-        break;
-    }
-  };
+  const location = useLocation();
+  const [user, setUser] = React.useState<any>(store.getState().users.user);
+  const [currentLocation, setCurrentLocation] = React.useState<string>(
+    location.pathname.split("/")[1]
+  );
 
   React.useEffect(() => {
-    setUser(store.getState().users.user[0]);
-  }, [store.getState()]);
+    setCurrentLocation(location.pathname.split("/")[1]);
+    setUser(store.getState().users.user); // Update user on route change
+  }, [location]);
+
+  const routes = {
+    payments: "/update/payments",
+    mission: "/update/missions",
+    weights: "/update/weight",
+    program: "/update/program",
+    trainee: "/update/newTrainee",
+  } as const; // using `as const` to ensure the keys are treated as literal types.
+
+  const navToPage = (item: string) => {
+    // Assert the string is one of the valid keys
+    const route = routes[item as keyof typeof routes];
+    nav(route);
+  };
+
   return (
     <Sheet
       className="Sidebar"
@@ -108,7 +106,6 @@ export default function Sidebar() {
         height: "100vh",
         width: "var(--Sidebar-width)",
         top: 0,
-        // p:2,
         flexShrink: 0,
         display: "flex",
         flexDirection: "column",
@@ -116,7 +113,6 @@ export default function Sidebar() {
         borderRight: "1px solid",
         borderColor: "divider",
         paddingBottom: 0,
-        // p:0,
       }}
     >
       <GlobalStyles
@@ -149,78 +145,103 @@ export default function Sidebar() {
         onClick={() => closeSidebar()}
       />
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        <IconButton variant="soft" color="primary" size="sm">
+        <IconButton
+          variant="soft"
+          color="primary"
+          size="sm"
+        >
           <BrightnessAutoRoundedIcon />
         </IconButton>
         <Typography level="title-lg">gym Link</Typography>
-
         <ColorSchemeToggle sx={{ ml: "auto" }} />
       </Box>
-      {user ? (
-        <>
-          <Input
+
+      <>
+        <Input
+          size="sm"
+          startDecorator={<SearchRoundedIcon />}
+          placeholder="Search"
+        />
+        <Box
+          sx={{
+            minHeight: 0,
+            overflow: "hidden auto",
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            [`& .${listItemButtonClasses.root}`]: {
+              gap: 1.5,
+            },
+          }}
+        >
+          <List
             size="sm"
-            startDecorator={<SearchRoundedIcon />}
-            placeholder="Search"
-          />
-          <Box
             sx={{
-              minHeight: 0,
-              overflow: "hidden auto",
-              flexGrow: 1,
-              display: "flex",
-              flexDirection: "column",
-              [`& .${listItemButtonClasses.root}`]: {
-                gap: 1.5,
-              },
+              gap: 1,
+              "--List-nestedInsetStart": "30px",
+              "--ListItem-radius": (theme) => theme.vars.radius.sm,
             }}
           >
-            <List
-              size="sm"
-              sx={{
-                gap: 1,
-                "--List-nestedInsetStart": "30px",
-                "--ListItem-radius": (theme) => theme.vars.radius.sm,
-              }}
-            >
-              <ListItem>
-                <ListItemButton
-                  onClick={() => {
-                    nav("/");
-                  }}
-                >
-                  <HomeRoundedIcon />
-                  <ListItemContent>
-                    <Typography level="title-sm">בית</Typography>
-                  </ListItemContent>
-                </ListItemButton>
-              </ListItem>
+            <ListItem>
+              <ListItemButton
+                selected={currentLocation === ""}
+                onClick={() => nav("/")}
+              >
+                <DashboardRoundedIcon />
+                <ListItemContent>
+                  <Typography level="title-sm">Dashboard</Typography>
+                </ListItemContent>
+              </ListItemButton>
+            </ListItem>
 
-              <ListItem>
-                <ListItemButton>
-                  <DashboardRoundedIcon />
-                  <ListItemContent>
-                    <Typography level="title-sm">Dashboard</Typography>
-                  </ListItemContent>
-                </ListItemButton>
-              </ListItem>
+            <ListItem>
+              <ListItemButton
+                selected={currentLocation === "orders"}
+                onClick={() => nav("/orders")}
+              >
+                <ShoppingCartRoundedIcon />
+                <ListItemContent>
+                  <Typography level="title-sm">Orders</Typography>
+                </ListItemContent>
+              </ListItemButton>
+            </ListItem>
 
-              <ListItem>
-                <ListItemButton selected>
-                  <ShoppingCartRoundedIcon />
-                  <ListItemContent>
-                    <Typography level="title-sm">Orders</Typography>
-                  </ListItemContent>
-                </ListItemButton>
-              </ListItem>
+            <ListItem nested>
+              <Toggler
+                renderToggle={({ open, setOpen }) => (
+                  <ListItemButton onClick={() => setOpen(!open)}>
+                    <AssignmentRoundedIcon />
+                    <ListItemContent>
+                      <Typography level="title-sm">פעולות</Typography>
+                    </ListItemContent>
+                    <KeyboardArrowDownIcon
+                      sx={{ transform: open ? "rotate(180deg)" : "none" }}
+                    />
+                  </ListItemButton>
+                )}
+              >
+                <List sx={{ gap: 0.5 }}>
+                  {["payments", "mission", "weights", "program", "trainee"].map(
+                    (item) => (
+                      <ListItem key={item}>
+                        <ListItemButton onClick={() => navToPage(item)}>
+                          {`עדכן ${item}`}
+                        </ListItemButton>
+                      </ListItem>
+                    )
+                  )}
+                </List>
+              </Toggler>
+            </ListItem>
 
+            {user?.role === "admin" && (
               <ListItem nested>
                 <Toggler
                   renderToggle={({ open, setOpen }) => (
                     <ListItemButton onClick={() => setOpen(!open)}>
-                      <AssignmentRoundedIcon />
+                      <GroupRoundedIcon />
                       <ListItemContent>
-                        <Typography level="title-sm">פעולות</Typography>
+                        <Typography level="title-sm">תפריט אדמין</Typography>
                       </ListItemContent>
                       <KeyboardArrowDownIcon
                         sx={{ transform: open ? "rotate(180deg)" : "none" }}
@@ -229,173 +250,85 @@ export default function Sidebar() {
                   )}
                 >
                   <List sx={{ gap: 0.5 }}>
-                    <ListItem sx={{ mt: 0.5 }}>
-                      <ListItemButton
-                        onClick={() => {
-                          navToPage("payments");
-                        }}
-                      >
-                        עדכן תשלום
-                      </ListItemButton>
+                    <ListItem>
+                      <ListItemButton>הוסף מאמן</ListItemButton>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemButton>נהל משתמשים</ListItemButton>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemButton>Roles & permission</ListItemButton>
                     </ListItem>
                     <ListItem>
                       <ListItemButton
                         onClick={() => {
-                          navToPage("mission");
+                          nav(`/addClient/${user._id}`);
                         }}
                       >
-                        עדכן משימות
-                      </ListItemButton>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemButton
-                        onClick={() => {
-                          navToPage("weights");
-                        }}
-                      >
-                        עדכן משקלים
-                      </ListItemButton>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemButton
-                        onClick={() => {
-                          navToPage("program");
-                        }}
-                      >
-                        עדכן תוכנית למתאמן
-                      </ListItemButton>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemButton
-                        onClick={() => {
-                          navToPage("trainee");
-                        }}
-                      >
-                        צרף מתאמן חדש
+                        {" "}
+                        הוסף לקוח
                       </ListItemButton>
                     </ListItem>
                   </List>
                 </Toggler>
               </ListItem>
+            )}
+          </List>
 
-              {/* <ListItem>
-                <ListItemButton
-                  role="menuitem"
-                  component="a"
-                  href="/joy-ui/getting-started/templates/messages/"
-                >
-                  <QuestionAnswerRoundedIcon />
-                  <ListItemContent>
-                    <Typography level="title-sm">Messages</Typography>
-                  </ListItemContent>
-                  <Chip size="sm" color="primary" variant="solid">
-                    4
-                  </Chip>
-                </ListItemButton>
-              </ListItem> */}
+          <List
+            size="sm"
+            sx={{
+              mt: "auto",
+              flexGrow: 0,
+              "--ListItem-radius": (theme) => theme.vars.radius.sm,
+              "--List-gap": "8px",
+              mb: 2,
+            }}
+          >
+            <ListItem>
+              <ListItemButton>
+                <SupportRoundedIcon />
+                תמיכה
+              </ListItemButton>
+            </ListItem>
+            <ListItem>
+              <ListItemButton>
+                <SettingsRoundedIcon />
+                הגדרות
+              </ListItemButton>
+            </ListItem>
+          </List>
 
-              {user.type == "admin" && (
-                <ListItem nested>
-                  <Toggler
-                    renderToggle={({ open, setOpen }) => (
-                      <ListItemButton onClick={() => setOpen(!open)}>
-                        <GroupRoundedIcon />
-                        <ListItemContent>
-                          <Typography level="title-sm">תפריט אדמין</Typography>
-                        </ListItemContent>
-                        <KeyboardArrowDownIcon
-                          sx={{ transform: open ? "rotate(180deg)" : "none" }}
-                        />
-                      </ListItemButton>
-                    )}
-                  >
-                    <List sx={{ gap: 0.5 }}>
-                      <ListItem sx={{ mt: 0.5 }}>
-                        <ListItemButton
-                          role="menuitem"
-                          component="a"
-                          onClick={() => {}}
-                        >
-                          הוסף מאמן
-                        </ListItemButton>
-                      </ListItem>
-                      <ListItem>
-                        <ListItemButton onClick={() => {}}>
-                          נהל משתמשים
-                        </ListItemButton>
-                      </ListItem>
-                      <ListItem>
-                        <ListItemButton>Roles & permission</ListItemButton>
-                      </ListItem>
-                    </List>
-                  </Toggler>
-                </ListItem>
-              )}
-            </List>
-
-            <List
-              size="sm"
-              sx={{
-                mt: "auto",
-                flexGrow: 0,
-                "--ListItem-radius": (theme) => theme.vars.radius.sm,
-                "--List-gap": "8px",
-                mb: 2,
-              }}
+          <Divider />
+          <Box
+            sx={{
+              display: "flex",
+              gap: 1,
+              alignItems: "center",
+            }}
+          >
+            <Avatar
+              color="primary"
+              variant="soft"
             >
-              <ListItem>
-                <ListItemButton>
-                  <SupportRoundedIcon />
-                  תמיכה
-                </ListItemButton>
-              </ListItem>
-              <ListItem>
-                <ListItemButton>
-                  <SettingsRoundedIcon />
-                  הגדרות
-                </ListItemButton>
-              </ListItem>
-            </List>
-
-            <Divider />
-            <Box
-              sx={{
-                display: "flex",
-                gap: 1,
-                alignItems: "center",
-              }}
-            >
-              <Avatar color="primary" variant="soft">
-                {`${user.firstName[0]} ${user.lastName[0]}`}
-              </Avatar>
-              <Box
-                sx={{
-                  minWidth: 0,
-                  flex: 1,
-                }}
-              >
-                <Typography level="title-sm">{`${user.firstName} ${user.lastName}`}</Typography>
-                {/* <Typography level="body-xs">siriwatk@test.com</Typography> */}
-              </Box>
-              <IconButton
-                size="sm"
-                // sx={{ marginTop: -2 }}
-                variant="plain"
-                color="neutral"
-                onClick={() => {
-                  logOut();
-                }}
-              >
-                <LogoutRoundedIcon />
-              </IconButton>
+              {user ? `${user.firstName[0]}${user.lastName[0]}` : ""}
+            </Avatar>
+            <Box sx={{ minWidth: 0, flex: 1 }}>
+              <Typography level="title-sm">
+                {user ? `${user.firstName} ${user.lastName}` : ""}
+              </Typography>
             </Box>
+            <IconButton
+              size="sm"
+              variant="plain"
+              color="neutral"
+              onClick={logOut}
+            >
+              <LogoutRoundedIcon />
+            </IconButton>
           </Box>
-        </>
-      ) : (
-        <Button variant="solid" color="success">
-          להתחברות
-        </Button>
-      )}
+        </Box>
+      </>
     </Sheet>
   );
 }

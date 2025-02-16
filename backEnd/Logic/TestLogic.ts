@@ -1,4 +1,4 @@
-import { Test } from "../Models/Test";
+import { Test } from "../Models/oldModals/Test";
 
 const sendOK = (verb: string, body?: string) => {
   if (body) {

@@ -1,4 +1,4 @@
-import { missionModel } from "./../Models/missionModel";
+import { missionModel } from "../Models/oldModals/missionModel";
 import express, { NextFunction, Request, Response } from "express";
 import * as missionLogic from "../Logic/missionLogic";
 
@@ -32,12 +32,12 @@ router.put(
   async (request: Request, response: Response, next: NextFunction) => {
     try {
       const id = +request.params.id;
-      const  mission  = request.body; // Assuming missionStatus is the property you want to update
+      const mission = request.body; // Assuming missionStatus is the property you want to update
 
       // Call missionLogic.updateStatus with the id and missionStatus
-    await missionLogic.updateMission(id, mission);
+      await missionLogic.updateMission(id, mission);
 
-      response.status(201).json()
+      response.status(201).json();
     } catch (error) {
       // Handle errors
       console.error("Error updating mission status:", error);
@@ -118,9 +118,9 @@ router.put(
       const { missionStatus } = request.body; // Assuming missionStatus is the property you want to update
 
       // Call missionLogic.updateStatus with the id and missionStatus
-await missionLogic.updateStatus(id, missionStatus);
+      await missionLogic.updateStatus(id, missionStatus);
 
-      response.status(201).json()
+      response.status(201).json();
     } catch (error) {
       // Handle errors
       console.error("Error updating mission status:", error);

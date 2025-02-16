@@ -1,137 +1,163 @@
 import express, { NextFunction, Request, Response } from "express";
-import {
-  // addUser,
-  // checkNum,
-  // deleteUser,
-  // getAll,
-  getAllById,
-  getById,
-  // getNameById,
-  // getOption,
-  logUser,
-  getPaymentsById,
-  addCard,
-  deleteCard,
-  updateCard,
-  deleteMembership,
-  updateMembership,
-  addMembership,
-  executeCard,
-  // updateUser,
-} from "../Logic/userLogic";
-
+import * as userLogic from "../Logic/userLogic";
 const router = express.Router();
-// router.get(
-//   "/getAll",
-//   async (request: Request, response: Response, next: NextFunction) => {
-//     response.status(200).json(await getAll());
-//   }
-// );
-// router.get(
-//   "/getOption",
-//   async (request: Request, response: Response, next: NextFunction) => {
-//     response.status(200).json(await getOption());
-//   }
-// );
-// router.get(
-//   "/getNameById/:id",
-//   async (request: Request, response: Response, next: NextFunction) => {
-//     const id = +request.params.id;
-//     response.status(200).json(await getNameById(id));
-//   }
-// );
-router.get(
-  "/getAllById/:id",
-  async (request: Request, response: Response, next: NextFunction) => {
-    const id = +request.params.id;
 
-    id && response.status(200).json(await getAllById(id));
+// User CRUD operations
+router.post(
+  "/register",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const user = request.body;
+    response.status(201).json(await userLogic.createUser(user));
   }
 );
-router.get(
-  "/getPaymentsById/:id",
-  async (request: Request, response: Response, next: NextFunction) => {
-    const id = +request.params.id;
 
-    const data = await getPaymentsById(id);
-    data ? response.status(200).json(data) : response.status(204).json(null);
+router.post(
+  "/login",
+  async (request: Request, response: Response, next: NextFunction) => {
+    // console.log(request.body + "dfrbhhrdhrd");
+    try {
+      const { email, password } = request.body;
+
+      const user = await userLogic.loginUser(email, password);
+
+      response.status(200).json(user);
+    } catch (error) {
+      next(error); // Pass the error to Express error middleware
+    }
   }
 );
+
 router.get(
-  "/getById/:id",
+  "/get/:id",
   async (request: Request, response: Response, next: NextFunction) => {
-    const id = +request.params.id;
-    response.status(200).json(await getById(id));
+    const id = request.params.id;
+    response.status(200).json(await userLogic.getUserById(id));
   }
 );
-router.post(
-  "/logUser",
+
+router.put(
+  "/edit/:id",
   async (request: Request, response: Response, next: NextFunction) => {
-    const email = request.body.email;
-    const password = request.body._userPass;
-    const data = await logUser(email, password);
-    data.length > 0
-      ? response.status(200).json(data)
-      : response.status(403).json(data);
+    const id = request.params.id;
+    const updateData = request.body;
+    response.status(200).json(await userLogic.updateUserById(id, updateData));
   }
 );
-// router.get(
-//   "/checkPhoneNumber",
-//   async (request: Request, response: Response, next: NextFunction) => {
-//     const num = request.query.numberToCheck;
-//     if (typeof num === "string") {
-//       response.status(200).json(await checkNum(+num));
-//     }
-//   }
-// );
-router.post(
-  "/addCard",
-  async (request: Request, response: Response, next: NextFunction) => {
-    const card: any = request.body;
-    response.status(201).json(await addCard(card));
-  }
-);
-router.post(
-  "/addMembership",
-  async (request: Request, response: Response, next: NextFunction) => {
-    const membership: any = request.body;
-    response.status(201).json(await addMembership(membership));
-  }
-);
+
 router.delete(
-  "/deleteCard/:id",
+  "/delete/:id",
   async (request: Request, response: Response, next: NextFunction) => {
-    const id = +request.params.id;
-    response.status(200).json(await deleteCard(id));
+    const id = request.params.id;
+    response.status(200).json(await userLogic.deleteUserById(id));
   }
 );
+
+// Coach CRUD operations
+router.post(
+  "/addCoach/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const userId = request.params.id;
+    const coachData = request.body;
+    response.status(201).json(await userLogic.createCoach(userId, coachData));
+  }
+);
+
+router.get(
+  "/coach/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const id = request.params.id;
+    response.status(200).json(await userLogic.getCoachById(id));
+  }
+);
+
+router.put(
+  "/editCoach/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const id = request.params.id;
+    const updateData = request.body;
+    response.status(200).json(await userLogic.updateCoachById(id, updateData));
+  }
+);
+
 router.delete(
-  "/deleteMembership/:id",
+  "/deleteCoach/:id",
   async (request: Request, response: Response, next: NextFunction) => {
-    const id = +request.params.id;
-    response.status(200).json(await deleteMembership(id));
+    const id = request.params.id;
+    response.status(200).json(await userLogic.deleteCoachById(id));
   }
 );
+
+// Trainee CRUD operations
+router.post(
+  "/addTrainee/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const userId = request.params.id;
+    const traineeData = request.body;
+    response
+      .status(201)
+      .json(await userLogic.createTrainee(userId, traineeData));
+  }
+);
+
+router.get(
+  "/:userId/trainee/:traineeId",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const userId = request.params.userId;
+    const traineeId = request.params.traineeId;
+    response
+      .status(200)
+      .json(await userLogic.getTraineeById(userId, traineeId));
+  }
+);
+
 router.put(
-  "/updateCard",
+  "/:userId/trainee/:traineeId",
   async (request: Request, response: Response, next: NextFunction) => {
-    const card = request.body;
-    response.status(200).json(await updateCard(card));
+    const userId = request.params.userId;
+    const traineeId = request.params.traineeId;
+    const updateData = request.body;
+    response
+      .status(200)
+      .json(await userLogic.updateTraineeById(userId, traineeId, updateData));
   }
 );
-router.put(
-  "/executeCard/:id",
+
+router.delete(
+  "/:userId/trainee/:traineeId",
   async (request: Request, response: Response, next: NextFunction) => {
-    const id = +request.params.id;
-    const cardLeft = request.body.cardLeft;
-    response.status(200).json(await executeCard(id, cardLeft));
+    const userId = request.params.userId;
+    const traineeId = request.params.traineeId;
+    response
+      .status(200)
+      .json(await userLogic.deleteTraineeById(userId, traineeId));
   }
 );
-router.put(
-  "/updateMembership",
+
+// Get all trainees of a user
+router.get(
+  "/getTrainees/:id",
   async (request: Request, response: Response, next: NextFunction) => {
-    const membership = request.body;
-    response.status(200).json(await updateMembership(membership));
+    const userId = request.params.id;
+    response.status(200).json(await userLogic.getAllTrainees(userId));
   }
 );
+
+// Get all trainees of a user's coach
+router.get(
+  "/getTraineesByCoach/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const userId = request.params.id;
+    response.status(200).json(await userLogic.getAllTraineesOfCoach(userId));
+  }
+);
+
+// Get all coaches of a user
+router.get(
+  "/getCoaches/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const userId = request.params.id;
+    response.status(200).json(await userLogic.getAllCoaches(userId));
+  }
+);
+
 export default router;

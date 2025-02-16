@@ -1,6 +1,6 @@
 import { OkPacket } from "mysql";
-import { UserModel } from "../Models/userModel";
-import { missionModel } from "../Models/missionModel";
+import { UserModel } from "../Models/oldModals/userModel";
+import { missionModel } from "../Models/oldModals/missionModel";
 import dal_mysql from "../Utils/dal_mysql";
 
 const getAllMissionsForCoach = async (id: number) => {
@@ -70,11 +70,15 @@ const updateStatus = async (id: number, status: boolean) => {
   return !status;
 };
 const updateMission = async (id: number, mission: missionModel) => {
-  const SQLcmd = mission.lastDate!==null?
-  `
+  const SQLcmd =
+    mission.lastDate !== null
+      ? `
 UPDATE missions SET content = '${mission.content}', lastDate = '${mission.lastDate}' WHERE (id = ${id})
-  `:`
-UPDATE missions SET content = '${mission.content}', lastDate = ${null} WHERE (id = ${id})
+  `
+      : `
+UPDATE missions SET content = '${
+          mission.content
+        }', lastDate = ${null} WHERE (id = ${id})
   `;
   const data = await dal_mysql.execute(SQLcmd);
   return true;

@@ -11,35 +11,43 @@ import Tooltip from "@mui/material/Tooltip";
 import Logout from "@mui/icons-material/Logout";
 import store from "../../../../redux/store";
 import { logOutUser } from "../../../../redux/usersReducer";
-function AccountButton(): JSX.Element {
+
+function AccountButton(): React.JSX.Element {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [userName, setUser] = React.useState("");
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
-  // React.useEffect(() => {
-  //
-  // }, [store]);
-  store.subscribe(() => {
-    store.getState().users?.user[0] &&
-      setUser(
-        store.getState().users?.user[0].firstName[0] +
-          store.getState().users?.user[0].lastName[0]
-      );
-  });
+
+  React.useEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      const state = store.getState();
+      const user = state.users?.user;
+
+      if (user && user.firstName && user.lastName) {
+        setUser(user.firstName[0] + user.lastName[0]);
+      } else {
+        setUser(""); // Reset if user data is unavailable
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const logOut = () => {
     store.dispatch(logOutUser());
     handleClose();
   };
+
   return (
     <div className="accountButton">
       <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
-        {/* <Typography sx={{ minWidth: 100 }}>Contact</Typography>
-        <Typography sx={{ minWidth: 100 }}>Profile</Typography> */}
         <Tooltip title="Account settings">
           <IconButton
             onClick={handleClick}
@@ -50,7 +58,10 @@ function AccountButton(): JSX.Element {
             aria-expanded={open ? "true" : undefined}
           >
             {userName ? (
-              <Avatar color="primary" variant="soft">
+              <Avatar
+                color="primary"
+                variant="soft"
+              >
                 {userName}
               </Avatar>
             ) : (
@@ -96,22 +107,28 @@ function AccountButton(): JSX.Element {
       >
         <MenuItem onClick={handleClose}>
           {userName ? (
-            <Avatar color="primary" variant="soft">
+            <Avatar
+              color="primary"
+              variant="soft"
+            >
               {userName}
             </Avatar>
           ) : (
             <Avatar />
-          )}{" "}
+          )}
           פרופיל
         </MenuItem>
         <MenuItem onClick={handleClose}>
           {userName ? (
-            <Avatar color="primary" variant="soft">
+            <Avatar
+              color="primary"
+              variant="soft"
+            >
               {userName}
             </Avatar>
           ) : (
             <Avatar />
-          )}{" "}
+          )}
           המשתמש שלי
         </MenuItem>
         <Divider />

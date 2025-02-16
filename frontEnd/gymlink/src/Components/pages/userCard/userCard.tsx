@@ -8,7 +8,7 @@ import { CardHeader } from "@mui/material";
 interface props {
   id: number;
 }
-function UserCard(props: props): JSX.Element {
+function UserCard(props: props): React.JSX.Element {
   const [user, setUser] = useState<UserModel>();
   useEffect(() => {
     axios
@@ -28,7 +28,6 @@ function UserCard(props: props): JSX.Element {
           <CardContent>
             <h1>{`${user?.firstName} ${user?.lastName}`}</h1>
             <div>{`${user?.email}`}</div>
-            <div>{`${user?.phone}`}</div>
           </CardContent>
         </Card>
       )}

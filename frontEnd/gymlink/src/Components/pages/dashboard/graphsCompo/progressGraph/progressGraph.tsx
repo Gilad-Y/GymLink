@@ -1,7 +1,7 @@
 import "./progressGraph.css";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { useEffect, useState } from "react";
-function ProgressGraph(): JSX.Element {
+function ProgressGraph(): React.JSX.Element {
   const [xData, setX] = useState<any[]>([]);
   const [yData, setY] = useState<any[]>([]);
   const colors = ["white"];

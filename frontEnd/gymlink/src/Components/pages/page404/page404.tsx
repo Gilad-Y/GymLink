@@ -1,6 +1,6 @@
 import "./page404.css";
 
-function Page404(): JSX.Element {
+function Page404(): React.JSX.Element {
   return <div className="page404">404</div>;
 }
 

@@ -1,4 +1,4 @@
-import "./logIn.css";
+import "./register.css";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -10,9 +10,9 @@ import { Container } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { UserModel } from "../../../models/userModel";
 import store from "../../../redux/store";
-import { logInUser as logInUserAction } from "../../../redux/usersReducer";
+import { addUser } from "../../../redux/usersReducer";
 import { useNavigate } from "react-router-dom";
-import logIngPic from "../../media/teamSukar.jpeg";
+import registerPic from "../../media/teamSukar.jpeg";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -21,9 +21,10 @@ import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import React from "react";
-import { logInUser } from "../../../util/api"; // Import the logInUser function from api.ts
+import bcrypt from "bcryptjs"; // Import bcryptjs
+import { registerUser } from "../../../util/https"; // Import the registerUser function
 
-function LogIn(): React.JSX.Element {
+function Register(): React.JSX.Element {
   const nav = useNavigate();
   const {
     handleSubmit,
@@ -31,21 +32,24 @@ function LogIn(): React.JSX.Element {
     formState: { errors },
   } = useForm<UserModel>();
 
-  const logUser = (data: UserModel) => {
+  const registerNewUser = async (data: UserModel) => {
+    data.role = "admin";
     console.log(data);
     document.body.style.cursor = "wait";
-    logInUser(data.email, data._password)
-      .then((res) => {
-        store.dispatch(logInUserAction(res));
-        nav("/");
-      })
-      .catch((err: any) => {
-        console.log(err);
-        console.log("not correct");
-      })
-      .finally(() => {
-        document.body.style.cursor = "default";
-      });
+    try {
+      // Hash the password before sending it to the backend
+      const hashedPassword = await bcrypt.hash(data._password, 10);
+      data._password = hashedPassword;
+
+      const res = await registerUser(data); // Use the registerUser function
+      store.dispatch(addUser(res));
+      nav("/");
+    } catch (err) {
+      console.log(err);
+      console.log("Registration failed");
+    } finally {
+      document.body.style.cursor = "default";
+    }
   };
 
   const [showPassword, setShowPassword] = React.useState(false);
@@ -59,7 +63,7 @@ function LogIn(): React.JSX.Element {
   };
 
   return (
-    <div className="logIn">
+    <div className="register">
       <Container component="main">
         <CssBaseline />
         <Box
@@ -76,7 +80,7 @@ function LogIn(): React.JSX.Element {
           {/* Left Side (Image) */}
           <Box
             sx={{
-              backgroundImage: `url(${logIngPic})`,
+              backgroundImage: `url(${registerPic})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               height: "100%",
@@ -98,9 +102,9 @@ function LogIn(): React.JSX.Element {
               borderRadius: "8px",
             }}
           >
-            <h1 style={{ textAlign: "center", fontWeight: "bold" }}>התחבר</h1>
+            <h1 style={{ textAlign: "center", fontWeight: "bold" }}>הרשמה</h1>
             <form
-              onSubmit={handleSubmit(logUser)}
+              onSubmit={handleSubmit(registerNewUser)}
               style={{ width: "100%" }}
             >
               <FormControl
@@ -110,33 +114,18 @@ function LogIn(): React.JSX.Element {
                 }}
                 variant="outlined"
               >
-                <InputLabel
-                  htmlFor="email"
-                  sx={{ color: "black" }}
-                >
-                  *אימייל
-                </InputLabel>
+                <InputLabel htmlFor="firstName">*שם פרטי</InputLabel>
                 <OutlinedInput
-                  label="אימייל"
+                  label="שם פרטי"
                   required
                   fullWidth
-                  id="email"
-                  autoComplete="email"
+                  id="firstName"
+                  autoComplete="firstName"
                   autoFocus
-                  {...register("email")}
+                  {...register("firstName")}
                   sx={{
                     backgroundColor: "white",
                     borderRadius: "8px",
-                    color: "black",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "black",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "black",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "black",
-                    },
                   }}
                 />
               </FormControl>
@@ -148,10 +137,51 @@ function LogIn(): React.JSX.Element {
                 }}
                 variant="outlined"
               >
-                <InputLabel
-                  htmlFor="outlined-adornment-password"
-                  sx={{ color: "black" }}
-                >
+                <InputLabel htmlFor="lastName">*שם משפחה</InputLabel>
+                <OutlinedInput
+                  label="שם משפחה"
+                  required
+                  fullWidth
+                  id="lastName"
+                  autoComplete="lastName"
+                  {...register("lastName")}
+                  sx={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                  }}
+                />
+              </FormControl>
+
+              <FormControl
+                sx={{
+                  m: 1,
+                  width: "100%",
+                }}
+                variant="outlined"
+              >
+                <InputLabel htmlFor="email">*אימייל</InputLabel>
+                <OutlinedInput
+                  label="אימייל"
+                  required
+                  fullWidth
+                  id="email"
+                  autoComplete="email"
+                  {...register("email")}
+                  sx={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                  }}
+                />
+              </FormControl>
+
+              <FormControl
+                sx={{
+                  m: 1,
+                  width: "100%",
+                }}
+                variant="outlined"
+              >
+                <InputLabel htmlFor="outlined-adornment-password">
                   *סיסמא
                 </InputLabel>
                 <OutlinedInput
@@ -167,7 +197,6 @@ function LogIn(): React.JSX.Element {
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
-                        sx={{ color: "black" }}
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -177,16 +206,49 @@ function LogIn(): React.JSX.Element {
                   sx={{
                     backgroundColor: "white",
                     borderRadius: "8px",
-                    color: "black",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "black",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "black",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "black",
-                    },
+                  }}
+                />
+              </FormControl>
+
+              <FormControl
+                sx={{
+                  m: 1,
+                  width: "100%",
+                }}
+                variant="outlined"
+              >
+                <InputLabel htmlFor="brandName">*שם מותג</InputLabel>
+                <OutlinedInput
+                  label="שם מותג"
+                  required
+                  fullWidth
+                  id="brandName"
+                  autoComplete="brandName"
+                  {...register("brand.name")}
+                  sx={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                  }}
+                />
+              </FormControl>
+
+              <FormControl
+                sx={{
+                  m: 1,
+                  width: "100%",
+                }}
+                variant="outlined"
+              >
+                <InputLabel htmlFor="brandImage">*תמונת מותג</InputLabel>
+                <OutlinedInput
+                  label="תמונת מותג"
+                  fullWidth
+                  id="brandImage"
+                  autoComplete="brandImage"
+                  {...register("brand.image")}
+                  sx={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
                   }}
                 />
               </FormControl>
@@ -198,7 +260,7 @@ function LogIn(): React.JSX.Element {
                     color="primary"
                   />
                 }
-                label="זכור אותי"
+                label="אני מסכים לתנאים"
                 sx={{ alignSelf: "flex-start", marginLeft: "10px" }}
               />
 
@@ -215,7 +277,7 @@ function LogIn(): React.JSX.Element {
                   },
                 }}
               >
-                התחבר
+                הירשם
               </Button>
 
               <Box
@@ -226,13 +288,13 @@ function LogIn(): React.JSX.Element {
                   href="#"
                   variant="body2"
                 >
-                  שכחתי סיסמא
+                  יש לי כבר משתמש
                 </Link>
                 <Link
-                  href="/register"
+                  href="#"
                   variant="body2"
                 >
-                  {"אין לי משתמש"}
+                  {"שכחתי סיסמא"}
                 </Link>
               </Box>
             </form>
@@ -243,4 +305,4 @@ function LogIn(): React.JSX.Element {
   );
 }
 
-export default LogIn;
+export default Register;

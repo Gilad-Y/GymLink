@@ -2,10 +2,13 @@ import AccountButton from "./accountButton/accountButton";
 import "./header.css";
 import LangAndNot from "./langAndNot/langAndNot";
 
-function Header(): JSX.Element {
+function Header(): React.JSX.Element {
   return (
     <div className="header">
-      <h1 className="logo" style={{ marginTop: "-1px" }}>
+      <h1
+        className="logo"
+        style={{ marginTop: "-1px" }}
+      >
         GymLink
       </h1>
       <div className="headerButtons">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./weightGraph.css";
 import { LineChart } from "@mui/x-charts/LineChart";
-function WeightGraph(): JSX.Element {
+function WeightGraph(): React.JSX.Element {
   const [xData, setX] = useState<any[]>([]);
   const [yData, setY] = useState<any[]>([]);
   const colors = ["purple"];

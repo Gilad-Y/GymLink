@@ -1,6 +1,6 @@
 //import
 import express, { NextFunction, Request, Response } from "express";
-import { Test } from "../Models/Test";
+import { Test } from "../Models/oldModals/Test";
 import { sendBAD, sendOK } from "../Logic/TestLogic";
 
 const router = express.Router();

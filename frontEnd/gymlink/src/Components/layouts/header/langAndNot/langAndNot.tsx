@@ -19,7 +19,7 @@ const options = [
   "Rebase and merge",
 ];
 
-function LangAndNot(): JSX.Element {
+function LangAndNot(): React.JSX.Element {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
@@ -100,7 +100,10 @@ function LangAndNot(): JSX.Element {
           >
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
-                <MenuList id="split-button-menu" autoFocusItem>
+                <MenuList
+                  id="split-button-menu"
+                  autoFocusItem
+                >
                   {options.map((option, index) => (
                     <MenuItem
                       key={option}

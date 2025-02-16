@@ -1,20 +1,45 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
+import { CssVarsProvider } from "@mui/joy/styles";
+import { StyledEngineProvider } from "@mui/joy";
 import MainLayout from "./Components/layouts/mainLayout/mainLayout";
-import { StyledEngineProvider, CssVarsProvider } from "@mui/joy/styles";
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
-root.render(
-  <BrowserRouter>
-    <MainLayout />
-  </BrowserRouter>
-);
+import "./index.css";
+import { useMediaQuery } from "@mui/material";
+import theme from "./theme/theme"; // Import your custom MUI Joy theme
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+const App = () => {
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+  // const currentTheme = React.useMemo(() => {
+  //   return {
+  //     ...theme,
+  //     colorSchemes: {
+  //       ...theme.colorSchemes,
+  //       light: {
+  //         ...theme.colorSchemes.light,
+  //         palette: {
+  //           ...theme.colorSchemes.light.palette,
+  //           mode: prefersDarkMode ? "dark" : "light",
+  //         },
+  //       },
+  //     },
+  //   };
+  // }, [prefersDarkMode]);
+
+  return (
+    // <CssVarsProvider
+    //   // theme={currentTheme}
+    //   defaultMode="system"
+    // >
+    //   <StyledEngineProvider injectFirst>
+    <BrowserRouter>
+      <MainLayout />
+    </BrowserRouter>
+    //   {/* </StyledEngineProvider>
+    // </CssVarsProvider> */}
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById("root")!);
+root.render(<App />);

@@ -9,10 +9,11 @@ import { UserModel } from "../../../../models/userModel";
 import "./traineesList.css";
 
 interface Props {
-  id: number;
-  getTrainee: any;
+  id: string;
+  getTrainee: (traineeId: string) => void;
 }
-function TraineesList(props: Props): JSX.Element {
+
+function TraineesList(props: Props): React.JSX.Element {
   const [selectedTrainee, setSelectedTrainee] = useState<string>("");
   const [options, setOptions] = useState<UserModel[]>([]);
 
@@ -24,20 +25,21 @@ function TraineesList(props: Props): JSX.Element {
         const uniqueOptions: UserModel[] = [];
 
         // Keep track of encountered option IDs
-        const encounteredIds: Set<number> = new Set();
+        const encounteredIds: Set<string> = new Set();
 
         // Iterate through fetched options
         fetchedOptions.forEach((option) => {
           // If the ID hasn't been encountered, add the option to uniqueOptions
-          if (!encounteredIds.has(option.id)) {
+          if (!encounteredIds.has(option._id)) {
             uniqueOptions.push(option);
-            encounteredIds.add(option.id);
+            encounteredIds.add(option._id);
           }
         });
 
         // Set the options state with unique options
-        setOptions((prevOptions) => [...prevOptions, ...uniqueOptions]);
-      });
+        setOptions(uniqueOptions);
+      })
+      .catch((error) => console.error("Error fetching users:", error));
   }, [props.id]);
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -49,7 +51,10 @@ function TraineesList(props: Props): JSX.Element {
     <div className="traineesList">
       <Box sx={{ minWidth: 120, width: 200, margin: "auto" }}>
         <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label" sx={{ color: "white" }}>
+          <InputLabel
+            id="demo-simple-select-label"
+            sx={{ color: "white" }}
+          >
             בחר מתאמן
           </InputLabel>
           <Select
@@ -60,7 +65,10 @@ function TraineesList(props: Props): JSX.Element {
             onChange={handleChange}
           >
             {options.map((trainee) => (
-              <MenuItem key={trainee.id} value={trainee.id}>
+              <MenuItem
+                key={trainee._id}
+                value={trainee._id}
+              >
                 {`${trainee.firstName} ${trainee.lastName}`}
               </MenuItem>
             ))}

@@ -1,23 +1,21 @@
 .mainLayout {
-  height: 100%;
-  box-sizing: border-box;
-  display: grid;
-  /* grid-template-rows: 8% 92%; */
-  grid-template-columns: repeat(6, 1fr);
-  overflow: hidden;
+  display: flex;
+  height: 100vh;
 }
 
-.mainLayout > main {
-  grid-column: span 5;
-  height: 100%;
-  width: 100%;
+.menu {
+  width: 250px;
 }
-menu {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+
+main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 20px;
 }
-/* .mainLayout > * {
-  border: 1px black solid;
-} */
+
+.centered main {
+  align-items: center;
+  justify-content: center;
+}

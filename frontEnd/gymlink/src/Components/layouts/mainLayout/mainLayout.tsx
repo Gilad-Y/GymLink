@@ -1,36 +1,39 @@
-import { CssVarsProvider } from "@mui/joy";
+import React, { useEffect, useState } from "react";
+import { useMediaQuery, createTheme, ThemeProvider } from "@mui/material";
 import MainRoute from "../../routes/mainRoute/mainRoute";
 import Menu from "../menu/menu";
 import "./mainLayout.css";
-import * as React from "react";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+import store from "../../../redux/store";
 
-function MainLayout(): JSX.Element {
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+function MainLayout(): React.JSX.Element {
+  // const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  // const theme = createTheme({
+  //   palette: { mode: prefersDarkMode ? "dark" : "light" },
+  //   shape: { borderRadius: 8 },
+  // });
 
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: prefersDarkMode ? "dark" : "light",
-        },
-      }),
-    [prefersDarkMode]
-  );
+  const [userId, setId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      setId(store.getState().users.user?._id || null);
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
-    <div className="mainLayout">
-      {/* <header>
-        <Header />
-      </header> */}
-      <menu className="menu">
-        <Menu />
-      </menu>
+    // <ThemeProvider theme={theme}>
+    <div className={`mainLayout ${userId ? "" : "centered"}`}>
+      {userId && (
+        <div className="menu">
+          <Menu />
+        </div>
+      )}
       <main>
         <MainRoute />
       </main>
     </div>
+    // </ThemeProvider>
   );
 }
 
