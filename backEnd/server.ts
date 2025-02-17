@@ -10,7 +10,7 @@ import missionRouter from "./Routes/missionRouter";
 import mongoose from "mongoose";
 
 const MONGO_URI =
-  "mongodb+srv://Gilad:g1i2l3a4d5@project-x.1yc01.mongodb.net/Project-X?retryWrites=true&w=majority&appName=Project-X";
+  
 
 // Create server
 const server = express();
