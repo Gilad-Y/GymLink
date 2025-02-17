@@ -3,7 +3,6 @@ import "./traineePage.css";
 import { Button } from "@mui/joy";
 import MainModal from "../mainModal/mainModal";
 import React, { useEffect, useState } from "react";
-import { missionModel } from "../../models/missionModel";
 import store from "../../redux/store";
 
 function TraineePage(): React.JSX.Element {

@@ -1,7 +1,7 @@
 import TraineeTable from "../traineeTable/traineeTable";
 import "./coachDashboard.css";
 interface props {
-  id: number;
+  id: string;
 }
 function CoachDashboard(props: props): React.JSX.Element {
   return (

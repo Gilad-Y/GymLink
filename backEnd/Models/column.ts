@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const columnSchema = new Schema({
   title: { type: String, required: true },
   dataType: { type: String, required: true },
-  data: { type: Schema.Types.Mixed, required: true },
+  data: { type: Schema.Types.Mixed, default: null },
   createdBy: { type: mongoose.Types.ObjectId, ref: "User", required: true },
 });
 

@@ -6,7 +6,7 @@ import LogIn from "../../pages/logIn/logIn";
 import Register from "../../pages/register/register";
 import store from "../../../redux/store";
 import { useEffect, useState } from "react";
-
+import Settings from "../../pages/settings/settings";
 import AddTrainee from "../../pages/addData/addTrainee/addTrainee";
 import TraineePage from "../../traineePage/traineePage";
 import PrivateRoute from "../privateRoute/privateRoute";
@@ -79,6 +79,10 @@ function MainRoute(): React.JSX.Element {
               <TraineePage />
             </PrivateRoute>
           }
+        />
+        <Route
+          path="/settings"
+          element={<Settings />}
         />
         <Route
           path="*"

@@ -5,37 +5,30 @@ import Sheet from "@mui/joy/Sheet";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserModel } from "../../../../models/userModel";
+import { Column } from "../../../../models/columnModel"; // Import the Column model
+import { get } from "http";
+import { getColumnsByUserId } from "../../../../util/api";
 
 interface Props {
   id: string;
 }
 
 export default function TraineeTable(props: Props) {
-  const [users, setUsers] = React.useState<UserModel[]>([]);
+  const [columns, setColumns] = React.useState<Column[]>([]);
   const nav = useNavigate();
 
   React.useEffect(() => {
-    axios
-      .get(`http://localhost:4000/api/v1/user/getAllById/${props.id}`)
-      .then((res) => {
-        const usersMapped = res.data.map(
-          (user: any) =>
-            new UserModel(
-              user._id,
-              user.firstName,
-              user.lastName,
-              user.email,
-              user.password,
-              user.role,
-              user.brand,
-              user.coaches,
-              user.trainees,
-              user.belongsTo
-            )
-        );
-        setUsers(usersMapped);
-      })
-      .catch((error) => console.error("Error fetching users:", error));
+    const fetchColumns = async () => {
+      try {
+        const response = await getColumnsByUserId(props.id);
+        console.log("Columns:", response);
+        setColumns(response);
+      } catch (error) {
+        console.error("Error fetching columns:", error);
+      }
+    };
+
+    fetchColumns();
   }, [props.id]);
 
   return (
@@ -83,35 +76,12 @@ export default function TraineeTable(props: Props) {
         >
           <thead>
             <tr>
-              <th>שם</th>
-              <th style={{ width: 200 }}>מייל</th>
-              <th>טלפון</th>
-              <th>סוג משתמש</th>
-              <th>מספר תשלום</th>
-              <th>תשלום הושלם</th>
-              <th>שיטת תשלום</th>
-              <th>התחלה</th>
-              <th>סיום</th>
-              <th>מחיר</th>
-              <th>סטטוס</th>
-              <th>הערות</th>
-              <th>קוד לקוח</th>
-              <th>סוג חבילה</th>
+              {columns.map((column) => (
+                <th key={column._id}>{column.title}</th>
+              ))}
             </tr>
           </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr
-                key={user._id}
-                onDoubleClick={() => nav(`userPage/${user._id}`)}
-              >
-                <td>
-                  {user.firstName} {user.lastName}
-                </td>
-                <td style={{ width: 200 }}>{user.email || "-"}</td>
-              </tr>
-            ))}
-          </tbody>
+          <tbody>{/* The tbody will be added later */}</tbody>
         </Table>
       </Sheet>
     </div>

@@ -142,4 +142,4 @@ userSchema.statics.getAllCoaches = async function (userId) {
 };
 
 module.exports = mongoose.model("User", userSchema);
-export default mongoose.model("Column", userSchema);
+export default mongoose.model("User", userSchema);

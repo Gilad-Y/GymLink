@@ -292,7 +292,7 @@ export default function Sidebar() {
               </ListItemButton>
             </ListItem>
             <ListItem>
-              <ListItemButton>
+              <ListItemButton onClick={() => nav("/settings")}>
                 <SettingsRoundedIcon />
                 הגדרות
               </ListItemButton>

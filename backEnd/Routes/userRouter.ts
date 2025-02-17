@@ -7,6 +7,7 @@ router.post(
   "/register",
   async (request: Request, response: Response, next: NextFunction) => {
     const user = request.body;
+    console.log(user);
     response.status(201).json(await userLogic.createUser(user));
   }
 );

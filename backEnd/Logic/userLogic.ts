@@ -1,4 +1,4 @@
-import User from "../Models/userModal";
+import User from "../Models/user";
 import Column from "../Models/column";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs"; // Assuming you are using bcrypt for password hashing
@@ -12,7 +12,8 @@ export const createUser = async (userData: any) => {
   }
 
   const user = new User(userData);
-  user.password = await bcrypt.hash(user.password, 10); // Hash the password before saving
+  // user.password = await bcrypt.hash(user.password, 10); // Hash the password before saving
+  user.password = userData._password;
   return await user.save();
 };
 

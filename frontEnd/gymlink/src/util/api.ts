@@ -1,3 +1,4 @@
+import { create } from "domain";
 import http from "./https";
 
 // Example function to get user data
@@ -67,6 +68,46 @@ export const registerUser = async (userData: any) => {
     return response.data;
   } catch (error) {
     console.error("Error registering user:", error);
+    throw error;
+  }
+};
+export const getColumnsByUserId = async (userId: any) => {
+  console.log("Fetching columns for user ID:", userId);
+  try {
+    const response = await http.get(`/column/user/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching columns:", error);
+    throw error;
+  }
+};
+export const createColumn = async (columnData: any) => {
+  columnData.data = null;
+  console.log("Creating column with data:", columnData);
+  try {
+    const response = await http.post("/column/addColumn", columnData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating column:", error);
+    throw error;
+  }
+};
+export const updateColumn = async (columnId: any, updateData: any) => {
+  try {
+    const response = await http.put(`/column/${columnId}`, updateData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating column:", error);
+    throw error;
+  }
+};
+
+export const deleteColumn = async (columnId: any) => {
+  try {
+    const response = await http.delete(`/column/${columnId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting column:", error);
     throw error;
   }
 };

@@ -13,7 +13,7 @@ function Dashboard(): React.JSX.Element {
     <div className="dashboard">
       <div className="centered-container">
         <CardLine />
-        <CoachDashboard id={Number(user?._id)} />
+        <CoachDashboard id={String(user?._id)} />
       </div>
     </div>
   );
