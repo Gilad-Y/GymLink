@@ -21,6 +21,7 @@ router.post(
 router.get(
   "/user/:userId",
   async (request: Request, response: Response, next: NextFunction) => {
+    console.log("Fetching columns for user ID:", request.params.userId);
     const userId = request.params.userId;
     response.status(200).json(await columnLogic.getColumnsByUserId(userId));
   }

@@ -11,8 +11,8 @@ import {
 import { useForm, Controller, ControllerRenderProps } from "react-hook-form";
 import "./addTrainee.css"; // Ensure this file is correctly linked
 import store from "../../../../redux/store";
-import { getColumnsByUserId } from "../../../../util/api";
-
+import { addTrainees, getColumnsByUserId } from "../../../../util/api";
+import { sanitizeKeys } from "../../../../util/formattingKey";
 function AddTrainee(): React.JSX.Element {
   const user = store.getState().users.user;
   const [columns, setColumns] = useState<any[]>([]);
@@ -25,19 +25,32 @@ function AddTrainee(): React.JSX.Element {
   useEffect(() => {
     if (user && user._id) {
       getColumnsByUserId(user._id).then((res) => {
-        setColumns(res.data);
+        setColumns(res);
       });
     }
   }, [user]);
 
   // Handle form submission
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     if (user && user._id) {
-      data.belongsTo = user._id;
-      console.log(data); // Log the user data
+      // Sanitize form data before sending
+      const formattedData = {
+        ...sanitizeKeys(data), // Sanitize keys before adding belongsTo
+        belongsTo: user._id, // Add the user ID
+      };
+
+      console.log(formattedData); // Debug: Check the sanitized and formatted data
+
+      try {
+        await addTrainees(formattedData); // Pass sanitized data to addTrainee
+        console.log("Trainee added successfully");
+      } catch (error) {
+        console.error("Error adding trainee:", error);
+        alert("Error adding trainee, please try again."); // Better user feedback
+      }
     } else {
       console.error("User is not logged in or user data is unavailable");
-      // Handle the case where the user is not logged in or user data is unavailable
+      alert("User is not logged in. Please log in and try again.");
     }
   };
 
@@ -61,7 +74,7 @@ function AddTrainee(): React.JSX.Element {
                 render={({
                   field,
                 }: {
-                  field: ControllerRenderProps<any, keyof any>;
+                  field: ControllerRenderProps<any, string>;
                 }) => {
                   switch (column.dataType) {
                     case "string":
@@ -70,7 +83,7 @@ function AddTrainee(): React.JSX.Element {
                           {...field}
                           label={column.title}
                           error={!!errors[column.title]}
-                          helperText={errors[column.title]?.message}
+                          helperText={errors[column.title]?.message?.toString()}
                         />
                       );
                     case "number":
@@ -80,7 +93,7 @@ function AddTrainee(): React.JSX.Element {
                           type="number"
                           label={column.title}
                           error={!!errors[column.title]}
-                          helperText={errors[column.title]?.message}
+                          helperText={errors[column.title]?.message?.toString()}
                         />
                       );
                     case "boolean":
@@ -90,8 +103,8 @@ function AddTrainee(): React.JSX.Element {
                           label={column.title}
                           error={!!errors[column.title]}
                         >
-                          <MenuItem value={true}>True</MenuItem>
-                          <MenuItem value={false}>False</MenuItem>
+                          <MenuItem value="true">True</MenuItem>
+                          <MenuItem value="false">False</MenuItem>
                         </Select>
                       );
                     case "date":
@@ -102,17 +115,17 @@ function AddTrainee(): React.JSX.Element {
                           label={column.title}
                           InputLabelProps={{ shrink: true }}
                           error={!!errors[column.title]}
-                          helperText={errors[column.title]?.message}
+                          helperText={errors[column.title]?.message?.toString()}
                         />
                       );
                     default:
-                      return null;
+                      return <></>; // Return an empty fragment if no case matches
                   }
                 }}
               />
               {errors[column.title] && (
                 <FormHelperText error>
-                  {errors[column.title]?.message}
+                  {errors[column.title]?.message?.toString()}
                 </FormHelperText>
               )}
             </FormControl>

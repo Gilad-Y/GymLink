@@ -17,11 +17,11 @@ http.interceptors.request.use(
     // Optionally add headers, e.g., Authorization
     // config.headers['Authorization'] = `Bearer ${token}`;
 
-    console.log("Request Config:", config); // Optional: for debugging purposes
+    // console.log("Request Config:", config); // Optional: for debugging purposes
     return config;
   },
   (error) => {
-    console.error("Request error:", error); // Log request error
+    // console.error("Request error:", error); // Log request error
     return Promise.reject(error); // Ensure errors are passed to the next handler
   }
 );
@@ -30,20 +30,20 @@ http.interceptors.request.use(
 http.interceptors.response.use(
   (response: AxiosResponse) => {
     // Optionally handle response data before passing it on
-    console.log("Response:", response); // Optional: for debugging purposes
+    // console.log("Response:", response); // Optional: for debugging purposes
     return response;
   },
   (error) => {
     // Handle error based on response status code
     if (error.response) {
       // Server responded with a status code outside of 2xx
-      console.error("Response error:", error.response.data); // Log server response
+      // console.error("Response error:", error.response.data); // Log server response
     } else if (error.request) {
       // No response received from server
-      console.error("No response received:", error.request);
+      // console.error("No response received:", error.request);
     } else {
       // Something else triggered the error (e.g., setup)
-      console.error("Request setup error:", error.message);
+      // console.error("Request setup error:", error.message);
     }
 
     return Promise.reject(error); // Return error to be handled later
@@ -54,10 +54,10 @@ http.interceptors.response.use(
 export const registerUser = async (userData: any) => {
   try {
     const response = await http.post("/user/register", userData);
-    console.log("Register response:", response.data);
+    // console.log("Register response:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Error registering user:", error);
+    // console.error("Error registering user:", error);
     throw error;
   }
 };

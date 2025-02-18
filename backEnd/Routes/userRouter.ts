@@ -90,24 +90,19 @@ router.delete(
 
 // Trainee CRUD operations
 router.post(
-  "/addTrainee/:id",
+  "/addTrainee",
   async (request: Request, response: Response, next: NextFunction) => {
-    const userId = request.params.id;
     const traineeData = request.body;
-    response
-      .status(201)
-      .json(await userLogic.createTrainee(userId, traineeData));
+    response.status(201).json(await userLogic.createTrainee(traineeData));
   }
 );
 
 router.get(
-  "/:userId/trainee/:traineeId",
+  "/:userId/trainees",
   async (request: Request, response: Response, next: NextFunction) => {
     const userId = request.params.userId;
-    const traineeId = request.params.traineeId;
-    response
-      .status(200)
-      .json(await userLogic.getTraineeById(userId, traineeId));
+
+    response.status(200).json(await userLogic.getTraineeById(userId));
   }
 );
 

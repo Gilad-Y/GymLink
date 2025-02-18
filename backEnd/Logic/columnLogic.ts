@@ -30,7 +30,11 @@ export const getColumnsByUserId = async (
   userId: string | mongoose.Types.ObjectId
 ) => {
   userId = new mongoose.Types.ObjectId(userId);
-  return await Column.find({ createdBy: userId }).populate("createdBy").exec();
+  const columns = await Column.find({ createdBy: userId })
+    .populate("createdBy")
+    .exec();
+  console.log("Columns:", columns);
+  return columns;
 };
 
 // Get a column by ID

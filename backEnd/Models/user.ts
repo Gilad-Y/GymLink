@@ -10,13 +10,12 @@ const userSchema = new Schema({
   role: { type: String, enum: ["admin", "coach"], required: true },
   brand: { type: Schema.Types.Mixed },
   coaches: [{ type: mongoose.Types.ObjectId, ref: "User" }],
-  trainees: {
-    type: Map,
-    of: {
-      column: { type: mongoose.Types.ObjectId, ref: "Column" },
-      value: Schema.Types.Mixed,
+  trainees: [
+    {
+      type: Object,
     },
-  },
+  ],
+
   belongsTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 

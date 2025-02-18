@@ -71,6 +71,7 @@ export const registerUser = async (userData: any) => {
     throw error;
   }
 };
+
 export const getColumnsByUserId = async (userId: any) => {
   console.log("Fetching columns for user ID:", userId);
   try {
@@ -81,6 +82,7 @@ export const getColumnsByUserId = async (userId: any) => {
     throw error;
   }
 };
+
 export const createColumn = async (columnData: any) => {
   columnData.data = null;
   console.log("Creating column with data:", columnData);
@@ -92,6 +94,7 @@ export const createColumn = async (columnData: any) => {
     throw error;
   }
 };
+
 export const updateColumn = async (columnId: any, updateData: any) => {
   try {
     const response = await http.put(`/column/${columnId}`, updateData);
@@ -108,6 +111,28 @@ export const deleteColumn = async (columnId: any) => {
     return response.data;
   } catch (error) {
     console.error("Error deleting column:", error);
+    throw error;
+  }
+};
+
+export const addTrainees = async (traineeData: any) => {
+  try {
+    const response = await http.post("user/addTrainee", traineeData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding trainee:", error);
+    throw error;
+  }
+};
+
+// Function to get trainees by user ID
+export const getTraineesByUserId = async (userId: string) => {
+  console.log("Fetching trainees for user ID:", userId);
+  try {
+    const response = await http.get(`/user/${userId}/trainees`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching trainees:", error);
     throw error;
   }
 };
