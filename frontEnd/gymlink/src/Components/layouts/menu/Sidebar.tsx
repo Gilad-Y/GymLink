@@ -27,6 +27,7 @@ import { closeSidebar } from "./utils";
 import store from "../../../redux/store";
 import { logOutUser } from "../../../redux/usersReducer";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserModel } from "../../../models/userModel";
 
 function Toggler({
   defaultExpanded = false,
@@ -68,7 +69,9 @@ const logOut = () => {
 export default function Sidebar() {
   const nav = useNavigate();
   const location = useLocation();
-  const [user, setUser] = React.useState<any>(store.getState().users.user);
+  const [user, setUser] = React.useState<UserModel | null>(
+    store.getState().users.user
+  );
   const [currentLocation, setCurrentLocation] = React.useState<string>(
     location.pathname.split("/")[1]
   );
@@ -113,6 +116,7 @@ export default function Sidebar() {
         borderRight: "1px solid",
         borderColor: "divider",
         paddingBottom: 0,
+        padding: "10px",
       }}
     >
       <GlobalStyles
@@ -145,14 +149,9 @@ export default function Sidebar() {
         onClick={() => closeSidebar()}
       />
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        <IconButton
-          variant="soft"
-          color="primary"
-          size="sm"
-        >
-          <BrightnessAutoRoundedIcon />
-        </IconButton>
-        <Typography level="title-lg">gym Link</Typography>
+        <Typography level="title-lg">
+          {user ? `${user.brand.name}` : ""}
+        </Typography>
         <ColorSchemeToggle sx={{ ml: "auto" }} />
       </Box>
 
@@ -254,7 +253,7 @@ export default function Sidebar() {
                       <ListItemButton>הוסף מאמן</ListItemButton>
                     </ListItem>
                     <ListItem>
-                      <ListItemButton>נהל משתמשים</ListItemButton>
+                      <ListItemButton>נהל מאמנים</ListItemButton>
                     </ListItem>
                     <ListItem>
                       <ListItemButton>Roles & permission</ListItemButton>
@@ -300,6 +299,7 @@ export default function Sidebar() {
           </List>
 
           <Divider />
+          <br />
           <Box
             sx={{
               display: "flex",
@@ -327,6 +327,7 @@ export default function Sidebar() {
               <LogoutRoundedIcon />
             </IconButton>
           </Box>
+          <br />
         </Box>
       </>
     </Sheet>

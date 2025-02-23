@@ -10,20 +10,24 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
-// import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-import { useNavigate } from "react-router-dom";
 import { Column } from "../../../../models/columnModel"; // Import the Column model
-import { getColumnsByUserId, getTraineesByUserId } from "../../../../util/api";
+import {
+  getColumnsByUserId,
+  getTraineesByUserId,
+  updateTrainee,
+  // deleteTrainee,
+} from "../../../../util/api";
 import { filterString } from "../../../../util/formattingKey";
 import { Sheet } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
+import TextField from "@mui/material/TextField";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FilterListIcon from "@mui/icons-material/FilterList";
+
 interface Props {
   id: string;
 }
@@ -63,14 +67,7 @@ interface HeadCell {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-  } = props;
+  const { order, orderBy, onRequestSort } = props;
   const createSortHandler =
     (property: string) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
@@ -103,6 +100,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell align="right">Actions</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -137,18 +135,6 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         },
       ]}
     >
-      {/* {numSelected > 0 ? (
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected} selected
-        </Typography>
-      ) : (
-        
-      )} */}
       <Typography
         sx={{ flex: "1 1 100%" }}
         level="h4"
@@ -172,8 +158,12 @@ export default function TraineeTable(props: Props) {
   const [orderBy, setOrderBy] = React.useState<string>("");
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
-
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [editingCell, setEditingCell] = React.useState<{
+    rowId: string;
+    columnId: string;
+  } | null>(null);
+  const [editedData, setEditedData] = React.useState<Data>({});
 
   React.useEffect(() => {
     const fetchColumns = async () => {
@@ -198,7 +188,7 @@ export default function TraineeTable(props: Props) {
 
     fetchColumns();
     fetchTrainees();
-  }, [props.id]);
+  }, [props.id, editingCell]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -218,24 +208,24 @@ export default function TraineeTable(props: Props) {
     setSelected([]);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly string[] = [];
+  // const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
+  //   const selectedIndex = selected.indexOf(id);
+  //   let newSelected: readonly string[] = [];
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
+  //   if (selectedIndex === -1) {
+  //     newSelected = newSelected.concat(selected, id);
+  //   } else if (selectedIndex === 0) {
+  //     newSelected = newSelected.concat(selected.slice(1));
+  //   } else if (selectedIndex === selected.length - 1) {
+  //     newSelected = newSelected.concat(selected.slice(0, -1));
+  //   } else if (selectedIndex > 0) {
+  //     newSelected = newSelected.concat(
+  //       selected.slice(0, selectedIndex),
+  //       selected.slice(selectedIndex + 1)
+  //     );
+  //   }
+  //   setSelected(newSelected);
+  // };
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -268,14 +258,71 @@ export default function TraineeTable(props: Props) {
     label: column.title,
   }));
 
+  const editTrainee = (rowId: string, columnId: string) => {
+    setEditingCell({ rowId, columnId });
+    const trainee = trainees.find((trainee) => trainee._id === rowId);
+    if (trainee) {
+      setEditedData(trainee);
+    }
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    columnId: string
+  ) => {
+    setEditedData({
+      ...editedData,
+      [columnId]: e.target.value,
+    });
+  };
+
+  const handleBlur = () => {
+    saveTrainee();
+  };
+
+  const saveTrainee = async () => {
+    let updatedTrainees: any[] = [];
+
+    // Update the trainees state and capture the new value
+    updatedTrainees = trainees.map((trainee) =>
+      trainee._id === editingCell?.rowId
+        ? { ...trainee, ...editedData }
+        : trainee
+    );
+    console.log("updatedTrainees", updatedTrainees);
+    try {
+      // Wait for the state to update before sending the request
+      await updateTrainee(props.id, updatedTrainees);
+    } catch (error) {
+      console.error("Error updating trainee:", error);
+    } finally {
+      setEditingCell(null);
+    }
+  };
+
+  const handleDeleteTrainee = async (traineeId: string) => {
+    try {
+      updateTrainee(
+        props.id,
+        trainees.filter((trainee) => trainee._id !== traineeId)
+      );
+
+      setTrainees(trainees.filter((trainee) => trainee._id !== traineeId));
+      console.log("Trainee deleted:", traineeId);
+    } catch (error) {
+      console.error("Error deleting trainee:", error);
+    }
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       <Sheet
         sx={(theme) => ({
           "--TableCell-height": "40px",
           "--TableHeader-height": "calc(1 * var(--TableCell-height))",
-          height: 400,
-          overflow: "auto",
+          height: "100%",
+          // maxHeight: 400,
+          overflow: "",
           whiteSpace: "nowrap",
           background: `linear-gradient(${theme.vars.palette.background.surface} 30%, rgba(255, 255, 255, 0)),
             linear-gradient(rgba(255, 255, 255, 0), ${theme.vars.palette.background.surface} 70%) 0 100%,
@@ -296,6 +343,7 @@ export default function TraineeTable(props: Props) {
           backgroundPosition:
             "0 var(--TableHeader-height), 0 100%, 0 var(--TableHeader-height), 0 100%",
           backgroundColor: "background.surface",
+          borderRadius: "16px",
         })}
       >
         <EnhancedTableToolbar numSelected={selected.length} />
@@ -317,11 +365,11 @@ export default function TraineeTable(props: Props) {
             <TableBody>
               {visibleRows.map((row, index) => {
                 const isItemSelected = isSelected(row._id);
+                const isEditing = editingCell?.rowId === row._id;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row._id)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
@@ -329,16 +377,59 @@ export default function TraineeTable(props: Props) {
                     selected={isItemSelected}
                     sx={{ cursor: "pointer" }}
                   >
-                    {columns.map((column) => (
-                      <TableCell
-                        key={column._id}
-                        align="left"
-                      >
-                        <Typography level="title-sm">
-                          {row[filterString(column.title)]}
-                        </Typography>
-                      </TableCell>
-                    ))}
+                    {columns.map((column) => {
+                      const isCellEditing =
+                        isEditing &&
+                        editingCell?.columnId === filterString(column.title);
+                      return (
+                        <TableCell
+                          key={column._id}
+                          align="left"
+                          onDoubleClick={() =>
+                            editTrainee(row._id, filterString(column.title))
+                          }
+                        >
+                          {isCellEditing ? (
+                            <TextField
+                              value={editedData[filterString(column.title)]}
+                              onChange={(e) =>
+                                handleInputChange(e, filterString(column.title))
+                              }
+                              onBlur={handleBlur}
+                              autoFocus
+                              sx={{
+                                "& .MuiInputBase-input": {
+                                  padding: 0,
+                                  fontSize: "inherit",
+                                  color: "white", //need to change this when the theme is set
+                                  textAlign: "inherit",
+                                  size: "inherit",
+                                  width: "inherit",
+                                  height: "inherit",
+                                },
+                              }}
+                              type={
+                                column.dataType === "number" ? "number" : "text"
+                              }
+                            />
+                          ) : (
+                            <Typography level="title-sm">
+                              {row[filterString(column.title)]}
+                            </Typography>
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                    <TableCell align="right">
+                      <Tooltip title="Delete">
+                        <IconButton
+                          onClick={() => handleDeleteTrainee(row._id)}
+                          color="error"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -354,7 +445,6 @@ export default function TraineeTable(props: Props) {
             </TableBody>
           </Table>
         </TableContainer>
-        <Typography level="title-sm"></Typography>
         <TablePagination
           sx={{
             color: (theme) => theme.palette.background.paper, // Use primary text color from the theme
@@ -367,8 +457,6 @@ export default function TraineeTable(props: Props) {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-
-        {/* </Paper> */}
       </Sheet>
     </Box>
   );

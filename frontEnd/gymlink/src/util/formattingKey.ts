@@ -12,6 +12,5 @@ export const sanitizeKeys = (obj: any) => {
 };
 export const filterString = (string: string) => {
   const newString = string.replace(/\s+/g, "");
-  console.log(string);
   return newString;
 };

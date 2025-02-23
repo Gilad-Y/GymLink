@@ -107,14 +107,13 @@ router.get(
 );
 
 router.put(
-  "/:userId/trainee/:traineeId",
+  "/:userId/editTrainee",
   async (request: Request, response: Response, next: NextFunction) => {
     const userId = request.params.userId;
-    const traineeId = request.params.traineeId;
     const updateData = request.body;
     response
       .status(200)
-      .json(await userLogic.updateTraineeById(userId, traineeId, updateData));
+      .json(await userLogic.updateTraineeById(userId, updateData));
   }
 );
 

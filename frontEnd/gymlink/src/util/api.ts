@@ -1,4 +1,3 @@
-import { create } from "domain";
 import http from "./https";
 
 // Example function to get user data
@@ -133,6 +132,17 @@ export const getTraineesByUserId = async (userId: string) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching trainees:", error);
+    throw error;
+  }
+};
+
+// Function to update trainee data
+export const updateTrainee = async (userId: string, traineeData: any[]) => {
+  try {
+    const response = await http.put(`/user/${userId}/editTrainee`, traineeData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating trainee:", error);
     throw error;
   }
 };

@@ -89,16 +89,12 @@ export const deleteCoachById = async (coachId: string) => {
 // Trainee CRUD operations
 export const createTrainee = async (traineeData: any) => {
   traineeData.belongsTo = new mongoose.Types.ObjectId(traineeData.belongsTo);
+  traineeData._id = new mongoose.Types.ObjectId();
   console.log("traineeData--", traineeData);
   await User.findByIdAndUpdate(traineeData.belongsTo, {
     $push: { trainees: traineeData },
   }).exec();
-  // await trainee.save();
-  // return await User.findByIdAndUpdate(
-  //   trainee.belongsTo,
-  //   { $set: { [`trainees.${trainee._id}`]: traineeData } },
-  //   { new: true }
-  // ).exec();
+
   return;
 };
 
@@ -107,16 +103,16 @@ export const getTraineeById = async (userId: string) => {
   return user?.trainees ?? [];
 };
 
-export const updateTraineeById = async (
-  userId: string,
-  traineeId: string,
-  updateData: any
-) => {
-  return await User.findByIdAndUpdate(
-    userId,
-    { $set: { [`trainees.${traineeId}`]: updateData } },
-    { new: true }
+export const updateTraineeById = async (userId: string, trainees: any[]) => {
+  // Update the entire trainees array for the given user
+  console.log("trainees--", trainees);
+  const updatedUser = await User.findOneAndUpdate(
+    { _id: userId }, // Find user by ID
+    { $set: { trainees } }, // Replace the entire trainees array
+    { new: true, runValidators: true } // Return updated document
   ).exec();
+
+  return updatedUser;
 };
 
 export const deleteTraineeById = async (userId: string, traineeId: string) => {
