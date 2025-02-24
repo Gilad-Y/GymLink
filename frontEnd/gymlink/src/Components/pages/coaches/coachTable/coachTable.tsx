@@ -28,7 +28,7 @@ import {
   randomArrayItem,
 } from "@mui/x-data-grid-generator";
 import store from "../../../../redux/store";
-import { getCoachesByIds, updateUser } from "../../../../util/api";
+import { deleteUser, getCoachesByIds, updateUser } from "../../../../util/api";
 /// when adding the option to use select in table
 // const roles = ["Market", "Finance", "Development"];
 // const randomRole = () => {
@@ -150,6 +150,11 @@ export default function FullFeaturedCrudGrid() {
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
+    try {
+      deleteUser(id.toString());
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
     setRows(rows.filter((row) => row.id !== id));
   };
 
@@ -166,7 +171,6 @@ export default function FullFeaturedCrudGrid() {
   };
 
   const processRowUpdate = (newRow: GridRowModel) => {
-    console.log("Row updated:", newRow, newRow.id);
     try {
       updateUser(newRow.id, newRow);
     } catch (error) {

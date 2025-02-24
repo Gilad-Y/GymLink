@@ -25,12 +25,14 @@ export const updateUser = async (userId: string, userData: any) => {
 // Example function to delete a user
 export const deleteUser = async (userId: string) => {
   try {
-    const response = await http.delete(`/users/${userId}`);
+    const response = await http.delete(`/user/delete/${userId}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting user:", error);
     throw error;
   }
+
+  return;
 };
 
 // Function to log in a user

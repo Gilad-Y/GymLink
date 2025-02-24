@@ -42,7 +42,8 @@ export const updateUserById = async (userId: string, updateData: any) => {
 };
 
 export const deleteUserById = async (userId: string) => {
-  return await User.findByIdAndDelete(userId).exec();
+  const id = new mongoose.Types.ObjectId(userId);
+  return await User.findByIdAndDelete(id).exec();
 };
 
 // Login logic
