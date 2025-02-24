@@ -6,9 +6,12 @@ body,
   height: 100%;
   width: 100%;
   text-align: center;
-  background-color: rgb(36, 36, 36);
+  /* background-color: rgb(36, 36, 36);
+  
+  */
+  background-color: rgb(145, 145, 145);
   /* font-family: "rubik"; */
-  color: white;
+  color: rgb(171, 171, 171);
   overflow: hidden;
 }
 .p-blue {

@@ -7,7 +7,6 @@ router.post(
   "/register",
   async (request: Request, response: Response, next: NextFunction) => {
     const user = request.body;
-    console.log(user);
     response.status(201).json(await userLogic.createUser(user));
   }
 );
@@ -15,15 +14,21 @@ router.post(
 router.post(
   "/login",
   async (request: Request, response: Response, next: NextFunction) => {
-    // console.log(request.body + "dfrbhhrdhrd");
     try {
       const { email, password } = request.body;
 
       const user = await userLogic.loginUser(email, password);
 
+      if (!user) {
+        return response
+          .status(401)
+          .json({ message: "Invalid email or password" });
+      }
+
       response.status(200).json(user);
-    } catch (error) {
-      next(error); // Pass the error to Express error middleware
+    } catch (error: any) {
+      error.status = 401;
+      next(error);
     }
   }
 );
@@ -41,6 +46,7 @@ router.put(
   async (request: Request, response: Response, next: NextFunction) => {
     const id = request.params.id;
     const updateData = request.body;
+    console.log(id, updateData);
     response.status(200).json(await userLogic.updateUserById(id, updateData));
   }
 );

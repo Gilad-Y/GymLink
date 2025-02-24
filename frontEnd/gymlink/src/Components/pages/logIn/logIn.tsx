@@ -6,7 +6,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import { Container } from "@mui/material";
+import { Alert, Container, Stack } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { UserModel } from "../../../models/userModel";
 import store from "../../../redux/store";
@@ -20,10 +20,11 @@ import IconButton from "@mui/material/IconButton";
 import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import React from "react";
+import React, { useState } from "react";
 import { logInUser } from "../../../util/api"; // Import the logInUser function from api.ts
 
 function LogIn(): React.JSX.Element {
+  const [statusCode, setStatus] = useState<number | undefined>(undefined);
   const nav = useNavigate();
   const {
     handleSubmit,
@@ -40,8 +41,11 @@ function LogIn(): React.JSX.Element {
         nav("/");
       })
       .catch((err: any) => {
-        console.log(err);
-        console.log("not correct");
+        console.log(err.status);
+        setStatus(err.status);
+        setTimeout(() => {
+          setStatus(undefined);
+        }, 5000);
       })
       .finally(() => {
         document.body.style.cursor = "default";
@@ -99,10 +103,52 @@ function LogIn(): React.JSX.Element {
             }}
           >
             <h1 style={{ textAlign: "center", fontWeight: "bold" }}>התחבר</h1>
+            {/* <Stack
+              sx={{ width: "100%" }}
+              spacing={2}
+            >
+              {statusCode == 401 && (
+                <Alert
+                  variant="filled"
+                  severity="warning"
+                >
+                  Email or password is incorrect
+                </Alert>
+              )}
+              {statusCode !== 401 && !!statusCode && (
+                <Alert
+                  variant="filled"
+                  severity="error"
+                >
+                  This is an info Alert.
+                </Alert>
+              )}
+            </Stack> */}
             <form
               onSubmit={handleSubmit(logUser)}
               style={{ width: "100%" }}
             >
+              <Stack
+                sx={{ width: "100%" }}
+                spacing={2}
+              >
+                {statusCode == 401 && (
+                  <Alert
+                    variant="filled"
+                    severity="warning"
+                  >
+                    Email or password is incorrect
+                  </Alert>
+                )}
+                {statusCode !== 401 && !!statusCode && (
+                  <Alert
+                    variant="filled"
+                    severity="error"
+                  >
+                    This is an info Alert.
+                  </Alert>
+                )}
+              </Stack>
               <FormControl
                 sx={{
                   m: 1,

@@ -3,7 +3,7 @@ import http from "./https";
 // Example function to get user data
 export const getUser = async (userId: string) => {
   try {
-    const response = await http.get(`/users/${userId}`);
+    const response = await http.get(`/user/${userId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -11,21 +11,10 @@ export const getUser = async (userId: string) => {
   }
 };
 
-// Example function to create a new user
-export const createUser = async (userData: any) => {
-  try {
-    const response = await http.post("/users", userData);
-    return response.data;
-  } catch (error) {
-    console.error("Error creating user:", error);
-    throw error;
-  }
-};
-
 // Example function to update user data
 export const updateUser = async (userId: string, userData: any) => {
   try {
-    const response = await http.put(`/users/${userId}`, userData);
+    const response = await http.put(`/user/edit/${userId}`, userData);
     return response.data;
   } catch (error) {
     console.error("Error updating user data:", error);
@@ -46,13 +35,9 @@ export const deleteUser = async (userId: string) => {
 
 // Function to log in a user
 export const logInUser = async (email: string, password: string) => {
-  console.log("Logging in user with email:", email);
   try {
     const requestData = { email, password };
-    console.log("Request Body:", JSON.stringify(requestData)); // Log request data
-
     const response = await http.post("/user/login", requestData);
-    console.log("Login response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error logging in user:", error);
@@ -72,7 +57,6 @@ export const registerUser = async (userData: any) => {
 };
 
 export const getColumnsByUserId = async (userId: any) => {
-  console.log("Fetching columns for user ID:", userId);
   try {
     const response = await http.get(`/column/user/${userId}`);
     return response.data;
@@ -143,6 +127,29 @@ export const updateTrainee = async (userId: string, traineeData: any[]) => {
     return response.data;
   } catch (error) {
     console.error("Error updating trainee:", error);
+    throw error;
+  }
+};
+
+// Function to add a new coach
+export const addCoach = async (coachData: any) => {
+  try {
+    const response = await http.post("/user/addCoach", coachData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding coach:", error);
+    throw error;
+  }
+};
+export const getCoachesByIds = async (id: string) => {
+  try {
+    const response = await http.get(`/user/getCoaches/${id}`);
+    return response.data.map((coach: any) => {
+      const { password, ...coachWithoutPassword } = coach;
+      return coachWithoutPassword;
+    });
+  } catch (error) {
+    console.error("Error fetching coaches:", error);
     throw error;
   }
 };

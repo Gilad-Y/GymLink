@@ -50,16 +50,4 @@ http.interceptors.response.use(
   }
 );
 
-// Function to register a new user
-export const registerUser = async (userData: any) => {
-  try {
-    const response = await http.post("/user/register", userData);
-    // console.log("Register response:", response.data);
-    return response.data;
-  } catch (error) {
-    // console.error("Error registering user:", error);
-    throw error;
-  }
-};
-
 export default http;

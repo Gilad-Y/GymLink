@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs"; // Assuming you are using bcrypt for password hashing
 
 // User CRUD operations
+// User CRUD operations
 export const createUser = async (userData: any) => {
   // Check if a user with the same email already exists
   const existingUser = await User.findOne({ email: userData.email }).exec();
@@ -12,8 +13,18 @@ export const createUser = async (userData: any) => {
   }
 
   const user = new User(userData);
-  // user.password = await bcrypt.hash(user.password, 10); // Hash the password before saving
   user.password = userData._password;
+
+  if (userData.role === "coach") {
+    const coach = await user.save();
+    await User.findByIdAndUpdate(
+      userData.belongsTo,
+      { $push: { coaches: coach._id } },
+      { new: true }
+    ).exec();
+    return coach;
+  }
+
   return await user.save();
 };
 
@@ -25,7 +36,9 @@ export const updateUserById = async (userId: string, updateData: any) => {
   if (updateData.password) {
     updateData.password = await bcrypt.hash(updateData.password, 10); // Hash the password if it's being updated
   }
-  return await User.findByIdAndUpdate(userId, updateData, { new: true }).exec();
+  console.log("Updating user with data:", updateData);
+  const id = new mongoose.Types.ObjectId(userId);
+  return await User.findByIdAndUpdate(id, updateData, { new: true }).exec();
 };
 
 export const deleteUserById = async (userId: string) => {
@@ -90,7 +103,7 @@ export const deleteCoachById = async (coachId: string) => {
 export const createTrainee = async (traineeData: any) => {
   traineeData.belongsTo = new mongoose.Types.ObjectId(traineeData.belongsTo);
   traineeData._id = new mongoose.Types.ObjectId();
-  console.log("traineeData--", traineeData);
+
   await User.findByIdAndUpdate(traineeData.belongsTo, {
     $push: { trainees: traineeData },
   }).exec();
@@ -105,7 +118,10 @@ export const getTraineeById = async (userId: string) => {
 
 export const updateTraineeById = async (userId: string, trainees: any[]) => {
   // Update the entire trainees array for the given user
-  console.log("trainees--", trainees);
+  const traineeToSave = trainees.map((trainee) => {
+    delete trainee.id;
+  });
+
   const updatedUser = await User.findOneAndUpdate(
     { _id: userId }, // Find user by ID
     { $set: { trainees } }, // Replace the entire trainees array
@@ -144,8 +160,14 @@ export const getAllTraineesOfCoach = async (userId: string) => {
 
 // Get all coaches of a user
 export const getAllCoaches = async (userId: string) => {
-  const user = await User.findById(userId).populate("coaches").exec();
-  return user ? user.coaches : [];
+  try {
+    const id = new mongoose.Types.ObjectId(userId); // Convert userId to ObjectId
+    const users = await User.find({ belongsTo: id }).exec(); // Find all users with belongsTo matching the given ID
+    return users;
+  } catch (error) {
+    console.error("Error fetching users by belongsTo:", error);
+    return [];
+  }
 };
 
 // Column CRUD operations

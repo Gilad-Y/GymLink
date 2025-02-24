@@ -6,7 +6,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import { Container } from "@mui/material";
+import { Alert, Container, Stack } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { UserModel } from "../../../models/userModel";
 import store from "../../../redux/store";
@@ -22,7 +22,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import React from "react";
 import bcrypt from "bcryptjs"; // Import bcryptjs
-import { registerUser } from "../../../util/https"; // Import the registerUser function
+import { registerUser } from "../../../util/api"; // Import the registerUser function
 
 function Register(): React.JSX.Element {
   const nav = useNavigate();
@@ -103,6 +103,13 @@ function Register(): React.JSX.Element {
             }}
           >
             <h1 style={{ textAlign: "center", fontWeight: "bold" }}>הרשמה</h1>
+            {/* <Stack
+              sx={{ width: "100%" }}
+              spacing={2}
+            >
+              <Alert severity="success">This is a success Alert.</Alert>
+              <Alert severity="info">This is an info Alert.</Alert>
+            </Stack> */}
             <form
               onSubmit={handleSubmit(registerNewUser)}
               style={{ width: "100%" }}

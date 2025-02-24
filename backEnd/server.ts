@@ -45,13 +45,18 @@ server.use("/api/v1/column", columnRouter);
 // Handle errors (Route Not Found)
 server.use("*", ErrorHandler);
 
-server.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
-  const error =
-    err instanceof Error ? err : new Error("Unknown error occurred");
+server.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  let error: Error & { status?: number };
+
+  if (err instanceof Error) {
+    error = err;
+  } else {
+    error = new Error("Unknown error occurred");
+  }
 
   console.error(error.stack || "No stack trace available");
 
-  res.status((error as any).status || 500).json({
+  res.status(error.status || 500).json({
     message: error.message || "Internal Server Error",
     error: process.env.NODE_ENV === "development" ? error : {},
   });

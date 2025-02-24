@@ -250,10 +250,14 @@ export default function Sidebar() {
                 >
                   <List sx={{ gap: 0.5 }}>
                     <ListItem>
-                      <ListItemButton>הוסף מאמן</ListItemButton>
+                      <ListItemButton onClick={() => nav("/addCoach")}>
+                        הוסף מאמן
+                      </ListItemButton>
                     </ListItem>
                     <ListItem>
-                      <ListItemButton>נהל מאמנים</ListItemButton>
+                      <ListItemButton onClick={() => nav("/coaches")}>
+                        נהל מאמנים
+                      </ListItemButton>
                     </ListItem>
                     <ListItem>
                       <ListItemButton>Roles & permission</ListItemButton>
@@ -264,7 +268,6 @@ export default function Sidebar() {
                           nav(`/addClient/${user._id}`);
                         }}
                       >
-                        {" "}
                         הוסף לקוח
                       </ListItemButton>
                     </ListItem>
