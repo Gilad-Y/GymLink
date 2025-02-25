@@ -9,7 +9,7 @@ export const createUser = async (userData: any) => {
   // Check if a user with the same email already exists
   const existingUser = await User.findOne({ email: userData.email }).exec();
   if (existingUser) {
-    throw new Error("Email is already in use");
+    return { error: "User with the same email already exists" };
   }
 
   const user = new User(userData);
@@ -22,10 +22,11 @@ export const createUser = async (userData: any) => {
       { $push: { coaches: coach._id } },
       { new: true }
     ).exec();
-    return coach;
+    return coach._id;
   }
 
-  return await user.save();
+  const newUser = await user.save();
+  return newUser._id;
 };
 
 export const getUserById = async (userId: string) => {
@@ -36,6 +37,16 @@ export const updateUserById = async (userId: string, updateData: any) => {
   if (updateData.password) {
     updateData.password = await bcrypt.hash(updateData.password, 10); // Hash the password if it's being updated
   }
+  // const user = {
+  //   email: updateData.email,
+  //   firstName: updateData.firstName,
+  //   lastName: updateData.lastName,
+  //   password: updateData.password,
+  //   role: updateData.role,
+  //   belongsTo: updateData.belongsTo,
+  //   coaches: updateData.coaches,
+  //   trainees: updateData.trainees,
+  // };
   console.log("Updating user with data:", updateData);
   const id = new mongoose.Types.ObjectId(userId);
   return await User.findByIdAndUpdate(id, updateData, { new: true }).exec();

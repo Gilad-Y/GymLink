@@ -13,6 +13,12 @@ export const getUser = async (userId: string) => {
 
 // Example function to update user data
 export const updateUser = async (userId: string, userData: any) => {
+  if (userData.isNew) {
+    delete userData.isNew;
+    delete userData.id;
+    userData._password = "123456789";
+    return registerUser(userData);
+  }
   try {
     const response = await http.put(`/user/edit/${userId}`, userData);
     return response.data;

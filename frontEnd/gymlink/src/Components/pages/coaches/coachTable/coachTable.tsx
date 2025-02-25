@@ -21,57 +21,9 @@ import {
   GridRowEditStopReasons,
   GridSlotProps,
 } from "@mui/x-data-grid";
-import {
-  randomCreatedDate,
-  randomTraderName,
-  randomId,
-  randomArrayItem,
-} from "@mui/x-data-grid-generator";
 import store from "../../../../redux/store";
 import { deleteUser, getCoachesByIds, updateUser } from "../../../../util/api";
-/// when adding the option to use select in table
-// const roles = ["Market", "Finance", "Development"];
-// const randomRole = () => {
-//   return randomArrayItem(roles);
-// };
-
-// const initialRows: GridRowsProp = [
-//   {
-//     id: randomId(),
-//     name: randomTraderName(),
-//     age: 25,
-//     joinDate: randomCreatedDate(),
-//     role: randomRole(),
-//   },
-//   {
-//     id: randomId(),
-//     name: randomTraderName(),
-//     age: 36,
-//     joinDate: randomCreatedDate(),
-//     role: randomRole(),
-//   },
-//   {
-//     id: randomId(),
-//     name: randomTraderName(),
-//     age: 19,
-//     joinDate: randomCreatedDate(),
-//     role: randomRole(),
-//   },
-//   {
-//     id: randomId(),
-//     name: randomTraderName(),
-//     age: 28,
-//     joinDate: randomCreatedDate(),
-//     role: randomRole(),
-//   },
-//   {
-//     id: randomId(),
-//     name: randomTraderName(),
-//     age: 23,
-//     joinDate: randomCreatedDate(),
-//     role: randomRole(),
-//   },
-// ];
+import { randomId } from "@mui/x-data-grid-generator";
 
 declare module "@mui/x-data-grid" {
   interface ToolbarPropsOverrides {
@@ -89,11 +41,19 @@ function EditToolbar(props: GridSlotProps["toolbar"]) {
     const id = randomId();
     setRows((oldRows) => [
       ...oldRows,
-      { id, name: "", age: "", role: "", isNew: true },
+      {
+        id: id,
+        firstName: "",
+        lastName: "",
+        email: "",
+        role: "coach",
+        belongsTo: store.getState().users.user?._id,
+        isNew: true,
+      },
     ]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "firstName" },
     }));
   };
 
@@ -116,7 +76,7 @@ export default function FullFeaturedCrudGrid() {
     {}
   );
 
-  React.useEffect(() => {
+  const fetchCoaches = () => {
     const userId = store.getState().users.user?._id || "";
     if (userId) {
       getCoachesByIds(userId).then((coaches) => {
@@ -130,6 +90,10 @@ export default function FullFeaturedCrudGrid() {
         setRows(coachesRows); // Set rows with fetched coaches data
       });
     }
+  };
+
+  React.useEffect(() => {
+    fetchCoaches();
   }, []);
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (
@@ -170,9 +134,13 @@ export default function FullFeaturedCrudGrid() {
     }
   };
 
-  const processRowUpdate = (newRow: GridRowModel) => {
+  const processRowUpdate = async (newRow: GridRowModel) => {
     try {
-      updateUser(newRow.id, newRow);
+      updateUser(newRow.id, newRow).then((res) => {
+        if (typeof res === "string") {
+          return fetchCoaches();
+        }
+      });
     } catch (error) {
       console.error("Error updating row:", error);
     }
@@ -184,9 +152,11 @@ export default function FullFeaturedCrudGrid() {
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
+
   const isValidEmail = (value: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   };
+
   const isCellEditable = (params: any) => {
     if (params.field === "email") {
       return !isValidEmail(params.value); // Only editable if it's NOT a valid email
@@ -252,74 +222,6 @@ export default function FullFeaturedCrudGrid() {
         ];
       },
     },
-    // {
-    //   field: "age",
-    //   headerName: "Age",
-    //   type: "number",
-    //   width: 80,
-    //   align: "left",
-    //   headerAlign: "left",
-    //   editable: true,
-    // },
-    // {
-    //   field: "joinDate",
-    //   headerName: "Join date",
-    //   type: "date",
-    //   width: 180,
-    //   editable: true,
-    // },
-    // {
-    //   field: "role",
-    //   headerName: "Department",
-    //   width: 220,
-    //   editable: true,
-    //   type: "singleSelect",
-    //   valueOptions: ["Market", "Finance", "Development"],
-    // },
-    // {
-    //   field: "actions",
-    //   type: "actions",
-    //   headerName: "Actions",
-    //   width: 100,
-    //   cellClassName: "actions",
-    //   getActions: ({ id }) => {
-    //     const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-    //     if (isInEditMode) {
-    //       return [
-    //         <GridActionsCellItem
-    //           icon={<SaveIcon />}
-    //           label="Save"
-    //           sx={{
-    //             color: "primary.main",
-    //           }}
-    //           onClick={handleSaveClick(id)}
-    //         />,
-    //         <GridActionsCellItem
-    //           icon={<CancelIcon />}
-    //           label="Cancel"
-    //           className="textPrimary"
-    //           onClick={handleCancelClick(id)}
-    //           color="inherit"
-    //         />,
-    //       ];
-    //     }
-    //     return [
-    //       <GridActionsCellItem
-    //         icon={<EditIcon />}
-    //         label="Edit"
-    //         className="textPrimary"
-    //         onClick={handleEditClick(id)}
-    //         color="inherit"
-    //       />,
-    //       <GridActionsCellItem
-    //         icon={<DeleteIcon />}
-    //         label="Delete"
-    //         onClick={handleDeleteClick(id)}
-    //         color="inherit"
-    //       />,
-    //     ];
-    //   },
-    // },
   ];
 
   return (
@@ -348,6 +250,7 @@ export default function FullFeaturedCrudGrid() {
         slotProps={{
           toolbar: { setRows, setRowModesModel },
         }}
+        sx={{ borderRadius: "16px" }}
       />
     </Box>
   );
