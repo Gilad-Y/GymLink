@@ -10,8 +10,8 @@ import Settings from "../../pages/settings/settings";
 import AddTrainee from "../../pages/addData/addTrainee/addTrainee";
 import TraineePage from "../../traineePage/traineePage";
 import PrivateRoute from "../privateRoute/privateRoute";
-import AddCoach from "../../pages/coaches/addCoach/addCoach";
 import CoachTable from "../../pages/coaches/coachTable/coachTable";
+import Calendar from "../../pages/Calendar/Calendar";
 
 function MainRoute(): React.JSX.Element {
   const nav = useNavigate();
@@ -87,12 +87,12 @@ function MainRoute(): React.JSX.Element {
           element={<Settings />}
         />
         <Route
-          path="/coaches"
-          element={<CoachTable />}
+          path="/calendar"
+          element={<Calendar />}
         />
         <Route
-          path="/addCoach"
-          element={<AddCoach id={store.getState().users.user?._id || "fes"} />}
+          path="/coaches"
+          element={<CoachTable />}
         />
         <Route
           path="*"

@@ -7,7 +7,8 @@ import MainLayout from "./Components/layouts/mainLayout/mainLayout";
 import "./index.css";
 import { useMediaQuery } from "@mui/material";
 import theme from "./theme/theme"; // Import your custom MUI Joy theme
-
+import { GoogleOAuthProvider } from "@react-oauth/google";
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "";
 const App = () => {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
@@ -33,9 +34,11 @@ const App = () => {
     //   defaultMode="system"
     // >
     //   <StyledEngineProvider injectFirst>
-    <BrowserRouter>
-      <MainLayout />
-    </BrowserRouter>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <BrowserRouter>
+        <MainLayout />
+      </BrowserRouter>
+    </GoogleOAuthProvider>
     //   {/* </StyledEngineProvider>
     // </CssVarsProvider> */}
   );

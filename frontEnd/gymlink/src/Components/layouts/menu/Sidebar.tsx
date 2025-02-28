@@ -2,7 +2,6 @@ import * as React from "react";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
-import Button from "@mui/joy/Button";
 import Divider from "@mui/joy/Divider";
 import IconButton from "@mui/joy/IconButton";
 import Input from "@mui/joy/Input";
@@ -14,13 +13,11 @@ import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
-import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
-import AssignmentRoundedIcon from "@mui/icons-material/AssignmentRounded";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
 import SupportRoundedIcon from "@mui/icons-material/SupportRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import BrightnessAutoRoundedIcon from "@mui/icons-material/BrightnessAutoRounded";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ColorSchemeToggle from "./ColorSchemeToggle";
 import { closeSidebar } from "./utils";
@@ -28,6 +25,7 @@ import store from "../../../redux/store";
 import { logOutUser } from "../../../redux/usersReducer";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserModel } from "../../../models/userModel";
+import axios from "axios";
 
 function Toggler({
   defaultExpanded = false,
@@ -62,8 +60,22 @@ function Toggler({
   );
 }
 
-const logOut = () => {
-  store.dispatch(logOutUser());
+const logOut = async () => {
+  try {
+    await axios.get("http://localhost:4000/auth/logout", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Pass the token here
+      },
+    });
+
+    // Clear the token from the frontend (localStorage)
+    localStorage.removeItem("token");
+    store.dispatch(logOutUser());
+
+    console.log("User logged out successfully");
+  } catch (err) {
+    console.error("Error during logout:", err);
+  }
 };
 
 export default function Sidebar() {
@@ -196,43 +208,14 @@ export default function Sidebar() {
             <ListItem>
               <ListItemButton
                 selected={currentLocation === "orders"}
-                onClick={() => nav("/orders")}
+                onClick={() => nav("/calendar")}
               >
-                <ShoppingCartRoundedIcon />
+                <CalendarMonthIcon />
                 <ListItemContent>
-                  <Typography level="title-sm">Orders</Typography>
+                  <Typography level="title-sm">calendar</Typography>
                 </ListItemContent>
               </ListItemButton>
             </ListItem>
-
-            <ListItem nested>
-              <Toggler
-                renderToggle={({ open, setOpen }) => (
-                  <ListItemButton onClick={() => setOpen(!open)}>
-                    <AssignmentRoundedIcon />
-                    <ListItemContent>
-                      <Typography level="title-sm">פעולות</Typography>
-                    </ListItemContent>
-                    <KeyboardArrowDownIcon
-                      sx={{ transform: open ? "rotate(180deg)" : "none" }}
-                    />
-                  </ListItemButton>
-                )}
-              >
-                <List sx={{ gap: 0.5 }}>
-                  {["payments", "mission", "weights", "program", "trainee"].map(
-                    (item) => (
-                      <ListItem key={item}>
-                        <ListItemButton onClick={() => navToPage(item)}>
-                          {`עדכן ${item}`}
-                        </ListItemButton>
-                      </ListItem>
-                    )
-                  )}
-                </List>
-              </Toggler>
-            </ListItem>
-
             {user?.role === "admin" && (
               <ListItem nested>
                 <Toggler
@@ -240,7 +223,7 @@ export default function Sidebar() {
                     <ListItemButton onClick={() => setOpen(!open)}>
                       <GroupRoundedIcon />
                       <ListItemContent>
-                        <Typography level="title-sm">תפריט אדמין</Typography>
+                        <Typography level="title-sm">admin menu</Typography>
                       </ListItemContent>
                       <KeyboardArrowDownIcon
                         sx={{ transform: open ? "rotate(180deg)" : "none" }}
@@ -250,17 +233,9 @@ export default function Sidebar() {
                 >
                   <List sx={{ gap: 0.5 }}>
                     <ListItem>
-                      <ListItemButton onClick={() => nav("/addCoach")}>
-                        הוסף מאמן
-                      </ListItemButton>
-                    </ListItem>
-                    <ListItem>
                       <ListItemButton onClick={() => nav("/coaches")}>
                         נהל מאמנים
                       </ListItemButton>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemButton>Roles & permission</ListItemButton>
                     </ListItem>
                     <ListItem>
                       <ListItemButton

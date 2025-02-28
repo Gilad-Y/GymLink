@@ -6,7 +6,13 @@ const userSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: {
+    type: String,
+    required: function (this: any) {
+      return !this.googleId;
+    }, // Works in TS
+  },
+  googleId: { type: String, unique: true, sparse: true }, // Store Google ID
   role: { type: String, enum: ["admin", "coach"], required: true },
   brand: { type: Schema.Types.Mixed },
   coaches: [{ type: mongoose.Types.ObjectId, ref: "User" }],
@@ -15,7 +21,6 @@ const userSchema = new Schema({
       type: Object,
     },
   ],
-
   belongsTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 

@@ -22,6 +22,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import React, { useState } from "react";
 import { logInUser } from "../../../util/api"; // Import the logInUser function from api.ts
+import OAuth from "../../oAuth/oauth";
 
 function LogIn(): React.JSX.Element {
   const [statusCode, setStatus] = useState<number | undefined>(undefined);
@@ -263,7 +264,7 @@ function LogIn(): React.JSX.Element {
               >
                 התחבר
               </Button>
-
+              <OAuth />
               <Box
                 display="flex"
                 justifyContent="space-between"
