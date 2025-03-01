@@ -7,8 +7,8 @@ interface props {
 function CoachDashboard(props: props): React.JSX.Element {
   return (
     <div className="coachDashboard">
-      {/* <TraineeTable id={props.id.toString()} /> */}
-      <NewTable id={props.id.toString()} />
+      <TraineeTable id={props.id.toString()} />
+      {/* <NewTable id={props.id.toString()} /> */}
       {/* <MissionTable id={props.id} /> */}
       {/* <Notifications /> */}
     </div>

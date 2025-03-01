@@ -10,6 +10,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import columnRouter from "./Routes/columnRouter";
 import authRouter from "./Routes/authRouter";
+import calendarRouter from "./Routes/calendarRouter";
 import { passport } from "./Utils/passportConfig"; // Import passport configuration
 import session from "express-session";
 
@@ -29,11 +30,10 @@ const server = express();
 server.use(bodyParser.urlencoded({ extended: false }));
 
 // CORS = Cross-Origin Resource Sharing
-// server.use(cors());
 server.use(
   cors({
     origin: "http://localhost:3000", // Frontend URL
-    credentials: true, // Allow cookies and authentication headers
+    credentials: true,
   })
 );
 
@@ -52,8 +52,10 @@ server.use(
     secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
+    cookie: { secure: false }, // Set secure to true if using HTTPS
   })
 );
+
 // Initialize Passport and restore authentication state, if any, from the session.
 server.use(passport.initialize());
 server.use(passport.session());
@@ -63,6 +65,8 @@ server.use("/api/v1/test", router);
 server.use("/api/v1/user", userRouter);
 server.use("/api/v1/column", columnRouter);
 server.use("/auth", authRouter);
+server.use("/api/v1/calendar", calendarRouter); // Add calendar routes
+
 // Handle errors (Route Not Found)
 server.use("*", ErrorHandler);
 

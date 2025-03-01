@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@googleapis/calendar": "^9.8.0",
     "@types/cors": "^2.8.13",
     "@types/express-fileupload": "^1.4.1",
     "@types/mongoose": "^5.11.97",
@@ -25,6 +26,7 @@
     "express-fileupload": "^1.4.0",
     "express-session": "^1.18.1",
     "google-auth-library": "^9.15.1",
+    "googleapis": "^146.0.0",
     "jsonwebtoken": "^9.0.2",
     "loadsh": "^0.0.4",
     "mongodb": "^6.13.0",
