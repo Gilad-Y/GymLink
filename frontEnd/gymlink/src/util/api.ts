@@ -13,10 +13,9 @@ export const getUser = async (userId: string) => {
 
 // Example function to update user data
 export const updateUser = async (userId: string, userData: any) => {
-  if (userData.isNew) {
+  if (!userData._password) {
     console.log("newwwww");
-    delete userData.isNew;
-    delete userData.id;
+    // delete userData.id;
     userData.role = "coach";
     userData._password = "123456789"; //// need to has this!!
     return await registerUser(userData);

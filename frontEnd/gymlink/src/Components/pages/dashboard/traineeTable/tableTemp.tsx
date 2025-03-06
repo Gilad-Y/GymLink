@@ -178,8 +178,8 @@ const DataGridCrud: React.FC<Props> = ({
   };
 
   const handleDeleteClick = (id: GridRowId) => async () => {
-    // crudFunctions.deleteData(id.toString());
-    console.log(id);
+    crudFunctions.deleteData(id.toString());
+    // console.log(id);
     setRowData(rowData.filter((row) => row.id !== id));
   };
 

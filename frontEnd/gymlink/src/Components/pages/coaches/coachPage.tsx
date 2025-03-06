@@ -40,9 +40,8 @@ const CoachPage: React.FC = () => {
   const updateCoach = async (userid: string, data: any) => {
     data.belongsTo = id;
     data._id = userid;
-    data.isNew = true;
     console.log(data);
-    // await updateUser(userid, data);
+    await updateUser(userid, data);
     return;
   };
   const addCoachFunc = async (data: any) => {
