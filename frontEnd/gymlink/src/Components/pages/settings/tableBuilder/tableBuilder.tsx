@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Paper,
@@ -40,10 +40,9 @@ const TableBuilder: React.FC = () => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [newColumnTitle, setNewColumnTitle] = useState<string>("");
   const [newColumnDataType, setNewColumnDataType] = useState<string>("string");
-  //   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
-  //   const [editedTitle, setEditedTitle] = useState<string>("");
-  //   const [editedDataType, setEditedDataType] = useState<string>("");
+  const [newColumnOptions, setNewColumnOptions] = useState<string[]>([]);
   const [editingColumn, setEditingColumn] = useState<Column | null>(null);
+  const [editingOptions, setEditingOptions] = useState<string[]>([]);
 
   const userId = store.getState().users.user?._id;
 
@@ -77,7 +76,7 @@ const TableBuilder: React.FC = () => {
       Math.random().toString(36).substr(2, 9), // Temporary ID (replace with backend response)
       newColumnTitle,
       newColumnDataType,
-      [],
+      newColumnOptions,
       userId
     );
     console.log("New Column:", newColumn);
@@ -87,27 +86,29 @@ const TableBuilder: React.FC = () => {
       setIsAdding(false);
       setNewColumnTitle("");
       setNewColumnDataType("string");
+      setNewColumnOptions([]);
     } catch (error) {
       console.error("Error creating column:", error);
     }
   };
 
   const handleEditColumn = (column: Column) => {
-    // setEditingColumnId(column._id);
-    // setEditedTitle(column.title);
-    // setEditedDataType(column.dataType);
     if (isAdding) return;
     setEditingColumn(column);
+    setEditingOptions(column.options || []);
   };
+
   const handleAddButton = () => {
     if (editingColumn) return;
     setIsAdding(true);
   };
+
   const handleSaveEdit = async (columnId: string) => {
     try {
       const updatedColumn = await updateColumn(columnId, {
         title: editingColumn?.title,
         dataType: editingColumn?.dataType,
+        options: editingOptions,
       });
 
       setColumns((prevColumns) =>
@@ -117,12 +118,14 @@ const TableBuilder: React.FC = () => {
                 ...col,
                 title: editingColumn?.title || col.title,
                 dataType: editingColumn?.dataType || col.dataType,
+                options: editingOptions,
               }
             : col
         )
       );
 
       setEditingColumn(null);
+      setEditingOptions([]);
     } catch (error) {
       console.error("Error updating column:", error);
     }
@@ -130,15 +133,32 @@ const TableBuilder: React.FC = () => {
 
   const handleCancelEdit = () => {
     setEditingColumn(null);
+    setEditingOptions([]);
   };
+
   const handleDeleteColumn = async (columnId: string) => {
     deleteColumn(columnId).then((res) => {
       setColumns((prevColumns) =>
         prevColumns.filter((col) => col._id !== columnId)
       );
-      //   console.log(res.data);
     });
   };
+
+  const handleAddOption = () => {
+    setEditingOptions([...editingOptions, ""]);
+  };
+
+  const handleOptionChange = (index: number, value: string) => {
+    const newOptions = [...editingOptions];
+    newOptions[index] = value;
+    setEditingOptions(newOptions);
+  };
+
+  const handleDeleteOption = (index: number) => {
+    const newOptions = editingOptions.filter((_, i) => i !== index);
+    setEditingOptions(newOptions);
+  };
+
   return (
     <Container
       component="main"
@@ -185,8 +205,6 @@ const TableBuilder: React.FC = () => {
                               title: e.target.value,
                             })
                           }
-                          //   onBlur={() => handleSaveEdit(column._id)}
-
                           autoFocus
                         />
                       ) : (
@@ -238,8 +256,35 @@ const TableBuilder: React.FC = () => {
                             <MenuItem value="string">String</MenuItem>
                             <MenuItem value="number">Number</MenuItem>
                             <MenuItem value="boolean">Boolean</MenuItem>
+                            <MenuItem value="singleSelect">Select</MenuItem>
                             <MenuItem value="date">Date</MenuItem>
                           </Select>
+                          {editingColumn.dataType === "singleSelect" && (
+                            <Box>
+                              {editingOptions.map((option, index) => (
+                                <Box
+                                  key={index}
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <TextField
+                                    value={option}
+                                    onChange={(e) =>
+                                      handleOptionChange(index, e.target.value)
+                                    }
+                                    placeholder={`Option ${index + 1}`}
+                                  />
+                                  <IconButton
+                                    onClick={() => handleDeleteOption(index)}
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </Box>
+                              ))}
+                              <Button onClick={handleAddOption}>
+                                Add Option
+                              </Button>
+                            </Box>
+                          )}
                           <IconButton
                             onClick={() => handleSaveEdit(column._id)}
                           >
@@ -261,7 +306,6 @@ const TableBuilder: React.FC = () => {
                       )}
                     </TableCell>
                   ))}
-                  {/* <TableCell></TableCell> */}
                   {isAdding ? (
                     <>
                       <TableCell>
@@ -274,8 +318,47 @@ const TableBuilder: React.FC = () => {
                           <MenuItem value="string">String</MenuItem>
                           <MenuItem value="number">Number</MenuItem>
                           <MenuItem value="boolean">Boolean</MenuItem>
+                          <MenuItem value="singleSelect">Select</MenuItem>
                           <MenuItem value="date">Date</MenuItem>
                         </Select>
+                        {newColumnDataType === "singleSelect" && (
+                          <Box>
+                            {newColumnOptions.map((option, index) => (
+                              <Box
+                                key={index}
+                                sx={{ display: "flex", alignItems: "center" }}
+                              >
+                                <TextField
+                                  value={option}
+                                  onChange={(e) =>
+                                    setNewColumnOptions((prevOptions) =>
+                                      prevOptions.map((opt, i) =>
+                                        i === index ? e.target.value : opt
+                                      )
+                                    )
+                                  }
+                                  placeholder={`Option ${index + 1}`}
+                                />
+                                <IconButton
+                                  onClick={() =>
+                                    setNewColumnOptions((prevOptions) =>
+                                      prevOptions.filter((_, i) => i !== index)
+                                    )
+                                  }
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </Box>
+                            ))}
+                            <Button
+                              onClick={() =>
+                                setNewColumnOptions([...newColumnOptions, ""])
+                              }
+                            >
+                              Add Option
+                            </Button>
+                          </Box>
+                        )}
                         <IconButton onClick={handleAddColumn}>
                           <SaveIcon />
                         </IconButton>
@@ -298,7 +381,7 @@ const TableBuilder: React.FC = () => {
             color="success"
             onClick={() => nav("/")}
           >
-            save changes
+            Save Changes
             <CheckIcon />
           </Button>
         </Paper>

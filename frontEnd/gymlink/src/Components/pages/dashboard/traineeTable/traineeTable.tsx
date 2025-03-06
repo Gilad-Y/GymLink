@@ -108,7 +108,7 @@ export default function FullFeaturedCrudGrid(props: props) {
   React.useEffect(() => {
     getColumns();
     fetchTrainees();
-  }, []);
+  }, [props]);
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (
     params,

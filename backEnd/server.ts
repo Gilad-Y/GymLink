@@ -11,6 +11,7 @@ import dotenv from "dotenv";
 import columnRouter from "./Routes/columnRouter";
 import authRouter from "./Routes/authRouter";
 import calendarRouter from "./Routes/calendarRouter";
+import traineeRouter from "./Routes/traineeRouter";
 import { passport } from "./Utils/passportConfig"; // Import passport configuration
 import session from "express-session";
 
@@ -66,6 +67,7 @@ server.use("/api/v1/user", userRouter);
 server.use("/api/v1/column", columnRouter);
 server.use("/auth", authRouter);
 server.use("/api/v1/calendar", calendarRouter); // Add calendar routes
+server.use("/api/v1/trainee", traineeRouter);
 
 // Handle errors (Route Not Found)
 server.use("*", ErrorHandler);

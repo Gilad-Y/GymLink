@@ -10,8 +10,8 @@ router.post(
     try {
       const column = request.body;
       console.log("Column data:", column);
-      const createdColumn = await columnLogic.createColumn(column);
-      response.status(201).json(createdColumn);
+      const createdColumnId = await columnLogic.createColumn(column);
+      response.status(201).json(createdColumnId);
     } catch (error) {
       next(error);
     }

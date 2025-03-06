@@ -50,7 +50,6 @@ export default function NewTable(props: Props) {
                 onClick={() => handleDelete(params.row._id)}
               >
                 <DeleteIcon />
-                {params.row.id}
               </IconButton>
             ),
           },

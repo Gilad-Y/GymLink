@@ -7,7 +7,7 @@ import Register from "../../pages/register/register";
 import store from "../../../redux/store";
 import { useEffect, useState } from "react";
 import Settings from "../../pages/settings/settings";
-import AddTrainee from "../../pages/addData/addTrainee/addTrainee";
+
 import TraineePage from "../../traineePage/traineePage";
 import PrivateRoute from "../privateRoute/privateRoute";
 import CoachTable from "../../pages/coaches/coachTable/coachTable";
@@ -63,14 +63,6 @@ function MainRoute(): React.JSX.Element {
           element={
             <PrivateRoute>
               <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/addClient/:id"
-          element={
-            <PrivateRoute>
-              <AddTrainee />
             </PrivateRoute>
           }
         />

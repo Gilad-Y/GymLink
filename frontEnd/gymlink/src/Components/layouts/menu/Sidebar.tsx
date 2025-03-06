@@ -237,15 +237,6 @@ export default function Sidebar() {
                         נהל מאמנים
                       </ListItemButton>
                     </ListItem>
-                    <ListItem>
-                      <ListItemButton
-                        onClick={() => {
-                          nav(`/addClient/${user._id}`);
-                        }}
-                      >
-                        הוסף לקוח
-                      </ListItemButton>
-                    </ListItem>
                   </List>
                 </Toggler>
               </ListItem>

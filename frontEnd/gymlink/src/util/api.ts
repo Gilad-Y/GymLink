@@ -37,8 +37,6 @@ export const deleteUser = async (userId: string) => {
     console.error("Error deleting user:", error);
     throw error;
   }
-
-  return;
 };
 
 // Function to log in a user
@@ -108,7 +106,7 @@ export const deleteColumn = async (columnId: any) => {
 
 export const addTrainees = async (traineeData: any) => {
   try {
-    const response = await http.post("user/addTrainee", traineeData);
+    const response = await http.post("trainee/", traineeData);
     return response.data;
   } catch (error) {
     console.error("Error adding trainee:", error);
@@ -117,10 +115,10 @@ export const addTrainees = async (traineeData: any) => {
 };
 
 // Function to get trainees by user ID
-export const getTraineesByUserId = async (userId: string) => {
-  console.log("Fetching trainees for user ID:", userId);
+export const getTraineesByUserId = async (Id: string) => {
+  console.log("Fetching trainees for user ID:", Id);
   try {
-    const response = await http.get(`/user/${userId}/trainees`);
+    const response = await http.get(`/trainee/${Id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching trainees:", error);
@@ -129,9 +127,9 @@ export const getTraineesByUserId = async (userId: string) => {
 };
 
 // Function to update trainee data
-export const updateTrainee = async (userId: string, traineeData: any[]) => {
+export const updateTrainee = async (id: string, traineeData: any[]) => {
   try {
-    const response = await http.put(`/user/${userId}/editTrainee`, traineeData);
+    const response = await http.put(`/trainee/${id}`, traineeData);
     return response.data;
   } catch (error) {
     console.error("Error updating trainee:", error);
@@ -158,6 +156,15 @@ export const getCoachesByIds = async (id: string) => {
     });
   } catch (error) {
     console.error("Error fetching coaches:", error);
+    throw error;
+  }
+};
+export const deleteTrainee = async (id: any) => {
+  try {
+    const response = await http.delete(`/trainee/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting column:", error);
     throw error;
   }
 };

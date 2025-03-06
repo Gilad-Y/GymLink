@@ -4,6 +4,7 @@ const columnSchema = new Schema({
   title: { type: String, required: true },
   dataType: { type: String, required: true },
   data: { type: Schema.Types.Mixed, default: null },
+  options: { type: [String], default: [] },
   createdBy: { type: mongoose.Types.ObjectId, ref: "User", required: true },
 });
 

@@ -22,7 +22,8 @@ export const createColumn = async (columnData: any) => {
   });
 
   console.log("Column before saving:", column);
-  return await column.save();
+  const savedColumn = await column.save();
+  return savedColumn._id;
 };
 
 // Get columns by user ID

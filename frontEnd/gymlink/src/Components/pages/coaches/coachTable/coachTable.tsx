@@ -135,6 +135,7 @@ export default function FullFeaturedCrudGrid() {
   };
 
   const processRowUpdate = async (newRow: GridRowModel) => {
+    console.log(newRow);
     try {
       updateUser(newRow.id, newRow).then((res) => {
         if (typeof res === "string") {
