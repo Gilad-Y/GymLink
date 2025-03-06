@@ -11,9 +11,12 @@ export const createUser = async (userData: any) => {
   if (existingUser) {
     return { error: "User with the same email already exists" };
   }
-
   const user = new User(userData);
   user.password = userData._password;
+
+  if (userData._id) {
+    user._id = userData._id; // Use the provided _id if it exists
+  }
 
   if (userData.role === "coach") {
     const coach = await user.save();
@@ -81,14 +84,15 @@ export const loginUser = async (email: string, password: string) => {
 
 // Coach CRUD operations
 export const createCoach = async (userId: string, coachData: any) => {
-  const coach = new User(coachData);
-  coach.belongsTo = new mongoose.Types.ObjectId(userId);
-  await coach.save();
-  return await User.findByIdAndUpdate(
-    userId,
-    { $push: { coaches: coach._id } },
-    { new: true }
-  ).exec();
+  // const coach = new User(coachData);
+  // coach.belongsTo = new mongoose.Types.ObjectId(userId);
+  // await coach.save();
+  // return await User.findByIdAndUpdate(
+  //   userId,
+  //   { $push: { coaches: coach._id } },
+  //   { new: true }
+  // ).exec();
+  return new mongoose.Types.ObjectId();
 };
 
 export const getCoachById = async (coachId: string) => {

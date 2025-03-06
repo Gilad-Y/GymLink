@@ -14,10 +14,12 @@ export const getUser = async (userId: string) => {
 // Example function to update user data
 export const updateUser = async (userId: string, userData: any) => {
   if (userData.isNew) {
+    console.log("newwwww");
     delete userData.isNew;
     delete userData.id;
-    userData._password = "123456789";
-    return registerUser(userData);
+    userData.role = "coach";
+    userData._password = "123456789"; //// need to has this!!
+    return await registerUser(userData);
   }
   try {
     const response = await http.put(`/user/edit/${userId}`, userData);
@@ -53,6 +55,7 @@ export const logInUser = async (email: string, password: string) => {
 
 // Function to register a new user
 export const registerUser = async (userData: any) => {
+  console.log("Registering user with data:", userData);
   try {
     const response = await http.post("/user/register", userData);
     return response.data;
@@ -138,9 +141,9 @@ export const updateTrainee = async (id: string, traineeData: any[]) => {
 };
 
 // Function to add a new coach
-export const addCoach = async (coachData: any) => {
+export const addCoach = async (id: string, coachData: any) => {
   try {
-    const response = await http.post("/user/addCoach", coachData);
+    const response = await http.post(`/user/addCoach/${id}`, coachData);
     return response.data;
   } catch (error) {
     console.error("Error adding coach:", error);

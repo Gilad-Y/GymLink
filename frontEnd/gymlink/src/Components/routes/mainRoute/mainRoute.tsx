@@ -12,6 +12,7 @@ import TraineePage from "../../traineePage/traineePage";
 import PrivateRoute from "../privateRoute/privateRoute";
 import CoachTable from "../../pages/coaches/coachTable/coachTable";
 import Calendar from "../../pages/Calendar/Calendar";
+import CoachPage from "../../pages/coaches/coachPage";
 
 function MainRoute(): React.JSX.Element {
   const nav = useNavigate();
@@ -84,7 +85,7 @@ function MainRoute(): React.JSX.Element {
         />
         <Route
           path="/coaches"
-          element={<CoachTable />}
+          element={<CoachPage />}
         />
         <Route
           path="*"

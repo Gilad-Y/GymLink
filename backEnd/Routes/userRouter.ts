@@ -46,7 +46,7 @@ router.put(
   async (request: Request, response: Response, next: NextFunction) => {
     const id = request.params.id;
     const updateData = request.body;
-    console.log(id, updateData);
+
     response.status(200).json(await userLogic.updateUserById(id, updateData));
   }
 );

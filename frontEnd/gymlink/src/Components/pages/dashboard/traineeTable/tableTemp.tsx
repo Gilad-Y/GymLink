@@ -137,16 +137,17 @@ const DataGridCrud: React.FC<Props> = ({
   const [columnsData, setColumns] = React.useState<GridColDef[]>([]);
 
   React.useEffect(() => {
-    console.log(rows);
     const Rows = rows.map((row: any) => ({
       id: row._id,
-      ...row.data,
+      ...(row.data || row), // Spread row.data if it exists, otherwise spread the row object itself
     }));
+
+    console.log(Rows);
     setRowData(Rows);
     const Columns = columns.map((col: any) => ({
       id: !!col._id ? col._id : randomId(),
       field: !!col.field ? filterString(col.field) : filterString(col.title),
-      headerName: col.title,
+      headerName: `${col.title} `,
       width: 130,
       editable: true,
       type: col.dataType,
@@ -177,8 +178,8 @@ const DataGridCrud: React.FC<Props> = ({
   };
 
   const handleDeleteClick = (id: GridRowId) => async () => {
-    crudFunctions.deleteData(id.toString());
-    // console.log(id);
+    // crudFunctions.deleteData(id.toString());
+    console.log(id);
     setRowData(rowData.filter((row) => row.id !== id));
   };
 
