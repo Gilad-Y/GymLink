@@ -40,6 +40,7 @@ const CoachPage: React.FC = () => {
   const updateCoach = async (userid: string, data: any) => {
     data.belongsTo = id;
     data._id = userid;
+    data.brand = store.getState().users.user?.brand;
     console.log(data);
     await updateUser(userid, data);
     return;

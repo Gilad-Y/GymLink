@@ -160,5 +160,15 @@ router.get(
     response.status(200).json(await userLogic.getAllCoaches(userId));
   }
 );
+router.put(
+  "/setNewPassword/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const userId = request.params.id;
+    const newPassword = request.body.password;
+    response
+      .status(200)
+      .json(await userLogic.setCoachPass(userId, newPassword));
+  }
+);
 
 export default router;

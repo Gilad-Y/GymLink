@@ -15,6 +15,8 @@ import {
   Button,
   Select,
   MenuItem,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
@@ -33,8 +35,10 @@ import store from "../../../../redux/store";
 import "./tableBuilder.css";
 import { Column } from "../../../../models/columnModel";
 import { useNavigate } from "react-router-dom";
-
-const TableBuilder: React.FC = () => {
+interface props {
+  id: string;
+}
+const TableBuilder: React.FC<props> = (props) => {
   const nav = useNavigate();
   const [columns, setColumns] = useState<Column[]>([]);
   const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -43,8 +47,10 @@ const TableBuilder: React.FC = () => {
   const [newColumnOptions, setNewColumnOptions] = useState<string[]>([]);
   const [editingColumn, setEditingColumn] = useState<Column | null>(null);
   const [editingOptions, setEditingOptions] = useState<string[]>([]);
+  const [isPrivate, setIsPrivate] = useState<boolean>(true);
+  const [editingPrivacy, setEditingPrivacy] = useState<boolean>(true);
 
-  const userId = store.getState().users.user?._id;
+  const userId = props.id;
 
   useEffect(() => {
     const fetchColumns = async () => {
@@ -77,16 +83,20 @@ const TableBuilder: React.FC = () => {
       newColumnTitle,
       newColumnDataType,
       newColumnOptions,
-      userId
+      isPrivate,
+      userId,
+      editingOptions
     );
-    console.log("New Column:", newColumn);
+    // console.log("New Column:", newColumn);
     try {
       const createdColumn = await createColumn(newColumn);
+      console.log("Created column:", createdColumn);
       setColumns((prevColumns) => [...prevColumns, createdColumn]);
       setIsAdding(false);
       setNewColumnTitle("");
       setNewColumnDataType("string");
       setNewColumnOptions([]);
+      setIsPrivate(true);
     } catch (error) {
       console.error("Error creating column:", error);
     }
@@ -96,6 +106,7 @@ const TableBuilder: React.FC = () => {
     if (isAdding) return;
     setEditingColumn(column);
     setEditingOptions(column.options || []);
+    setEditingPrivacy(column.isPrivate);
   };
 
   const handleAddButton = () => {
@@ -109,6 +120,7 @@ const TableBuilder: React.FC = () => {
         title: editingColumn?.title,
         dataType: editingColumn?.dataType,
         options: editingOptions,
+        isPrivate: editingPrivacy,
       });
 
       setColumns((prevColumns) =>
@@ -119,6 +131,7 @@ const TableBuilder: React.FC = () => {
                 title: editingColumn?.title || col.title,
                 dataType: editingColumn?.dataType || col.dataType,
                 options: editingOptions,
+                isPrivate: editingPrivacy,
               }
             : col
         )
@@ -126,6 +139,7 @@ const TableBuilder: React.FC = () => {
 
       setEditingColumn(null);
       setEditingOptions([]);
+      setEditingPrivacy(true);
     } catch (error) {
       console.error("Error updating column:", error);
     }
@@ -134,14 +148,19 @@ const TableBuilder: React.FC = () => {
   const handleCancelEdit = () => {
     setEditingColumn(null);
     setEditingOptions([]);
+    setEditingPrivacy(true);
   };
 
   const handleDeleteColumn = async (columnId: string) => {
-    deleteColumn(columnId).then((res) => {
+    try {
+      await deleteColumn(columnId);
       setColumns((prevColumns) =>
         prevColumns.filter((col) => col._id !== columnId)
       );
-    });
+      handleCancelEdit();
+    } catch (error) {
+      console.error("Error deleting column:", error);
+    }
   };
 
   const handleAddOption = () => {
@@ -198,7 +217,7 @@ const TableBuilder: React.FC = () => {
                     <TableCell key={column._id}>
                       {editingColumn?._id === column._id ? (
                         <TextField
-                          value={editingColumn.title}
+                          value={editingColumn?.title || ""}
                           onChange={(e) =>
                             setEditingColumn({
                               ...editingColumn,
@@ -216,21 +235,21 @@ const TableBuilder: React.FC = () => {
                   ))}
                   {isAdding ? (
                     <>
-                      <TableCell>
+                      <TableCell key="new-column-title">
                         <TextField
                           value={newColumnTitle}
                           onChange={(e) => setNewColumnTitle(e.target.value)}
                           placeholder="Column title"
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell key="new-column-add-button">
                         <IconButton onClick={handleAddButton}>
                           <AddIcon />
                         </IconButton>
                       </TableCell>
                     </>
                   ) : (
-                    <TableCell>
+                    <TableCell key="add-button">
                       <IconButton onClick={handleAddButton}>
                         <AddIcon />
                       </IconButton>
@@ -239,13 +258,13 @@ const TableBuilder: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow>
+                <TableRow key="new-row">
                   {columns.map((column) => (
                     <TableCell key={column._id}>
                       {editingColumn?._id === column._id ? (
                         <>
                           <Select
-                            value={editingColumn.dataType}
+                            value={editingColumn?.dataType || ""}
                             onChange={(e) =>
                               setEditingColumn({
                                 ...editingColumn,
@@ -257,9 +276,10 @@ const TableBuilder: React.FC = () => {
                             <MenuItem value="number">Number</MenuItem>
                             <MenuItem value="boolean">Boolean</MenuItem>
                             <MenuItem value="singleSelect">Select</MenuItem>
+                            <MenuItem value="link">Link</MenuItem>
                             <MenuItem value="date">Date</MenuItem>
                           </Select>
-                          {editingColumn.dataType === "singleSelect" && (
+                          {editingColumn?.dataType === "singleSelect" && (
                             <Box>
                               {editingOptions.map((option, index) => (
                                 <Box
@@ -285,6 +305,17 @@ const TableBuilder: React.FC = () => {
                               </Button>
                             </Box>
                           )}
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={editingPrivacy}
+                                onChange={(e) =>
+                                  setEditingPrivacy(e.target.checked)
+                                }
+                              />
+                            }
+                            label="Privacy"
+                          />
                           <IconButton
                             onClick={() => handleSaveEdit(column._id)}
                           >
@@ -308,7 +339,7 @@ const TableBuilder: React.FC = () => {
                   ))}
                   {isAdding ? (
                     <>
-                      <TableCell>
+                      <TableCell key="new-column-data-type">
                         <Select
                           value={newColumnDataType}
                           onChange={(e) =>
@@ -319,6 +350,7 @@ const TableBuilder: React.FC = () => {
                           <MenuItem value="number">Number</MenuItem>
                           <MenuItem value="boolean">Boolean</MenuItem>
                           <MenuItem value="singleSelect">Select</MenuItem>
+                          <MenuItem value="link">Link</MenuItem>
                           <MenuItem value="date">Date</MenuItem>
                         </Select>
                         {newColumnDataType === "singleSelect" && (
@@ -359,6 +391,15 @@ const TableBuilder: React.FC = () => {
                             </Button>
                           </Box>
                         )}
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={isPrivate}
+                              onChange={(e) => setIsPrivate(e.target.checked)}
+                            />
+                          }
+                          label="Private"
+                        />
                         <IconButton onClick={handleAddColumn}>
                           <SaveIcon />
                         </IconButton>
@@ -366,10 +407,10 @@ const TableBuilder: React.FC = () => {
                           <CancelIcon />
                         </IconButton>
                       </TableCell>
-                      <TableCell></TableCell>
+                      <TableCell key="new-column-empty"></TableCell>
                     </>
                   ) : (
-                    <TableCell></TableCell>
+                    <TableCell key="empty"></TableCell>
                   )}
                 </TableRow>
               </TableBody>

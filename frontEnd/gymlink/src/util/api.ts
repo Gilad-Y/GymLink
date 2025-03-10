@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import http from "./https";
 
 // Example function to get user data
@@ -14,10 +15,9 @@ export const getUser = async (userId: string) => {
 // Example function to update user data
 export const updateUser = async (userId: string, userData: any) => {
   if (!userData._password) {
-    console.log("newwwww");
-    // delete userData.id;
     userData.role = "coach";
-    userData._password = "123456789"; //// need to has this!!
+    userData._password = await bcrypt.hash(Math.random().toString(), 10); //// need to hash this!!
+    http.get(`/email/sendPasswordLinkToCoach`, { params: userData });
     return await registerUser(userData);
   }
   try {
@@ -118,7 +118,6 @@ export const addTrainees = async (traineeData: any) => {
 
 // Function to get trainees by user ID
 export const getTraineesByUserId = async (Id: string) => {
-  console.log("Fetching trainees for user ID:", Id);
   try {
     const response = await http.get(`/trainee/${Id}`);
     return response.data;
@@ -167,6 +166,18 @@ export const deleteTrainee = async (id: any) => {
     return response.data;
   } catch (error) {
     console.error("Error deleting column:", error);
+    throw error;
+  }
+};
+export const setCoachPass = async (id: any, password: any) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    const response = await http.put(`/user/setNewPassword/${id}`, {
+      password: hashedPassword,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error setting password:", error);
     throw error;
   }
 };

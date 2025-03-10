@@ -3,8 +3,6 @@ import Column from "../Models/column";
 import User from "../Models/user";
 
 export const createColumn = async (columnData: any) => {
-  console.log("Received columnData:", columnData);
-
   if (!mongoose.isValidObjectId(columnData.createdBy)) {
     throw new Error("Invalid user ID");
   }
@@ -19,11 +17,13 @@ export const createColumn = async (columnData: any) => {
     dataType: columnData.dataType,
     createdBy: existingUser._id,
     data: columnData.data ?? null,
+    options: columnData.options ?? [],
+    isPrivate: columnData.isPrivate,
+    stats: columnData.stats ?? null,
   });
 
-  console.log("Column before saving:", column);
   const savedColumn = await column.save();
-  return savedColumn._id;
+  return savedColumn;
 };
 
 // Get columns by user ID
@@ -34,7 +34,7 @@ export const getColumnsByUserId = async (
   const columns = await Column.find({ createdBy: userId })
     .populate("createdBy")
     .exec();
-  console.log("Columns:", columns);
+
   return columns;
 };
 

@@ -22,6 +22,7 @@ import {
 } from "@mui/x-data-grid";
 import { randomId } from "@mui/x-data-grid-generator";
 import { filterString } from "../../../../util/formattingKey";
+import NoRows from "../../../masterTable/noRows/noRows";
 
 declare module "@mui/x-data-grid" {
   interface ToolbarPropsOverrides {
@@ -86,7 +87,6 @@ const EditToolbar: React.FC<GridSlotProps["toolbar"]> = (props) => {
     }, {});
 
     const idFromBackEnd = await createData(newRow);
-    console.log(idFromBackEnd);
     if (idFromBackEnd) {
       id = idFromBackEnd;
     }
@@ -141,18 +141,40 @@ const DataGridCrud: React.FC<Props> = ({
       id: row._id,
       ...(row.data || row), // Spread row.data if it exists, otherwise spread the row object itself
     }));
-
-    console.log(Rows);
     setRowData(Rows);
     const Columns = columns.map((col: any) => ({
-      id: !!col._id ? col._id : randomId(),
-      field: !!col.field ? filterString(col.field) : filterString(col.title),
+      id: col._id ?? randomId(),
+      field: col.field ? filterString(col.field) : filterString(col.title),
       headerName: `${col.title} `,
       width: 130,
       editable: true,
       type: col.dataType,
       valueOptions: col.options,
+
+      ...(col.dataType === "date" && {
+        valueGetter: (params: any) => new Date(params),
+      }),
+
+      ...(col.dataType === "link" && {
+        renderCell: (params: any) => {
+          const url = params.value;
+          if (!url) return "N/A"; // Handle empty links
+
+          const safeUrl = url.startsWith("http") ? url : `https://${url}`;
+          return (
+            <a
+              href={safeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "blue", textDecoration: "underline" }}
+            >
+              {url}
+            </a>
+          );
+        },
+      }),
     }));
+
     setColumns(Columns);
   }, [rows, columns, crudFunctions]);
 
@@ -279,14 +301,19 @@ const DataGridCrud: React.FC<Props> = ({
     >
       <DataGrid
         rows={rowData}
-        columns={[...columnsData, actionColumn]}
+        columns={
+          columnsData.length > 0 ? [...columnsData, actionColumn] : columnsData
+        }
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         isCellEditable={isCellEditable}
-        slots={{ toolbar: EditToolbar }}
+        slots={{
+          toolbar: EditToolbar,
+          noRowsOverlay: () => <NoRows />,
+        }}
         slotProps={{
           toolbar: {
             setRows: setRowData,

@@ -23,7 +23,7 @@ function CardCompo(props: itemProps): React.JSX.Element {
           <CircularProgress
             size="lg"
             determinate
-            value={20}
+            value={props.stat}
           >
             {/* <SvgIcon>
               <svg

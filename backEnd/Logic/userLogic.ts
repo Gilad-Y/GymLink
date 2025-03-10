@@ -2,6 +2,8 @@ import User from "../Models/user";
 import Column from "../Models/column";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs"; // Assuming you are using bcrypt for password hashing
+import { send } from "process";
+import { sendEmailToNewCoach } from "./eMailLogic";
 
 // User CRUD operations
 // User CRUD operations
@@ -29,7 +31,7 @@ export const createUser = async (userData: any) => {
   }
 
   const newUser = await user.save();
-  return newUser._id;
+  return newUser;
 };
 
 export const getUserById = async (userId: string) => {
@@ -50,7 +52,7 @@ export const updateUserById = async (userId: string, updateData: any) => {
   //   coaches: updateData.coaches,
   //   trainees: updateData.trainees,
   // };
-  console.log("Updating user with data:", updateData);
+
   const id = new mongoose.Types.ObjectId(userId);
   return await User.findByIdAndUpdate(id, updateData, { new: true }).exec();
 };
@@ -205,4 +207,18 @@ export const updateColumnById = async (columnId: string, updateData: any) => {
 
 export const deleteColumnById = async (columnId: string) => {
   return await Column.findByIdAndDelete(columnId).exec();
+};
+export const setCoachPass = async (userId: string, newPassword: string) => {
+  const id = new mongoose.Types.ObjectId(userId);
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { password: newPassword },
+      { new: true }
+    ).exec();
+    return updatedUser ? { success: true } : { error: "User not found" };
+  } catch (error) {
+    console.error("Error setting coach password:", error);
+    return { error: "Failed to set password" };
+  }
 };

@@ -36,6 +36,7 @@ function CoachDashboard(props: props): React.JSX.Element {
     //   const id = await addTraineeFun(data);
     //   return id;
     // }
+    console.log(data);
     await updateTrainee(id, data);
     return;
   };

@@ -10,16 +10,17 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const isLoggedIn = !!store.getState().users.user;
   const location = useLocation();
 
-  // Allow access to the register page without authentication
-  if (location.pathname === "/register") {
+  // Allow access to public routes like register and login
+  if (location.pathname === "/register" || location.pathname === "/login") {
     return <>{children}</>;
   }
 
-  // Allow access to the login page without authentication
-  if (location.pathname === "/login") {
+  // Allow access to /setPassword route without authentication
+  if (location.pathname.startsWith("/setPassword/")) {
     return <>{children}</>;
   }
 
+  // Redirect unauthorized users to login
   return isLoggedIn ? <>{children}</> : <Navigate to="/login" />;
 };
 

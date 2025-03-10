@@ -26,7 +26,8 @@ import { logOutUser } from "../../../redux/usersReducer";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserModel } from "../../../models/userModel";
 import axios from "axios";
-
+import ExtensionIcon from "@mui/icons-material/Extension";
+import Badge from "@mui/material/Badge";
 function Toggler({
   defaultExpanded = false,
   renderToggle,
@@ -207,12 +208,24 @@ export default function Sidebar() {
 
             <ListItem>
               <ListItemButton
-                selected={currentLocation === "orders"}
+                selected={currentLocation === "calendar"}
                 onClick={() => nav("/calendar")}
               >
                 <CalendarMonthIcon />
                 <ListItemContent>
                   <Typography level="title-sm">calendar</Typography>
+                </ListItemContent>
+              </ListItemButton>
+            </ListItem>
+            <ListItem>
+              <ListItemButton
+                selected={currentLocation === "orders"}
+                onClick={() => nav("/extensions")}
+              >
+                {/* need to put badge */}
+                <ExtensionIcon />
+                <ListItemContent>
+                  <Typography level="title-sm">extensions</Typography>
                 </ListItemContent>
               </ListItemButton>
             </ListItem>

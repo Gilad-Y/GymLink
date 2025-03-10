@@ -18,7 +18,7 @@ export const addTrainee = async (traineeData: any) => {
   const belongsTo = traineeData.belongsTo;
   delete traineeData.belongsTo;
   const newTraineeToSave = { data: traineeData, belongsTo: belongsTo };
-  console.log(newTraineeToSave);
+
   try {
     const newTrainee = new Trainee(newTraineeToSave);
     await newTrainee.save();
@@ -34,7 +34,7 @@ export const editTrainee = async (traineeId: string, updateData: any) => {
   const belongsTo = updateData.belongsTo;
   delete updateData.belongsTo;
   const newTraineeToSave = { data: updateData, belongsTo: belongsTo };
-  console.log(newTraineeToSave);
+
   try {
     const updatedTrainee = await Trainee.findByIdAndUpdate(
       traineeId,
