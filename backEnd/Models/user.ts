@@ -22,6 +22,7 @@ const userSchema = new Schema({
     },
   ],
   belongsTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  profile: { type: String },
 });
 
 // Static methods for CRUD operations

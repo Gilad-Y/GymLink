@@ -77,7 +77,8 @@ router.post("/google-login", async (req, res) => {
       user.googleId = sub;
       await user.save();
     }
-    console.log("User:", user);
+
+    // console.log("User:", user.password);
     // Generate JWT token for authentication
     const jwtToken = jwt.sign(
       { userId: user._id, email: user.email },
@@ -85,7 +86,8 @@ router.post("/google-login", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({ token: jwtToken, user });
+    const { password, ...userWithoutPassword } = user.toObject();
+    res.json({ token: jwtToken, user: userWithoutPassword });
   } catch (error) {
     console.error("Google login error:", error);
     res.status(500).json({ message: "Internal server error" });

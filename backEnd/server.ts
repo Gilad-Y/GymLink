@@ -15,6 +15,8 @@ import traineeRouter from "./Routes/traineeRouter";
 import emailRouter from "./Routes/eMailRouter";
 import { passport } from "./Utils/passportConfig"; // Import passport configuration
 import session from "express-session";
+import path from "path";
+import fs from "fs";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -44,9 +46,47 @@ server.use(express.json());
 
 // Where I will save my files from upload
 server.use(express.static("upload"));
-
+server.use("/upload", express.static(path.join(__dirname, "upload")));
 // Enable file uploading, and create a path for the files if it does not exist
 server.use(fileUpload({ createParentPath: true }));
+
+// File upload route
+server.post("/upload", (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send("No files were uploaded.");
+  }
+
+  const userId = req.body.userId;
+  const folderType = req.body.folderType; // 'profile' or 'brand'
+
+  if (
+    !userId ||
+    !folderType ||
+    (folderType !== "profile" && folderType !== "brand")
+  ) {
+    return res.status(400).send("Invalid userId or folderType.");
+  }
+
+  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+  let sampleFile = req.files.file as fileUpload.UploadedFile;
+
+  // Use the mv() method to place the file somewhere on your server
+  const uploadPath = path.join(
+    __dirname,
+    "upload",
+    userId,
+    folderType,
+    sampleFile.name
+  );
+
+  sampleFile.mv(uploadPath, (err) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+    res.send("File uploaded!");
+  });
+});
 
 // Session middleware
 server.use(

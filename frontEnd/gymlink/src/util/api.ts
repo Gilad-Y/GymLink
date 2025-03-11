@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs";
 import http from "./https";
+import { stringOrDate } from "react-big-calendar";
+import axios from "axios";
 
 // Example function to get user data
 export const getUser = async (userId: string) => {
@@ -180,4 +182,40 @@ export const setCoachPass = async (id: any, password: any) => {
     console.error("Error setting password:", error);
     throw error;
   }
+};
+export const uploadImage = async (
+  file: File,
+  folderType: "profile" | "brand",
+  id: string
+) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("userId", id);
+  formData.append("folderType", folderType);
+
+  const response = await axios.post("http://localhost:4000/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Failed to upload image");
+  }
+
+  return file.name; // Assuming the backend returns the file path
+};
+// Function to edit user profile
+export const editUserProfile = async (profileData: any) => {
+  try {
+    const response = await http.put(
+      `/user/edit/${profileData._id}`,
+      profileData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error editing user profile:", error);
+    throw error;
+  }
+  console.log("Profile saved", profileData);
 };

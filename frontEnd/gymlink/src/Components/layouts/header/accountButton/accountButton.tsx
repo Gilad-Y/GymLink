@@ -14,7 +14,8 @@ import { logOutUser } from "../../../../redux/usersReducer";
 
 function AccountButton(): React.JSX.Element {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [userName, setUser] = React.useState("");
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+  const [avatarText, setAvatarText] = React.useState<string | null>(null);
   const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -30,10 +31,22 @@ function AccountButton(): React.JSX.Element {
       const state = store.getState();
       const user = state.users?.user;
 
-      if (user && user.firstName && user.lastName) {
-        setUser(user.firstName[0] + user.lastName[0]);
+      if (user) {
+        if (user.profile) {
+          setAvatarUrl(
+            `http://localhost:4000/upload/${user._id}/profile/${user.profile}`
+          );
+          setAvatarText(null); // Reset initials if image exists
+        } else if (user.firstName && user.lastName) {
+          setAvatarUrl(null);
+          setAvatarText(user.firstName[0] + user.lastName[0]);
+        } else {
+          setAvatarUrl(null);
+          setAvatarText(null);
+        }
       } else {
-        setUser(""); // Reset if user data is unavailable
+        setAvatarUrl(null);
+        setAvatarText(null);
       }
     });
 
@@ -57,16 +70,9 @@ function AccountButton(): React.JSX.Element {
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
-            {userName ? (
-              <Avatar
-                color="primary"
-                variant="soft"
-              >
-                {userName}
-              </Avatar>
-            ) : (
-              <Avatar />
-            )}
+            <Avatar src={avatarUrl || undefined}>
+              {!avatarUrl && avatarText}
+            </Avatar>
           </IconButton>
         </Tooltip>
       </Box>
@@ -106,29 +112,15 @@ function AccountButton(): React.JSX.Element {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem onClick={handleClose}>
-          {userName ? (
-            <Avatar
-              color="primary"
-              variant="soft"
-            >
-              {userName}
-            </Avatar>
-          ) : (
-            <Avatar />
-          )}
+          <Avatar src={avatarUrl || undefined}>
+            {!avatarUrl && avatarText}
+          </Avatar>
           פרופיל
         </MenuItem>
         <MenuItem onClick={handleClose}>
-          {userName ? (
-            <Avatar
-              color="primary"
-              variant="soft"
-            >
-              {userName}
-            </Avatar>
-          ) : (
-            <Avatar />
-          )}
+          <Avatar src={avatarUrl || undefined}>
+            {!avatarUrl && avatarText}
+          </Avatar>
           המשתמש שלי
         </MenuItem>
         <Divider />

@@ -1,3 +1,5 @@
+import { profile } from "console";
+
 export class UserModel {
   public _id: string;
   public firstName: string;
@@ -9,6 +11,7 @@ export class UserModel {
   public coaches?: string[];
   public trainees?: Map<string, { column: string; value: any }>;
   public belongsTo?: string;
+  public profile?: string;
 
   constructor(
     _id: string,
@@ -20,7 +23,8 @@ export class UserModel {
     brand?: any,
     coaches?: string[],
     trainees?: Map<string, { column: string; value: any }>,
-    belongsTo?: string
+    belongsTo?: string,
+    profile?: string
   ) {
     this._id = _id;
     this.firstName = firstName;
@@ -32,6 +36,7 @@ export class UserModel {
     this.coaches = coaches;
     this.trainees = trainees;
     this.belongsTo = belongsTo;
+    this.profile = profile;
   }
 
   // Getter for password

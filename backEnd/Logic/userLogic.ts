@@ -4,8 +4,8 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs"; // Assuming you are using bcrypt for password hashing
 import { send } from "process";
 import { sendEmailToNewCoach } from "./eMailLogic";
-
-// User CRUD operations
+import { profile } from "console";
+const fs = require("fs");
 // User CRUD operations
 export const createUser = async (userData: any) => {
   // Check if a user with the same email already exists
@@ -42,19 +42,21 @@ export const updateUserById = async (userId: string, updateData: any) => {
   if (updateData.password) {
     updateData.password = await bcrypt.hash(updateData.password, 10); // Hash the password if it's being updated
   }
-  // const user = {
-  //   email: updateData.email,
-  //   firstName: updateData.firstName,
-  //   lastName: updateData.lastName,
-  //   password: updateData.password,
-  //   role: updateData.role,
-  //   belongsTo: updateData.belongsTo,
-  //   coaches: updateData.coaches,
-  //   trainees: updateData.trainees,
-  // };
+  const user = {
+    email: updateData.email,
+    firstName: updateData.firstName,
+    lastName: updateData.lastName,
+    password: updateData.password,
+    role: updateData.role,
+    belongsTo: updateData.belongsTo,
+    coaches: updateData.coaches,
+    trainees: updateData.trainees,
+    brand: { name: updateData.brand.name, image: updateData.brand.image },
+    profile: updateData.profile,
+  };
 
   const id = new mongoose.Types.ObjectId(userId);
-  return await User.findByIdAndUpdate(id, updateData, { new: true }).exec();
+  return await User.findByIdAndUpdate(id, user, { new: true }).exec();
 };
 
 export const deleteUserById = async (userId: string) => {
@@ -77,7 +79,10 @@ export const loginUser = async (email: string, password: string) => {
       throw new Error("Invalid email or password");
     }
 
-    return user;
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+
+    return userWithoutPassword;
   } catch (error) {
     console.error("Login error:", error);
     throw error; // Re-throw the original error for proper handling
@@ -221,4 +226,34 @@ export const setCoachPass = async (userId: string, newPassword: string) => {
     console.error("Error setting coach password:", error);
     return { error: "Failed to set password" };
   }
+};
+
+export const uploadImg = async (files: any) => {
+  if (!files || !files.file) {
+    return "no file";
+  }
+  let uploadedFile;
+  if (Array.isArray(files.file)) {
+    uploadedFile = files.file[0];
+  } else {
+    uploadedFile = files.file;
+  }
+
+  const fileName = uploadedFile.name;
+  uploadedFile.mv(`upload/${fileName}`, (error: any) => {
+    if (error) {
+      console.error(error);
+      return "failed";
+    } else {
+      return "file upload successful";
+    }
+  });
+};
+
+export const getImgUrl = (img: string) => {
+  const filePath = `upload/${img}`;
+  const fileData = fs.readFileSync(filePath);
+  const base64Data = fileData.toString("base64");
+  const imageUrl = `data:image/jpeg;base64,${base64Data}`;
+  return imageUrl;
 };
