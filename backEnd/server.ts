@@ -16,7 +16,9 @@ import emailRouter from "./Routes/eMailRouter";
 import { passport } from "./Utils/passportConfig"; // Import passport configuration
 import session from "express-session";
 import path from "path";
-import fs from "fs";
+import MongoStore from "connect-mongo";
+import botRouter from "./Routes/botRouter";
+import eventsRouter from "./Routes/eventsRouter";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -38,6 +40,7 @@ server.use(
   cors({
     origin: "http://localhost:3000", // Frontend URL
     credentials: true,
+    allowedHeaders: ["Authorization", "Content-Type"],
   })
 );
 
@@ -94,7 +97,8 @@ server.use(
     secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }, // Set secure to true if using HTTPS
+    store: MongoStore.create({ mongoUrl: MONGO_URI }),
+    cookie: { secure: false }, // Set to true in production with HTTPS
   })
 );
 
@@ -110,6 +114,8 @@ server.use("/auth", authRouter);
 server.use("/api/v1/calendar", calendarRouter); // Add calendar routes
 server.use("/api/v1/trainee", traineeRouter);
 server.use("/api/v1/email", emailRouter);
+server.use("/api/v1/bot", botRouter);
+server.use("/api/v1/events", eventsRouter);
 
 // Handle errors (Route Not Found)
 server.use("*", ErrorHandler);

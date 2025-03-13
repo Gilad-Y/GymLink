@@ -8,7 +8,11 @@ import dotenv from "dotenv";
 dotenv.config();
 declare module "express-session" {
   interface Session {
-    user: any;
+    tokens: {
+      access_token: string; // Store the token as access_token
+      refresh_token?: string; // Optional, if you're handling refresh tokens
+      expiry_date?: number; // Optional, to track expiry date
+    };
   }
 }
 
@@ -78,13 +82,16 @@ router.post("/google-login", async (req, res) => {
       await user.save();
     }
 
-    // console.log("User:", user.password);
     // Generate JWT token for authentication
     const jwtToken = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET!,
       { expiresIn: "7d" }
     );
+
+    // Save the token to session (use access_token to match the type declaration)
+    req.session.tokens = { access_token: jwtToken }; // Correct session key
+    req.session.save(); // Ensure session is saved
 
     const { password, ...userWithoutPassword } = user.toObject();
     res.json({ token: jwtToken, user: userWithoutPassword });

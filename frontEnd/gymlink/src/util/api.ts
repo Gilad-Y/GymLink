@@ -217,5 +217,47 @@ export const editUserProfile = async (profileData: any) => {
     console.error("Error editing user profile:", error);
     throw error;
   }
-  console.log("Profile saved", profileData);
+};
+// Function to get events by user ID
+export const getEventsByUserId = async (userId: string) => {
+  try {
+    const response = await http.get(`/events/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    throw error;
+  }
+};
+
+// Function to create a new event
+export const createEvent = async (eventData: any) => {
+  try {
+    const response = await http.post("/events/create", eventData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating event:", error);
+    throw error;
+  }
+};
+
+// Function to update an event
+export const updateEvent = async (eventData: any) => {
+  try {
+    const response = await http.put(`/events/update`, eventData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating event:", error);
+    throw error;
+  }
+};
+
+// Function to delete an event
+export const deleteEvent = async (eventId: string) => {
+  try {
+    const response = await http.delete(`/events/delete/${eventId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    throw error;
+  }
 };

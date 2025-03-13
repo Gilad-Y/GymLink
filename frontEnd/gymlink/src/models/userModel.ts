@@ -1,5 +1,3 @@
-import { profile } from "console";
-
 export class UserModel {
   public _id: string;
   public firstName: string;

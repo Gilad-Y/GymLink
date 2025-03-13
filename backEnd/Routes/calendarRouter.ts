@@ -1,24 +1,34 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
+
+// Extend the Request interface to include the user property
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: any;
+  }
+}
 import dotenv from "dotenv";
 import { google } from "googleapis";
-import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import session from "express-session";
 
 declare module "express-session" {
   interface SessionData {
-    tokens: any;
+    tokens?: {
+      access_token: string;
+      refresh_token?: string;
+      expiry_date?: number;
+    };
   }
 }
 
-const router = express.Router();
 dotenv.config();
+const router = express.Router();
 
 // Set up the OAuth2 client
 const oauth2Client = new google.auth.OAuth2(
   process.env.REACT_APP_GOOGLE_CLIENT_ID,
   process.env.CLIENT_SECRET,
-  process.env.GOOGLE_CALLBACK_URL
+  process.env.GOOGLE_CALLBACK_URL // Ensure this is set in your .env file
 );
 
 // Scopes needed for Google Calendar access
@@ -33,12 +43,10 @@ const authUrl = oauth2Client.generateAuthUrl({
   scope: scopes,
 });
 
-console.log("Authorize this app by visiting:", authUrl);
-
 // Function to calculate the start and end of a given month
 const getMonthRange = (year: number, month: number) => {
-  const startOfMonth = new Date(year, month - 1, 1); // Month is 0-indexed in JavaScript
-  const endOfMonth = new Date(year, month, 0); // 0th day gives the last day of the previous month
+  const startOfMonth = new Date(year, month - 1, 1);
+  const endOfMonth = new Date(year, month, 0);
 
   return {
     startOfMonth: startOfMonth.toISOString(),
@@ -46,19 +54,45 @@ const getMonthRange = (year: number, month: number) => {
   };
 };
 
+// Middleware to verify JWT token
+const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
+  console.log("Authorization Header:", req.headers["authorization"]);
+  const token = req.header("Authorization")?.split(" ")[1]; // Get token from Authorization header
+  console.log("Token:", token);
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET || "", (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: "Invalid token" });
+    }
+
+    req.user = user; // Attach user to request object
+    next(); // Continue to next middleware/route handler
+  });
+};
+
 // Route to handle Google OAuth callback and fetch the token
 router.get("/auth/google/callback", async (req, res) => {
   const code = req.query.code as string;
 
   try {
-    // Get the access token using the code
     const { tokens } = await oauth2Client.getToken(code);
+
+    if (!tokens.access_token) {
+      throw new Error("Access token is missing in response");
+    }
+
     oauth2Client.setCredentials(tokens);
 
-    // Save the token in session or database (you can store tokens for future use)
-    req.session.tokens = tokens;
+    req.session.tokens = {
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token ?? undefined, // Convert null to undefined
+      expiry_date: tokens.expiry_date ?? undefined, // Convert null to undefined
+    };
+
     req.session.save(() => {
-      // Redirect to some page or show a success message
       res.redirect("/calendar");
     });
   } catch (error) {
@@ -67,74 +101,49 @@ router.get("/auth/google/callback", async (req, res) => {
   }
 });
 
-// Middleware to verify JWT token
-const authenticateJWT = (req: any, res: any, next: any) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token from the "Bearer <token>" format
-
-  if (!token) {
-    return res.status(401).send("No token provided");
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET!, (err: any, user: any) => {
-    if (err) {
-      return res.status(403).send("Invalid token");
-    }
-    req.user = user;
-    next();
-  });
-};
-
 // Route to fetch calendar events for a specific month
-router.get("/", authenticateJWT, async (req, res) => {
-  // Extract the Authorization header
-  const authHeader = req.headers.authorization;
-
-  // Check if the Authorization header exists
-  if (!authHeader) {
-    return res.status(401).json({ message: "Authorization header missing" });
-  }
-
-  // Extract the token from the Authorization header (format: Bearer <token>)
-  const token = authHeader.split(" ")[1]; // The token is after "Bearer "
-
-  if (!token) {
-    return res.status(401).json({ message: "Token missing" });
-  } else {
-    console.log(token); // Logging token for debugging (optional)
-  }
-
-  // If the user is authenticated via session token
+router.get("/", authenticateJWT, async (req: Request, res: Response) => {
   if (!req.session.tokens) {
-    return res.status(401).send("User is not authenticated");
+    return res.status(401).json({ message: "User is not authenticated" });
   }
 
-  // Set the credentials for oauth2Client using the session tokens
-  oauth2Client.setCredentials(req.session.tokens);
-
-  // Check if the access token has expired and refresh it if necessary
-  if (req.session.tokens.expiry_date < Date.now()) {
-    try {
-      // Refresh the access token using the refresh token stored in session
-      oauth2Client.setCredentials({
-        refresh_token: req.session.tokens.refresh_token,
-      });
-      const { credentials } = await oauth2Client.refreshAccessToken();
-      req.session.tokens = credentials; // Update session with refreshed token
-      req.session.save(); // Save the session
-    } catch (error) {
-      console.error("Error refreshing token:", error);
-      return res.status(401).send("Failed to refresh token");
-    }
-  }
-
-  // If token is still valid, fetch calendar events
-  const now = new Date();
-  const { startOfMonth, endOfMonth } = getMonthRange(
-    now.getFullYear(),
-    now.getMonth() + 1
-  );
+  let tokens = req.session.tokens;
+  oauth2Client.setCredentials(tokens);
 
   try {
+    // Refresh token if expired
+    if (tokens.expiry_date && tokens.expiry_date < Date.now()) {
+      if (!tokens.refresh_token) {
+        return res.status(401).json({ message: "Refresh token missing" });
+      }
+
+      // Refresh token properly
+      const { token, res: refreshResponse } =
+        await oauth2Client.getAccessToken();
+
+      if (!refreshResponse) {
+        return res
+          .status(500)
+          .json({ message: "Failed to refresh access token" });
+      }
+
+      // Update tokens in session
+      tokens = {
+        access_token: token || tokens.access_token,
+        refresh_token: tokens.refresh_token, // Google doesn't return a new refresh token
+        expiry_date: refreshResponse.data.expiry_date ?? undefined, // Handle expiry date
+      };
+
+      req.session.tokens = tokens;
+      req.session.save();
+      oauth2Client.setCredentials(tokens);
+    }
+
+    const { startOfMonth, endOfMonth } = getMonthRange(
+      new Date().getFullYear(),
+      new Date().getMonth() + 1
+    );
+
     const calendar = google.calendar("v3");
     const response = await calendar.events.list({
       calendarId: "primary",
@@ -145,17 +154,16 @@ router.get("/", authenticateJWT, async (req, res) => {
       orderBy: "startTime",
     });
 
-    const events = response.data.items || [];
-    res.json(events);
+    res.json(response.data.items || []);
   } catch (error) {
     console.error("Error fetching events:", error);
-    res.status(500).send("Error retrieving events");
+    res.status(500).json({ message: "Error retrieving events" });
   }
 });
 
 // Route to initiate Google login flow
 router.get("/auth/google", (req, res) => {
-  res.redirect(authUrl); // Redirect the user to Google for authentication
+  res.redirect(authUrl);
 });
 
 export default router;
