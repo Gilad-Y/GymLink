@@ -1,8 +1,6 @@
 import CardLine from "./cardLine/cardLine";
 import "./dashboard.css";
 import store from "../../../redux/store";
-import GraphsCompo from "./graphsCompo/graphsCompo";
-import TraineeTable from "./traineeTable/traineeTable";
 
 import CoachDashboard from "./coachDashboard/coachDashboard";
 

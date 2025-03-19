@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import TableTemp from "../dashboard/traineeTable/tableTemp";
+import TableTemp from "../../masterTable/tableTemp";
 import {
   addCoach,
   deleteUser,

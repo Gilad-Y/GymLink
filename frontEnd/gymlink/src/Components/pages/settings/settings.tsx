@@ -9,10 +9,10 @@ const Settings: React.FC = () => {
   const user = store.getState().users.user;
   const idForData = user?.role === "coach" ? user?.belongsTo : user?._id;
   return (
-    <>
-      <TableBuilder id={String(idForData)} />
+    <div className="settings">
       <EditProfile user={user} />
-    </>
+      <TableBuilder id={String(idForData)} />
+    </div>
   );
 };
 

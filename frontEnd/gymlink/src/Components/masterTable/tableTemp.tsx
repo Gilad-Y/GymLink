@@ -21,8 +21,9 @@ import {
   GridSlotProps,
 } from "@mui/x-data-grid";
 import { randomId } from "@mui/x-data-grid-generator";
-import { filterString } from "../../../../util/formattingKey";
-import NoRows from "../../../masterTable/noRows/noRows";
+import { filterString } from "../../util/formattingKey";
+import NoRows from "./noRows/noRows";
+import { Checkbox, Switch } from "@mui/material";
 
 declare module "@mui/x-data-grid" {
   interface ToolbarPropsOverrides {
@@ -49,6 +50,7 @@ interface Props {
   crudFunctions: CrudFunctions;
   addButtonText: string;
 }
+
 const exportToCSV = (rows: GridRowsProp, columns: GridColDef[]) => {
   const csvContent = [
     columns.map((col) => col.headerName).join(","), // Header row
@@ -172,6 +174,40 @@ const DataGridCrud: React.FC<Props> = ({
             </a>
           );
         },
+      }),
+
+      ...(col.dataType === "switch" && {
+        renderCell: (params: any) => <Switch checked={params.value ?? false} />,
+        renderEditCell: (params: any) => (
+          <Switch
+            checked={params.value ?? false}
+            onChange={(event) =>
+              params.api.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.checked,
+              })
+            }
+          />
+        ),
+      }),
+
+      ...(col.dataType === "checkbox" && {
+        renderCell: (params: any) => (
+          <Checkbox checked={params.value ?? false} />
+        ),
+        renderEditCell: (params: any) => (
+          <Checkbox
+            checked={params.value ?? false}
+            onChange={(event) =>
+              params.api.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.checked,
+              })
+            }
+          />
+        ),
       }),
     }));
 

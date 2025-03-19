@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import NewTable from "../traineeTable/newTable";
-import TraineeTable from "../traineeTable/traineeTable";
 import "./coachDashboard.css";
 import React from "react";
 import {
@@ -10,7 +9,7 @@ import {
   getTraineesByUserId,
   updateTrainee,
 } from "../../../../util/api";
-import TableTemp from "../traineeTable/tableTemp";
+import TableTemp from "../../../masterTable/tableTemp";
 interface props {
   id: string;
 }

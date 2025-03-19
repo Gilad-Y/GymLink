@@ -15,51 +15,65 @@ import {
   Button,
   Select,
   MenuItem,
-  Switch,
-  FormControlLabel,
+  InputLabel,
+  FormControl,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  Modal,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import {
   getColumnsByUserId,
   createColumn,
   updateColumn,
   deleteColumn,
 } from "../../../../util/api";
-import store from "../../../../redux/store";
-import "./tableBuilder.css";
 import { Column } from "../../../../models/columnModel";
 import { useNavigate } from "react-router-dom";
-interface props {
+import MainModal from "../../../mainModal/mainModal";
+
+interface Props {
   id: string;
 }
-const TableBuilder: React.FC<props> = (props) => {
+
+const TableBuilder: React.FC<Props> = ({ id }) => {
   const nav = useNavigate();
   const [columns, setColumns] = useState<Column[]>([]);
-  const [isAdding, setIsAdding] = useState<boolean>(false);
-  const [newColumnTitle, setNewColumnTitle] = useState<string>("");
-  const [newColumnDataType, setNewColumnDataType] = useState<string>("string");
+  const [isAdding, setIsAdding] = useState(false);
+  const [newColumnTitle, setNewColumnTitle] = useState("");
+  const [newColumnDataType, setNewColumnDataType] = useState("string");
   const [newColumnOptions, setNewColumnOptions] = useState<string[]>([]);
   const [editingColumn, setEditingColumn] = useState<Column | null>(null);
-  const [editingOptions, setEditingOptions] = useState<string[]>([]);
-  const [isPrivate, setIsPrivate] = useState<boolean>(true);
-  const [editingPrivacy, setEditingPrivacy] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [newOption, setNewOption] = useState<string>("");
+  const [openModal, setOpenModal] = useState(false);
 
-  const userId = props.id;
+  // Data types
+  const dataTypes = [
+    "string",
+    "number",
+    "select",
+    "link",
+    "date",
+    "switch",
+    "checkbox",
+  ];
 
   useEffect(() => {
     const fetchColumns = async () => {
-      if (!userId) {
+      if (!id) {
         console.error("User ID is not available");
         return;
       }
       try {
-        const data = await getColumnsByUserId(userId);
+        const data = await getColumnsByUserId(id);
         setColumns(data);
       } catch (error) {
         console.error("Error fetching columns:", error);
@@ -68,59 +82,66 @@ const TableBuilder: React.FC<props> = (props) => {
     };
 
     fetchColumns();
-  }, [userId]);
+  }, [id]);
+
+  const isColumnTitleUnique = (title: string, columnId?: string) => {
+    return !columns.some(
+      (column) => column.title === title && column._id !== columnId
+    );
+  };
 
   const handleAddColumn = async () => {
     if (!newColumnTitle.trim()) return;
 
-    if (!userId) {
-      console.error("User ID is not available");
+    if (!isColumnTitleUnique(newColumnTitle)) {
+      setError("Column title must be unique");
       return;
     }
 
     const newColumn = new Column(
-      Math.random().toString(36).substr(2, 9), // Temporary ID (replace with backend response)
+      Math.random().toString(36).substr(2, 9),
       newColumnTitle,
       newColumnDataType,
       newColumnOptions,
-      isPrivate,
-      userId,
-      editingOptions
+      false,
+      id,
+      []
     );
-    // console.log("New Column:", newColumn);
+
     try {
       const createdColumn = await createColumn(newColumn);
-      console.log("Created column:", createdColumn);
       setColumns((prevColumns) => [...prevColumns, createdColumn]);
       setIsAdding(false);
       setNewColumnTitle("");
       setNewColumnDataType("string");
       setNewColumnOptions([]);
-      setIsPrivate(true);
+      setError(null);
     } catch (error) {
       console.error("Error creating column:", error);
     }
   };
 
   const handleEditColumn = (column: Column) => {
-    if (isAdding) return;
     setEditingColumn(column);
-    setEditingOptions(column.options || []);
-    setEditingPrivacy(column.isPrivate);
-  };
-
-  const handleAddButton = () => {
-    if (editingColumn) return;
-    setIsAdding(true);
+    setNewColumnTitle(column.title);
+    setNewColumnDataType(column.dataType);
+    setNewColumnOptions(column.options || []);
+    setError(null); // Clear error message when starting to edit
   };
 
   const handleSaveEdit = async (columnId: string) => {
+    if (editingColumn) {
+      if (!isColumnTitleUnique(editingColumn.title, columnId)) {
+        setError("Column title must be unique");
+        return;
+      }
+    }
+
     try {
       const updatedColumn = await updateColumn(columnId, {
         title: editingColumn?.title,
         dataType: editingColumn?.dataType,
-        options: editingOptions,
-        isPrivate: editingPrivacy,
+        options: editingColumn?.dataType === "select" ? newColumnOptions : [],
       });
 
       setColumns((prevColumns) =>
@@ -130,25 +151,17 @@ const TableBuilder: React.FC<props> = (props) => {
                 ...col,
                 title: editingColumn?.title || col.title,
                 dataType: editingColumn?.dataType || col.dataType,
-                options: editingOptions,
-                isPrivate: editingPrivacy,
+                options: newColumnOptions,
               }
             : col
         )
       );
 
       setEditingColumn(null);
-      setEditingOptions([]);
-      setEditingPrivacy(true);
+      setError(null);
     } catch (error) {
       console.error("Error updating column:", error);
     }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingColumn(null);
-    setEditingOptions([]);
-    setEditingPrivacy(true);
   };
 
   const handleDeleteColumn = async (columnId: string) => {
@@ -157,32 +170,40 @@ const TableBuilder: React.FC<props> = (props) => {
       setColumns((prevColumns) =>
         prevColumns.filter((col) => col._id !== columnId)
       );
-      handleCancelEdit();
     } catch (error) {
       console.error("Error deleting column:", error);
     }
   };
 
   const handleAddOption = () => {
-    setEditingOptions([...editingOptions, ""]);
+    if (newOption.trim() && !newColumnOptions.includes(newOption)) {
+      setNewColumnOptions([...newColumnOptions, newOption]);
+      setNewOption("");
+    }
   };
 
-  const handleOptionChange = (index: number, value: string) => {
-    const newOptions = [...editingOptions];
-    newOptions[index] = value;
-    setEditingOptions(newOptions);
+  const handleDeleteOption = (option: string) => {
+    setNewColumnOptions(newColumnOptions.filter((opt) => opt !== option));
   };
 
-  const handleDeleteOption = (index: number) => {
-    const newOptions = editingOptions.filter((_, i) => i !== index);
-    setEditingOptions(newOptions);
+  const handleCancelAdd = () => {
+    setIsAdding(false);
+    setNewColumnTitle("");
+    setNewColumnDataType("string");
+    setNewColumnOptions([]);
+    setError(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingColumn(null);
+    setNewColumnTitle("");
+    setNewColumnDataType("string");
+    setNewColumnOptions([]);
+    setError(null);
   };
 
   return (
-    <Container
-      component="main"
-      className="tableBuilder"
-    >
+    <Container component="main">
       <Box
         sx={{
           display: "flex",
@@ -193,129 +214,109 @@ const TableBuilder: React.FC<props> = (props) => {
       >
         <Paper
           elevation={6}
-          sx={{
-            padding: 4,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            width: "100%",
-            maxWidth: "800px",
-          }}
+          sx={{ padding: 4, width: "100%", maxWidth: "800px" }}
         >
           <Typography
             component="h1"
             variant="h5"
+            align="center"
           >
             Customize Columns
           </Typography>
 
-          <TableContainer>
+          <TableContainer sx={{ marginTop: 2 }}>
             <Table>
               <TableHead>
                 <TableRow>
-                  {columns.map((column) => (
-                    <TableCell key={column._id}>
+                  <TableCell>Column Title</TableCell>
+                  <TableCell>Data Type</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {columns.map((column) => (
+                  <TableRow key={column._id}>
+                    <TableCell>
                       {editingColumn?._id === column._id ? (
                         <TextField
-                          value={editingColumn?.title || ""}
-                          onChange={(e) =>
-                            setEditingColumn({
-                              ...editingColumn,
-                              title: e.target.value,
-                            })
-                          }
+                          value={newColumnTitle}
+                          onChange={(e) => setNewColumnTitle(e.target.value)}
                           autoFocus
+                          error={!!error}
+                          helperText={error}
+                          fullWidth
                         />
                       ) : (
-                        <span onDoubleClick={() => handleEditColumn(column)}>
+                        <span
+                          style={{ cursor: "pointer" }}
+                          onDoubleClick={() => handleEditColumn(column)}
+                        >
                           {column.title}
                         </span>
                       )}
                     </TableCell>
-                  ))}
-                  {isAdding ? (
-                    <>
-                      <TableCell key="new-column-title">
-                        <TextField
-                          value={newColumnTitle}
-                          onChange={(e) => setNewColumnTitle(e.target.value)}
-                          placeholder="Column title"
-                        />
-                      </TableCell>
-                      <TableCell key="new-column-add-button">
-                        <IconButton onClick={handleAddButton}>
-                          <AddIcon />
-                        </IconButton>
-                      </TableCell>
-                    </>
-                  ) : (
-                    <TableCell key="add-button">
-                      <IconButton onClick={handleAddButton}>
-                        <AddIcon />
-                      </IconButton>
-                    </TableCell>
-                  )}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow key="new-row">
-                  {columns.map((column) => (
-                    <TableCell key={column._id}>
+                    <TableCell>
                       {editingColumn?._id === column._id ? (
-                        <>
+                        <FormControl fullWidth>
+                          <InputLabel>Data Type</InputLabel>
                           <Select
-                            value={editingColumn?.dataType || ""}
+                            value={newColumnDataType}
                             onChange={(e) =>
-                              setEditingColumn({
-                                ...editingColumn,
-                                dataType: e.target.value as string,
-                              })
+                              setNewColumnDataType(e.target.value)
                             }
                           >
-                            <MenuItem value="string">String</MenuItem>
-                            <MenuItem value="number">Number</MenuItem>
-                            <MenuItem value="boolean">Boolean</MenuItem>
-                            <MenuItem value="singleSelect">Select</MenuItem>
-                            <MenuItem value="link">Link</MenuItem>
-                            <MenuItem value="date">Date</MenuItem>
+                            {dataTypes.map((dataType) => (
+                              <MenuItem
+                                key={dataType}
+                                value={dataType}
+                              >
+                                {dataType}
+                              </MenuItem>
+                            ))}
                           </Select>
-                          {editingColumn?.dataType === "singleSelect" && (
+                        </FormControl>
+                      ) : (
+                        column.dataType
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editingColumn?._id === column._id ? (
+                        <>
+                          {newColumnDataType === "select" && (
                             <Box>
-                              {editingOptions.map((option, index) => (
-                                <Box
-                                  key={index}
-                                  sx={{ display: "flex", alignItems: "center" }}
-                                >
-                                  <TextField
-                                    value={option}
-                                    onChange={(e) =>
-                                      handleOptionChange(index, e.target.value)
-                                    }
-                                    placeholder={`Option ${index + 1}`}
-                                  />
-                                  <IconButton
-                                    onClick={() => handleDeleteOption(index)}
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                </Box>
-                              ))}
-                              <Button onClick={handleAddOption}>
+                              <TextField
+                                label="New Option"
+                                value={newOption}
+                                onChange={(e) => setNewOption(e.target.value)}
+                                fullWidth
+                              />
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={handleAddOption}
+                              >
                                 Add Option
                               </Button>
+
+                              <List>
+                                {newColumnOptions.map((option, index) => (
+                                  <ListItem key={index}>
+                                    <ListItemText primary={option} />
+                                    <ListItemSecondaryAction>
+                                      <IconButton
+                                        edge="end"
+                                        onClick={() =>
+                                          handleDeleteOption(option)
+                                        }
+                                      >
+                                        <DeleteIcon />
+                                      </IconButton>
+                                    </ListItemSecondaryAction>
+                                  </ListItem>
+                                ))}
+                              </List>
                             </Box>
                           )}
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                checked={editingPrivacy}
-                                onChange={(e) =>
-                                  setEditingPrivacy(e.target.checked)
-                                }
-                              />
-                            }
-                            label="Privacy"
-                          />
                           <IconButton
                             onClick={() => handleSaveEdit(column._id)}
                           >
@@ -324,107 +325,152 @@ const TableBuilder: React.FC<props> = (props) => {
                           <IconButton onClick={handleCancelEdit}>
                             <CancelIcon />
                           </IconButton>
+                        </>
+                      ) : (
+                        <>
+                          <IconButton onClick={() => handleEditColumn(column)}>
+                            <EditIcon />
+                          </IconButton>
                           <IconButton
                             onClick={() => handleDeleteColumn(column._id)}
                           >
                             <DeleteIcon />
                           </IconButton>
                         </>
-                      ) : (
-                        <span onDoubleClick={() => handleEditColumn(column)}>
-                          {column.dataType}
-                        </span>
                       )}
                     </TableCell>
-                  ))}
-                  {isAdding ? (
-                    <>
-                      <TableCell key="new-column-data-type">
-                        <Select
-                          value={newColumnDataType}
-                          onChange={(e) =>
-                            setNewColumnDataType(e.target.value as string)
-                          }
-                        >
-                          <MenuItem value="string">String</MenuItem>
-                          <MenuItem value="number">Number</MenuItem>
-                          <MenuItem value="boolean">Boolean</MenuItem>
-                          <MenuItem value="singleSelect">Select</MenuItem>
-                          <MenuItem value="link">Link</MenuItem>
-                          <MenuItem value="date">Date</MenuItem>
-                        </Select>
-                        {newColumnDataType === "singleSelect" && (
-                          <Box>
-                            {newColumnOptions.map((option, index) => (
-                              <Box
-                                key={index}
-                                sx={{ display: "flex", alignItems: "center" }}
-                              >
-                                <TextField
-                                  value={option}
-                                  onChange={(e) =>
-                                    setNewColumnOptions((prevOptions) =>
-                                      prevOptions.map((opt, i) =>
-                                        i === index ? e.target.value : opt
-                                      )
-                                    )
-                                  }
-                                  placeholder={`Option ${index + 1}`}
-                                />
-                                <IconButton
-                                  onClick={() =>
-                                    setNewColumnOptions((prevOptions) =>
-                                      prevOptions.filter((_, i) => i !== index)
-                                    )
-                                  }
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
-                              </Box>
-                            ))}
-                            <Button
-                              onClick={() =>
-                                setNewColumnOptions([...newColumnOptions, ""])
-                              }
-                            >
-                              Add Option
-                            </Button>
-                          </Box>
-                        )}
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              checked={isPrivate}
-                              onChange={(e) => setIsPrivate(e.target.checked)}
-                            />
-                          }
-                          label="Private"
-                        />
-                        <IconButton onClick={handleAddColumn}>
-                          <SaveIcon />
-                        </IconButton>
-                        <IconButton onClick={() => setIsAdding(false)}>
-                          <CancelIcon />
-                        </IconButton>
-                      </TableCell>
-                      <TableCell key="new-column-empty"></TableCell>
-                    </>
-                  ) : (
-                    <TableCell key="empty"></TableCell>
-                  )}
-                </TableRow>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </TableContainer>
-          <br />
-          <Button
-            variant="contained"
-            color="success"
-            onClick={() => nav("/")}
-          >
-            Save Changes
-            <CheckIcon />
-          </Button>
+
+          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
+            {!isAdding ? (
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setIsAdding(true)}
+                  startIcon={<AddIcon />}
+                >
+                  Add Column
+                </Button>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  onClick={() => setOpenModal(true)}
+                  startIcon={<SettingsSuggestIcon />}
+                >
+                  advanced
+                </Button>
+                <Modal
+                  open={openModal}
+                  onClose={() => setOpenModal(false)}
+                  aria-labelledby="modal-title"
+                  aria-describedby="modal-description"
+                >
+                  <MainModal
+                    open={openModal}
+                    onClose={() => setOpenModal(false)}
+                    type="advanced"
+                    data={columns}
+                  />
+                </Modal>
+              </>
+            ) : (
+              <Box
+                sx={{ display: "flex", flexDirection: "column", width: "100%" }}
+              >
+                <TextField
+                  label="Column Title"
+                  value={newColumnTitle}
+                  onChange={(e) => setNewColumnTitle(e.target.value)}
+                  error={!!error}
+                  helperText={error}
+                  fullWidth
+                />
+                <FormControl
+                  fullWidth
+                  sx={{ marginTop: 2 }}
+                >
+                  <InputLabel>Data Type</InputLabel>
+                  <Select
+                    value={newColumnDataType}
+                    onChange={(e) => setNewColumnDataType(e.target.value)}
+                  >
+                    {dataTypes.map((dataType) => (
+                      <MenuItem
+                        key={dataType}
+                        value={dataType}
+                      >
+                        {dataType}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                {newColumnDataType === "select" && (
+                  <Box>
+                    <TextField
+                      label="New Option"
+                      value={newOption}
+                      onChange={(e) => setNewOption(e.target.value)}
+                      fullWidth
+                    />
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={handleAddOption}
+                    >
+                      Add Option
+                    </Button>
+
+                    <List>
+                      {newColumnOptions.map((option, index) => (
+                        <ListItem key={index}>
+                          <ListItemText primary={option} />
+                          <ListItemSecondaryAction>
+                            <IconButton
+                              edge="end"
+                              onClick={() => handleDeleteOption(option)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </ListItemSecondaryAction>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Box>
+                )}
+
+                <Box
+                  sx={{
+                    marginTop: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleAddColumn}
+                    startIcon={<SaveIcon />}
+                  >
+                    Save Column
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleCancelAdd}
+                    startIcon={<CancelIcon />}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              </Box>
+            )}
+          </Box>
         </Paper>
       </Box>
     </Container>

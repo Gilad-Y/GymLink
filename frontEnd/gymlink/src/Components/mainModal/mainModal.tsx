@@ -4,6 +4,8 @@ import * as React from "react";
 import Button from "@mui/joy/Button";
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
+import AdvancedModal from "./advancedModal/advancedModal";
+import { data } from "react-router-dom";
 
 interface MainModalProps {
   open: boolean;
@@ -21,7 +23,14 @@ function MainModal(props: MainModalProps): React.JSX.Element {
           props.onClose();
         }}
       >
-        <ModalDialog></ModalDialog>
+        <ModalDialog>
+          {props.type === "advanced" && (
+            <AdvancedModal
+              onClose={props.onClose}
+              columns={props.data}
+            />
+          )}
+        </ModalDialog>
       </Modal>
     </>
   );
