@@ -154,13 +154,25 @@ const DataGridCrud: React.FC<Props> = ({
       valueOptions: col.options,
 
       ...(col.dataType === "date" && {
-        valueGetter: (params: any) => new Date(params),
+        valueGetter: (params: any) => {
+          // Convert the ISO date string to a Date object
+
+          const date = new Date(params);
+          return date; // Return the Date object
+        },
+        valueFormatter: (params: any) => {
+          const date = new Date(params); // Get the Date object
+          const day = String(date.getDate()).padStart(2, "0"); // Get day and pad to 2 digits
+          const month = String(date.getMonth() + 1).padStart(2, "0"); // Get month and pad to 2 digits
+          const year = date.getFullYear().toString().slice(-2); // Get the last 2 digits of the year
+          return `${day}/${month}/${year}`; // Format as DD/MM/YY
+        },
       }),
 
       ...(col.dataType === "link" && {
         renderCell: (params: any) => {
           const url = params.value;
-          if (!url) return "N/A"; // Handle empty links
+          if (!url) return ""; // Handle empty links
 
           const safeUrl = url.startsWith("http") ? url : `https://${url}`;
           return (

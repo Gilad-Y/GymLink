@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import Event from "../Models/events";
 import mongoose from "mongoose";
 

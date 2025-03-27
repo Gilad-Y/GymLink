@@ -6,10 +6,11 @@ export class UserModel {
   private password: string;
   public role: "admin" | "coach";
   public brand?: any;
-  public coaches?: string[];
-  public trainees?: Map<string, { column: string; value: any }>;
+  public coaches: string[];
+  public trainees: [];
   public belongsTo?: string;
   public profile?: string;
+  public stats: string[];
 
   constructor(
     _id: string,
@@ -18,9 +19,10 @@ export class UserModel {
     email: string,
     password: string,
     role: "admin" | "coach",
+    stats: string[],
+    coaches: string[],
+    trainees: [],
     brand?: any,
-    coaches?: string[],
-    trainees?: Map<string, { column: string; value: any }>,
     belongsTo?: string,
     profile?: string
   ) {
@@ -35,6 +37,12 @@ export class UserModel {
     this.trainees = trainees;
     this.belongsTo = belongsTo;
     this.profile = profile;
+    this.stats = stats;
+  }
+
+  // Method to check if stats has a length
+  public hasStatsLength(): boolean {
+    return this.stats.length > 0;
   }
 
   // Getter for password

@@ -10,7 +10,7 @@ import { Alert, Container, Stack } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { UserModel } from "../../../models/userModel";
 import store from "../../../redux/store";
-import { addUser } from "../../../redux/usersReducer";
+
 import { useNavigate } from "react-router-dom";
 import registerPic from "../../media/teamSukar.jpeg";
 import OutlinedInput from "@mui/material/OutlinedInput";
@@ -23,6 +23,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import React from "react";
 import bcrypt from "bcryptjs"; // Import bcryptjs
 import { registerUser } from "../../../util/api"; // Import the registerUser function
+import { logInUser } from "../../../redux/usersReducer";
 
 function Register(): React.JSX.Element {
   const nav = useNavigate();
@@ -42,7 +43,7 @@ function Register(): React.JSX.Element {
       data._password = hashedPassword;
 
       const res = await registerUser(data); // Use the registerUser function
-      store.dispatch(addUser(res));
+      store.dispatch(logInUser(res));
       nav("/");
     } catch (err) {
       console.log(err);

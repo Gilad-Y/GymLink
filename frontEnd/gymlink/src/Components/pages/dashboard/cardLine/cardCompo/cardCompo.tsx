@@ -6,24 +6,39 @@ import CardActions from "@mui/joy/CardActions";
 import CircularProgress from "@mui/joy/CircularProgress";
 import Typography from "@mui/joy/Typography";
 import SvgIcon from "@mui/joy/SvgIcon";
+import MainModal from "../../../../mainModal/mainModal";
+import { statLogic } from "./statLogic";
 interface itemProps {
   id: number;
   type: string;
-  stat: number;
+  refresh: () => void;
 }
 function CardCompo(props: itemProps): React.JSX.Element {
+  const [openModal, setOpenModal] = React.useState(false);
+  const [statValue, setStatValue] = React.useState(0);
+  React.useEffect(() => {
+    const fetchStatValue = async () => {
+      setStatValue(await statLogic(props.type));
+    };
+    fetchStatValue();
+    props.refresh();
+  }, [openModal]);
+  const toggleModal = () => {
+    setOpenModal(!openModal);
+  };
   return (
     <div className="cardCompo">
       <Card
         variant="solid"
         color="neutral"
         invertedColors
+        onDoubleClick={() => toggleModal()}
       >
         <CardContent orientation="horizontal">
           <CircularProgress
             size="lg"
             determinate
-            value={props.stat}
+            value={statValue} // This is the value of the stat
           >
             {/* <SvgIcon>
               <svg
@@ -40,14 +55,20 @@ function CardCompo(props: itemProps): React.JSX.Element {
                 />
               </svg>
             </SvgIcon> */}
-            <Typography level="h2">{props.stat}</Typography>
+            <Typography level="h2">{statValue}</Typography>
           </CircularProgress>
           <CardContent>
-            <Typography level="h1">{props.type}</Typography>
+            <Typography level="h2">{props.type}</Typography>
             {/* <Typography level="h2">{props.stat}</Typography> */}
           </CardContent>
         </CardContent>
       </Card>
+      <MainModal
+        open={openModal}
+        onClose={toggleModal}
+        type={"stat"}
+        data={{ stat: props }}
+      />
     </div>
   );
 }

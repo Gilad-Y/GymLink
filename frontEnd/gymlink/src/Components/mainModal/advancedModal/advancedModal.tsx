@@ -15,10 +15,12 @@ import {
 import * as React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Column } from "../../../models/columnModel";
+import { updateUseFor } from "../../../util/api";
 
 interface Props {
   onClose: () => void;
   columns?: Column[];
+  id: string;
 }
 
 const AdvancedModal: React.FC<Props> = (props) => {
@@ -27,17 +29,27 @@ const AdvancedModal: React.FC<Props> = (props) => {
   const dateColumns =
     props.columns?.filter((column) => column.dataType === "date") || [];
 
-  const { control, handleSubmit, reset } = useForm({
-    defaultValues: {
-      name: "-",
-      telephone: "-",
-      subscriptionEndingDate: "-",
-    },
+  const defaultValues = {
+    name: props.columns?.find((column) => column.useFor === "name")?._id || "",
+    telephone:
+      props.columns?.find((column) => column.useFor === "telephone")?._id || "",
+    subscriptionEndingDate:
+      props.columns?.find(
+        (column) => column.useFor === "subscriptionEndingDate"
+      )?._id || "",
+  };
+
+  const { control, handleSubmit, watch, reset } = useForm({
+    defaultValues,
   });
 
-  const onSubmit = (data: any) => {
+  const selectedName = watch("name");
+  const selectedTelephone = watch("telephone");
+
+  const onSubmit = async (data: any) => {
     console.log(data); // Here, you can handle the submission logic
-    // props.onClose();
+    await updateUseFor(props.id, data);
+    props.onClose();
   };
 
   return (
@@ -47,7 +59,7 @@ const AdvancedModal: React.FC<Props> = (props) => {
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        width: 1000,
+        width: 800,
         bgcolor: "background.paper",
         border: "2px solid #000",
         boxShadow: 24,
@@ -74,6 +86,8 @@ const AdvancedModal: React.FC<Props> = (props) => {
           stringColumns={stringColumns}
           dateColumns={dateColumns}
           control={control}
+          selectedName={selectedName}
+          selectedTelephone={selectedTelephone}
         />
         <Button
           variant="contained"
@@ -92,12 +106,16 @@ interface BasicTableProps {
   stringColumns: Column[];
   dateColumns: Column[];
   control: any;
+  selectedName: string;
+  selectedTelephone: string;
 }
 
 const BasicTable: React.FC<BasicTableProps> = ({
   stringColumns,
   dateColumns,
   control,
+  selectedName,
+  selectedTelephone,
 }) => {
   return (
     <TableContainer component={Paper}>
@@ -126,14 +144,16 @@ const BasicTable: React.FC<BasicTableProps> = ({
                     <MenuItem value="">
                       <em>-</em>
                     </MenuItem>
-                    {stringColumns.map((column) => (
-                      <MenuItem
-                        key={column._id}
-                        value={column._id}
-                      >
-                        {column.title}
-                      </MenuItem>
-                    ))}
+                    {stringColumns
+                      .filter((column) => column._id !== selectedTelephone)
+                      .map((column) => (
+                        <MenuItem
+                          key={column._id}
+                          value={column._id}
+                        >
+                          {column.title}
+                        </MenuItem>
+                      ))}
                   </Select>
                 )}
               />
@@ -150,14 +170,16 @@ const BasicTable: React.FC<BasicTableProps> = ({
                     <MenuItem value="">
                       <em>-</em>
                     </MenuItem>
-                    {stringColumns.map((column) => (
-                      <MenuItem
-                        key={column._id}
-                        value={column._id}
-                      >
-                        {column.title}
-                      </MenuItem>
-                    ))}
+                    {stringColumns
+                      .filter((column) => column._id !== selectedName)
+                      .map((column) => (
+                        <MenuItem
+                          key={column._id}
+                          value={column._id}
+                        >
+                          {column.title}
+                        </MenuItem>
+                      ))}
                   </Select>
                 )}
               />

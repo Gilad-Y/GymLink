@@ -8,6 +8,7 @@ const columnSchema = new Schema({
   isPrivate: { type: Boolean, required: true },
   stats: { type: String, required: false },
   createdBy: { type: mongoose.Types.ObjectId, ref: "User", required: true },
+  useFor: { type: String, required: false },
 });
 
 // Static methods for CRUD operations

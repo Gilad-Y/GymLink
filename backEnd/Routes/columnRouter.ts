@@ -53,32 +53,44 @@ router.delete(
   }
 );
 
+router.put("/useFor/:id", async (req, res) => {
+  const data = req.body;
+  const id = req.params.id;
+  await columnLogic.updateUseForColumns(id, data);
+  res.status(200).json({ message: "Updated successfully" });
+});
+router.get("/preferences/:userId", async (req, res) => {
+  const id = req.params.userId;
+  const columns = await columnLogic.getPreferences(id);
+  res.status(200).json(columns);
+});
+
 export default router;
 
-// Create a new column
-export const createColumn = async (columnData: any) => {
-  const column = new Column(columnData);
-  return await column.save();
-};
+// // Create a new column
+// export const createColumn = async (columnData: any) => {
+//   const column = new Column(columnData);
+//   return await column.save();
+// };
 
-// Get columns by user ID
-export const getColumnsByUserId = async (userId: string) => {
-  return await Column.find({ createdBy: userId }).populate("createdBy").exec();
-};
+// // Get columns by user ID
+// export const getColumnsByUserId = async (userId: string) => {
+//   return await Column.find({ createdBy: userId }).populate("createdBy").exec();
+// };
 
-// Get a column by ID
-export const getColumnById = async (columnId: string) => {
-  return await Column.findById(columnId).populate("createdBy").exec();
-};
+// // Get a column by ID
+// export const getColumnById = async (columnId: string) => {
+//   return await Column.findById(columnId).populate("createdBy").exec();
+// };
 
-// Update a column by ID
-export const updateColumnById = async (columnId: string, updateData: any) => {
-  return await Column.findByIdAndUpdate(columnId, updateData, {
-    new: true,
-  }).exec();
-};
+// // Update a column by ID
+// export const updateColumnById = async (columnId: string, updateData: any) => {
+//   return await Column.findByIdAndUpdate(columnId, updateData, {
+//     new: true,
+//   }).exec();
+// };
 
-// Delete a column by ID
-export const deleteColumnById = async (columnId: string) => {
-  return await Column.findByIdAndDelete(columnId).exec();
-};
+// // Delete a column by ID
+// export const deleteColumnById = async (columnId: string) => {
+//   return await Column.findByIdAndDelete(columnId).exec();
+// };

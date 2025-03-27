@@ -7,6 +7,7 @@ export class Column {
   isPrivate: boolean;
   stats?: string;
   createdBy: string;
+  useFor?: string;
 
   constructor(
     _id: string,
@@ -16,7 +17,8 @@ export class Column {
     isPrivate: boolean,
     createdBy: string,
     options?: string[],
-    stats?: string
+    stats?: string,
+    useFor?: string
   ) {
     this._id = _id;
     this.title = title;
@@ -26,5 +28,6 @@ export class Column {
     this.stats = stats;
     this.createdBy = createdBy;
     this.options = options;
+    this.useFor = useFor;
   }
 }

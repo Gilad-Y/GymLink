@@ -89,6 +89,7 @@ export const createColumn = async (columnData: any) => {
 };
 
 export const updateColumn = async (columnId: any, updateData: any) => {
+  console.log("Updating column with data:", updateData, columnId);
   try {
     const response = await http.put(`/column/${columnId}`, updateData);
     return response.data;
@@ -260,4 +261,33 @@ export const deleteEvent = async (eventId: string) => {
     console.error("Error deleting event:", error);
     throw error;
   }
+};
+export const updateUseFor = async (userId: string, data: any) => {
+  const response = await http.put(`/column/useFor/${userId}`, data);
+  return response.data;
+};
+export const getPreferences = async (userId: string) => {
+  const response = await http.get(`/column/preferences/${userId}`);
+  return response.data;
+};
+export const getExpired = async (userId: string, date: string) => {
+  const response = await http.get(`/trainee/expired/${userId}/${date}`);
+  return response.data;
+};
+export const getExpiringSoon = async (userId: string, date: string) => {
+  const response = await http.get(`/trainee/expiring/${userId}/${date}`);
+  return response.data;
+};
+export const getGrowth = async (userId: string) => {
+  const response = await http.get(`/trainee/growth/${userId}`);
+  return response.data;
+};
+export const updateStats = async (userId: string, data: any) => {
+  console.log(data);
+  if (data.length < 3) {
+    console.log("error");
+    return;
+  }
+  const response = await http.put(`/user/stats/${userId}`, data);
+  return response.data;
 };

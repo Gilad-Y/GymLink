@@ -56,7 +56,15 @@ export const updateUserById = async (userId: string, updateData: any) => {
   };
 
   const id = new mongoose.Types.ObjectId(userId);
-  return await User.findByIdAndUpdate(id, user, { new: true }).exec();
+  const updatedUser = await User.findByIdAndUpdate(id, user, {
+    new: true,
+  }).exec();
+  if (updatedUser) {
+    const userWithoutPassword = updatedUser.toObject();
+    userWithoutPassword.password = "";
+    return userWithoutPassword;
+  }
+  return null;
 };
 
 export const deleteUserById = async (userId: string) => {
@@ -256,4 +264,24 @@ export const getImgUrl = (img: string) => {
   const base64Data = fileData.toString("base64");
   const imageUrl = `data:image/jpeg;base64,${base64Data}`;
   return imageUrl;
+};
+export const setStats = async (userId: string, stats: any) => {
+  const id = new mongoose.Types.ObjectId(userId);
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { stats: stats },
+      { new: true }
+    ).exec();
+
+    if (updatedUser) {
+      const userWithoutPassword = updatedUser.toObject();
+      userWithoutPassword.password = "";
+      return userWithoutPassword;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error setting stats:", error);
+    return { error: "Failed to set stats" };
+  }
 };

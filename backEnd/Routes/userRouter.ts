@@ -170,5 +170,13 @@ router.put(
       .json(await userLogic.setCoachPass(userId, newPassword));
   }
 );
+router.put(
+  "/stats/:id",
+  async (request: Request, response: Response, next: NextFunction) => {
+    const userId = request.params.id;
+    const stats = request.body;
+    response.status(200).json(await userLogic.setStats(userId, stats));
+  }
+);
 
 export default router;

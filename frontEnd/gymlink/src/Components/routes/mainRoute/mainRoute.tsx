@@ -11,6 +11,7 @@ import CoachPage from "../../pages/coaches/coachPage";
 import Calendar from "../../pages/Calendar/Calendar";
 import Extensions from "../../pages/extensions/extensions";
 import SetPasswordForCoach from "../../pages/setPasswordForCoach/setPasswordForCoach";
+import Stats from "../../pages/stats/stats";
 
 function MainRoute(): React.JSX.Element {
   return (
@@ -75,6 +76,10 @@ function MainRoute(): React.JSX.Element {
               <Extensions />
             </PrivateRoute>
           }
+        />
+        <Route
+          path="stats"
+          element={<Stats />}
         />
         <Route
           path="*"

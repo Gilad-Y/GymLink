@@ -15,14 +15,16 @@ const userSchema = new Schema({
   googleId: { type: String, unique: true, sparse: true }, // Store Google ID
   role: { type: String, enum: ["admin", "coach"], required: true },
   brand: { type: Schema.Types.Mixed },
-  coaches: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+  coaches: [{ type: mongoose.Types.ObjectId, ref: "User", default: [] }],
   trainees: [
     {
       type: Object,
+      default: [],
     },
   ],
   belongsTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   profile: { type: String },
+  stats: [{ type: String, default: ["members", "expiring soon", "expired"] }],
 });
 
 // Static methods for CRUD operations

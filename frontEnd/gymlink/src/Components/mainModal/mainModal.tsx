@@ -6,6 +6,7 @@ import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
 import AdvancedModal from "./advancedModal/advancedModal";
 import { data } from "react-router-dom";
+import StatModal from "./statModal/statModal";
 
 interface MainModalProps {
   open: boolean;
@@ -27,7 +28,14 @@ function MainModal(props: MainModalProps): React.JSX.Element {
           {props.type === "advanced" && (
             <AdvancedModal
               onClose={props.onClose}
-              columns={props.data}
+              columns={props.data.columns}
+              id={props.data.id}
+            />
+          )}
+          {props.type === "stat" && (
+            <StatModal
+              onClose={props.onClose}
+              stat={props.data.stat}
             />
           )}
         </ModalDialog>

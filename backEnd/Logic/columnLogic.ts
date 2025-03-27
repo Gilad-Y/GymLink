@@ -45,12 +45,61 @@ export const getColumnById = async (columnId: string) => {
 
 // Update a column by ID
 export const updateColumnById = async (columnId: string, updateData: any) => {
-  return await Column.findByIdAndUpdate(columnId, updateData, {
-    new: true,
-  }).exec();
+  try {
+    if (!mongoose.isValidObjectId(columnId)) {
+      throw new Error("Invalid column ID");
+    }
+
+    const _id = new mongoose.Types.ObjectId(columnId);
+
+    const updatedColumn = await Column.findByIdAndUpdate(
+      _id,
+      { $set: updateData },
+      { new: true }
+    );
+
+    return updatedColumn;
+  } catch (error) {
+    console.error("Error updating column:", error);
+    throw error;
+  }
 };
 
 // Delete a column by ID
 export const deleteColumnById = async (columnId: string) => {
   return await Column.findByIdAndDelete(columnId).exec();
+};
+export const updateUseForColumns = async (userId: string, data: any) => {
+  const _id = new mongoose.Types.ObjectId(userId);
+
+  // Remove useFor from all columns created by the user
+  await Column.updateMany({ createdBy: _id }, { $unset: { useFor: "" } });
+
+  // Assign useFor to specific columns provided in data prop
+  for (const key in data) {
+    if (data.hasOwnProperty(key) && data[key] !== "") {
+      await Column.findByIdAndUpdate(data[key], { useFor: key }).exec();
+    }
+  }
+  return;
+};
+export const getPreferences = async (userId: string) => {
+  try {
+    if (!mongoose.isValidObjectId(userId)) {
+      throw new Error("Invalid userId format");
+    }
+
+    const _id = new mongoose.Types.ObjectId(userId);
+
+    // Full query
+    const columns = await Column.find({
+      createdBy: _id,
+      useFor: { $exists: true, $ne: "" },
+    }).exec();
+
+    return columns;
+  } catch (error) {
+    console.error("Error fetching preferences:", error);
+    throw error;
+  }
 };

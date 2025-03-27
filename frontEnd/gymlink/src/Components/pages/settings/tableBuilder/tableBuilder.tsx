@@ -22,6 +22,7 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Modal,
+  ButtonGroup,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
@@ -44,7 +45,6 @@ interface Props {
 }
 
 const TableBuilder: React.FC<Props> = ({ id }) => {
-  const nav = useNavigate();
   const [columns, setColumns] = useState<Column[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState("");
@@ -82,7 +82,7 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
     };
 
     fetchColumns();
-  }, [id]);
+  }, [id, setOpenModal]);
 
   const isColumnTitleUnique = (title: string, columnId?: string) => {
     return !columns.some(
@@ -124,7 +124,9 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
   const handleEditColumn = (column: Column) => {
     setEditingColumn(column);
     setNewColumnTitle(column.title);
-    setNewColumnDataType(column.dataType);
+    setNewColumnDataType(
+      column.dataType === "singleSelect" ? "select" : column.dataType
+    );
     setNewColumnOptions(column.options || []);
     setError(null); // Clear error message when starting to edit
   };
@@ -135,32 +137,29 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
         setError("Column title must be unique");
         return;
       }
-    }
 
-    try {
-      const updatedColumn = await updateColumn(columnId, {
-        title: editingColumn?.title,
-        dataType: editingColumn?.dataType,
-        options: editingColumn?.dataType === "select" ? newColumnOptions : [],
-      });
+      // Ensure the editingColumn is updated with the new data
+      const updatedColumn = {
+        ...editingColumn,
+        title: newColumnTitle, // Use the new column title
+        dataType:
+          newColumnDataType === "select" ? "singleSelect" : newColumnDataType, // Use the selected data type
+        options: newColumnDataType === "singleSelect" ? newColumnOptions : [], // Options are only for select type
+      };
 
-      setColumns((prevColumns) =>
-        prevColumns.map((col) =>
-          col._id === columnId
-            ? {
-                ...col,
-                title: editingColumn?.title || col.title,
-                dataType: editingColumn?.dataType || col.dataType,
-                options: newColumnOptions,
-              }
-            : col
-        )
-      );
+      try {
+        const savedColumn = await updateColumn(columnId, updatedColumn);
 
-      setEditingColumn(null);
-      setError(null);
-    } catch (error) {
-      console.error("Error updating column:", error);
+        // Update the local state with the new column data
+        setColumns((prevColumns) =>
+          prevColumns.map((col) => (col._id === columnId ? savedColumn : col))
+        );
+
+        setEditingColumn(null); // Clear the editing state
+        setError(null); // Clear any error
+      } catch (error) {
+        console.error("Error updating column:", error);
+      }
     }
   };
 
@@ -268,13 +267,19 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
                             {dataTypes.map((dataType) => (
                               <MenuItem
                                 key={dataType}
-                                value={dataType}
+                                value={
+                                  dataType === "select"
+                                    ? "singleSelect"
+                                    : dataType
+                                }
                               >
                                 {dataType}
                               </MenuItem>
                             ))}
                           </Select>
                         </FormControl>
+                      ) : column.dataType === "singleSelect" ? (
+                        "select"
                       ) : (
                         column.dataType
                       )}
@@ -282,7 +287,7 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
                     <TableCell>
                       {editingColumn?._id === column._id ? (
                         <>
-                          {newColumnDataType === "select" && (
+                          {newColumnDataType === "singleSelect" && (
                             <Box>
                               <TextField
                                 label="New Option"
@@ -348,22 +353,27 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
             {!isAdding ? (
               <>
-                <Button
+                <ButtonGroup
                   variant="contained"
-                  color="primary"
-                  onClick={() => setIsAdding(true)}
-                  startIcon={<AddIcon />}
+                  aria-label="Basic button group"
                 >
-                  Add Column
-                </Button>
-                <Button
-                  variant="contained"
-                  color="warning"
-                  onClick={() => setOpenModal(true)}
-                  startIcon={<SettingsSuggestIcon />}
-                >
-                  advanced
-                </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setIsAdding(true)}
+                    startIcon={<AddIcon />}
+                  >
+                    Add Column
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="warning"
+                    onClick={() => setOpenModal(true)}
+                    startIcon={<SettingsSuggestIcon />}
+                  >
+                    advanced
+                  </Button>
+                </ButtonGroup>
                 <Modal
                   open={openModal}
                   onClose={() => setOpenModal(false)}
@@ -374,7 +384,7 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
                     open={openModal}
                     onClose={() => setOpenModal(false)}
                     type="advanced"
-                    data={columns}
+                    data={{ columns, id }}
                   />
                 </Modal>
               </>
@@ -402,7 +412,9 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
                     {dataTypes.map((dataType) => (
                       <MenuItem
                         key={dataType}
-                        value={dataType}
+                        value={
+                          dataType === "select" ? "singleSelect" : dataType
+                        }
                       >
                         {dataType}
                       </MenuItem>
@@ -410,7 +422,7 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
                   </Select>
                 </FormControl>
 
-                {newColumnDataType === "select" && (
+                {newColumnDataType === "singleSelect" && (
                   <Box>
                     <TextField
                       label="New Option"

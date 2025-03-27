@@ -52,5 +52,34 @@ router.delete("/:id", async (req, res) => {
     res.status(500).send(error);
   }
 });
+router.get("/expired/:id/:date", async (req, res) => {
+  const id = req.params.id;
+  const date = req.params.date;
+  try {
+    const trainees = await traineeLogic.getExpiredTrainees(id, date);
+    res.json(trainees);
+  } catch (error) {
+    console.error("Error fetching expired trainees:", error);
+  }
+});
+router.get("/expiring/:id/:date", async (req, res) => {
+  const id = req.params.id;
+  const date = req.params.date;
+  try {
+    const trainees = await traineeLogic.getExpiringTrainees(id, date);
+    res.json(trainees);
+  } catch (error) {
+    console.error("Error fetching expiring trainees:", error);
+  }
+});
+router.get("/growth/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const trainees = await traineeLogic.getGrowthTrainees(id);
+    res.json(trainees);
+  } catch (error) {
+    console.error("Error fetching growth trainees:", error);
+  }
+});
 
 export default router;

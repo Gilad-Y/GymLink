@@ -5,7 +5,7 @@ export class UserState {
 }
 
 export enum UserActionType {
-  addUser = "addUser",
+  updateUser = "updateUser",
   logInUser = "logInUser",
   logOutUser = "logOutUser",
 }
@@ -15,9 +15,9 @@ export interface UserAction {
   payload?: any;
 }
 
-export function addUser(newUser: UserModel): UserAction {
+export function updateUser(newUser: UserModel): UserAction {
   return {
-    type: UserActionType.addUser,
+    type: UserActionType.updateUser,
     payload: newUser,
   };
 }
@@ -41,7 +41,7 @@ export const UserReducer = (
 ): UserState => {
   const newState: UserState = { ...currentState };
   switch (action.type) {
-    case UserActionType.addUser:
+    case UserActionType.updateUser:
       newState.user = action.payload;
       break;
     case UserActionType.logInUser:

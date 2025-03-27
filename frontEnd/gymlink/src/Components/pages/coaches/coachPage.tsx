@@ -7,7 +7,7 @@ import {
   updateUser,
 } from "../../../util/api";
 import store from "../../../redux/store";
-import { addUser } from "../../../redux/usersReducer";
+
 const CoachPage: React.FC = () => {
   const [columns, setColumns] = React.useState([
     {
@@ -29,7 +29,6 @@ const CoachPage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const coachesData = await getCoachesByIds(id);
-      console.log(coachesData);
       setCoaches(coachesData);
     };
     fetchData();
