@@ -21,7 +21,7 @@ import {
   GridSlotProps,
 } from "@mui/x-data-grid";
 import { randomId } from "@mui/x-data-grid-generator";
-import { filterString } from "../../util/formattingKey";
+import { filterString, isSubset } from "../../util/formattingKey";
 import NoRows from "./noRows/noRows";
 import { Checkbox, Switch } from "@mui/material";
 
@@ -266,6 +266,18 @@ const DataGridCrud: React.FC<Props> = ({
   };
 
   const processRowUpdate = async (newRow: GridRowModel) => {
+    const freshRow = columns.reduce((acc: any, col: any) => {
+      acc[col.title] = ""; // Set default value for each column's field
+      return acc;
+    }, {});
+    const result = isSubset(freshRow, newRow);
+
+    if (result) {
+      crudFunctions.deleteData(newRow.id);
+      setRowData((prevData) => prevData.filter((row) => row.id !== newRow.id));
+      return null; // Stop the update
+    }
+
     const updatedRow = { ...newRow, isNew: false };
     setRowData((prevData) =>
       prevData.map((row) => (row.id === newRow.id ? updatedRow : row))
@@ -337,18 +349,28 @@ const DataGridCrud: React.FC<Props> = ({
   return (
     <Box
       sx={{
-        height: 500,
-        width: "100%",
+        margin: "auto",
+        height: "auto", // Let the height adjust dynamically based on content
+        width: "100%", // Set the width to 100% of the container
+        maxWidth: "75vw", // Limit the maximum width to 80% of the viewport width
+        overflow: "auto", // Enable scrolling if content overflows
         "& .actions": {
           color: "text.secondary",
         },
         "& .textPrimary": {
           color: "text.primary",
         },
+        display: "flex",
+        justifyContent: "center", // Center horizontally
+        alignItems: "center", // Center vertically
       }}
     >
       <DataGrid
         rows={rowData}
+        autosizeOnMount
+        getRowClassName={(params) =>
+          params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
+        }
         columns={
           columnsData.length > 0 ? [...columnsData, actionColumn] : columnsData
         }

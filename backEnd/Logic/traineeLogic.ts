@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Trainee from "../Models/trainee";
 
 // Function to fetch all trainees
@@ -15,22 +16,25 @@ export const getAllTrainees = async (userId: string) => {
 
 // Function to add a new trainee
 export const addTrainee = async (traineeData: any) => {
-  const belongsTo = traineeData.belongsTo;
-  delete traineeData.belongsTo;
-  const newTraineeToSave = { data: traineeData, belongsTo: belongsTo };
+  return new mongoose.Types.ObjectId(); // Placeholder for the actual implementation
+  // console.log("Trainee data:", traineeData);
+  // const belongsTo = traineeData.belongsTo;
+  // delete traineeData.belongsTo;
+  // const newTraineeToSave = { data: traineeData, belongsTo: belongsTo };
 
-  try {
-    const newTrainee = new Trainee(newTraineeToSave);
-    await newTrainee.save();
-    return newTrainee._id;
-  } catch (error) {
-    console.error("Error adding trainee:", error);
-    throw new Error("Error adding trainee");
-  }
+  // try {
+  //   const newTrainee = new Trainee(newTraineeToSave);
+  //   await newTrainee.save();
+  //   return newTrainee._id;
+  // } catch (error) {
+  //   console.error("Error adding trainee:", error);
+  //   throw new Error("Error adding trainee");
+  // }
 };
 
 // Function to edit a trainee
 export const editTrainee = async (traineeId: string, updateData: any) => {
+  delete updateData.id;
   const belongsTo = updateData.belongsTo;
   delete updateData.belongsTo;
   const newTraineeToSave = { data: updateData, belongsTo: belongsTo };
@@ -40,7 +44,24 @@ export const editTrainee = async (traineeId: string, updateData: any) => {
       traineeId,
       newTraineeToSave
     );
-    return updatedTrainee;
+    if (updatedTrainee == null) {
+      const newTraineeToSave = {
+        data: updateData,
+        belongsTo: belongsTo,
+        _id: traineeId,
+      };
+
+      try {
+        const newTrainee = new Trainee(newTraineeToSave);
+        await newTrainee.save();
+        return newTrainee._id;
+      } catch (error) {
+        console.error("Error adding trainee:", error);
+        throw new Error("Error adding trainee");
+      }
+    } else {
+      return updatedTrainee;
+    }
   } catch (error) {
     console.error("Error editing trainee:", error);
     throw new Error("Error editing trainee");
@@ -50,11 +71,12 @@ export const editTrainee = async (traineeId: string, updateData: any) => {
 // Function to delete a trainee
 export const deleteTrainee = async (traineeId: string) => {
   try {
-    await Trainee.findByIdAndDelete(traineeId);
+    const deletedTrainee = await Trainee.findByIdAndDelete(traineeId);
   } catch (error) {
     console.error("Error deleting trainee:", error);
     throw new Error("Error deleting trainee");
   }
+  return;
 };
 export const getExpiredTrainees = async (userId: string, dateField: string) => {
   try {

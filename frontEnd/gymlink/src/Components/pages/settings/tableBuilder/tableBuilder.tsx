@@ -202,7 +202,18 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
   };
 
   return (
-    <Container component="main">
+    <Container
+      component="main"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: 2,
+        marginTop: -5,
+        // height: "100vh",
+        // overflowY: "auto",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -213,7 +224,14 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
       >
         <Paper
           elevation={6}
-          sx={{ padding: 4, width: "100%", maxWidth: "800px" }}
+          sx={{
+            padding: 4,
+            width: "100%",
+            maxWidth: "800px",
+            minHeight: "600px",
+            display: "flex",
+            flexDirection: "column", // Ensure the content stacks vertically
+          }}
         >
           <Typography
             component="h1"
@@ -223,8 +241,17 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
             Customize Columns
           </Typography>
 
-          <TableContainer sx={{ marginTop: 2 }}>
-            <Table>
+          <TableContainer
+            sx={{
+              marginTop: 2,
+              height: "400px", // Fixed height for the table container
+              overflowY: "auto", // Enable vertical scrolling
+              overflowX: "auto", // Enable horizontal scrolling for wide tables
+            }}
+          >
+            <Table stickyHeader>
+              {" "}
+              {/* Add stickyHeader to keep the header visible while scrolling */}
               <TableHead>
                 <TableRow>
                   <TableCell>Column Title</TableCell>
@@ -350,7 +377,14 @@ const TableBuilder: React.FC<Props> = ({ id }) => {
             </Table>
           </TableContainer>
 
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
+          {/* Buttons at the bottom */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "auto", // Push the buttons to the bottom
+            }}
+          >
             {!isAdding ? (
               <>
                 <ButtonGroup

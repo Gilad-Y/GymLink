@@ -18,3 +18,40 @@
 .centered-container > * {
   margin-bottom: 20px; /* Add space between components */
 }
+
+/* Responsive Styles */
+
+/* Large screens (>= 1024px) */
+@media (min-width: 1024px) {
+  .centered-container {
+    flex-direction: column; /* Stack components horizontally */
+    justify-content: space-between; /* Space out components evenly */
+  }
+
+  .centered-container > * {
+    margin-bottom: 0; /* Remove margin between components on larger screens */
+    /* width: calc(50% - 10px); 50% width for each component on large screens */
+  }
+}
+
+/* Medium screens (768px - 1023px) */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .centered-container {
+    flex-direction: column; /* Stack components vertically on medium screens */
+  }
+
+  .centered-container > * {
+    /* width: 100%; Each component takes full width on medium screens */
+  }
+}
+
+/* Small screens (<= 768px) */
+@media (max-width: 768px) {
+  .centered-container {
+    flex-direction: column; /* Stack components vertically on small screens */
+  }
+
+  .centered-container > * {
+    /* width: 100%; Full width for components on small screens */
+  }
+}

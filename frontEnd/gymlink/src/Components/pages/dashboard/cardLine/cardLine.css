@@ -3,7 +3,8 @@
   justify-content: space-between; /* Distribute the cards with space between them */
   align-items: center; /* Center cards vertically */
   width: 100%; /* Make the container span the full width */
-  padding: 20px 10px; /* Optional padding to add space around the container */
+  margin: auto;
+  padding-bottom: 10px;
   box-sizing: border-box; /* Ensure padding does not affect the overall width */
 }
 

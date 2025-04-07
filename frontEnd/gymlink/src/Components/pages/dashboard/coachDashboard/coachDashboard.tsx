@@ -40,18 +40,12 @@ function CoachDashboard(props: props): React.JSX.Element {
     return;
   };
   const addTraineeFun = async (trainee: any) => {
-    delete trainee.id;
-    delete trainee.isNew;
     trainee.belongsTo = props.id;
     console.log(trainee);
     return await addTrainees(trainee);
   };
   return (
     <div className="coachDashboard">
-      {/* <TraineeTable id={props.id.toString()} /> */}
-      {/* <NewTable id={props.id.toString()} /> */}
-      {/* <MissionTable id={props.id} /> */}
-      {/* <Notifications /> */}
       <TableTemp
         rows={trainees}
         columns={columns}

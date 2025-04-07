@@ -65,28 +65,41 @@ function LogIn(): React.JSX.Element {
 
   return (
     <div className="logIn">
-      <Container component="main">
+      <Container
+        component="main"
+        sx={{
+          height: "100vh", // Ensure full viewport height for the container
+          overflowY: "hidden", // Enable vertical scrolling for the entire container
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 2,
+        }}
+      >
         <CssBaseline />
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
-            height: "80vh",
-            width: "150vh",
+            flexDirection: { xs: "column", sm: "row" }, // Column for small screens, row for larger screens
+            width: "100%",
+            maxWidth: "100%",
             justifyContent: "center",
             alignItems: "center",
-            padding: 2,
+            gap: 2,
           }}
         >
           {/* Left Side (Image) */}
           <Box
             sx={{
               backgroundImage: `url(${logIngPic})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              height: "100%",
-              flex: 1,
+              backgroundSize: "cover", // Ensures the image covers the container
+              backgroundPosition: "center", // Ensures the image stays centered
+              height: { xs: "200px", sm: "750px" }, // 200px height for xs screens, auto for larger screens
+              // width: "70%", // Full width on all screen sizes
+              // minWidth: "500px",
+              width: { xs: "509px", sm: "70%" },
               borderRadius: "8px",
+              minHeight: "200px", // Prevents the image from becoming too small
             }}
           />
 
@@ -98,36 +111,30 @@ function LogIn(): React.JSX.Element {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              flex: 1,
-              height: "100%",
+              width: { xs: "100%", sm: "80%", md: "50%" },
               borderRadius: "8px",
+              minWidth: "320px", // Ensures usability on small screens
+              height: "auto", // Let the height adjust dynamically based on content
+              minHeight: "200px", // Prevents the form from becoming too small
+              maxHeight: "90vh", // Ensure that Paper height is limited and doesn't go beyond viewport
+              overflowY: "auto", // Enable vertical scrolling for Paper content if needed
             }}
           >
             <h1 style={{ textAlign: "center", fontWeight: "bold" }}>התחבר</h1>
-            {/* <Stack
-              sx={{ width: "100%" }}
-              spacing={2}
-            >
-              {statusCode == 401 && (
-                <Alert
-                  variant="filled"
-                  severity="warning"
-                >
-                  Email or password is incorrect
-                </Alert>
-              )}
-              {statusCode !== 401 && !!statusCode && (
-                <Alert
-                  variant="filled"
-                  severity="error"
-                >
-                  This is an info Alert.
-                </Alert>
-              )}
-            </Stack> */}
             <form
               onSubmit={handleSubmit(logUser)}
-              style={{ width: "100%" }}
+              style={{
+                width: "100%",
+                maxWidth: "600px", // Ensure form is not too wide
+                minWidth: "320px",
+                minHeight: "200px", // Ensures usability on small screens
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                padding: "16px",
+                boxSizing: "border-box",
+                height: "auto", // Let the form height adjust dynamically
+              }}
             >
               <Stack
                 sx={{ width: "100%" }}
@@ -150,11 +157,9 @@ function LogIn(): React.JSX.Element {
                   </Alert>
                 )}
               </Stack>
+
               <FormControl
-                sx={{
-                  m: 1,
-                  width: "100%",
-                }}
+                sx={{ m: 1, width: "100%" }}
                 variant="outlined"
               >
                 <InputLabel
@@ -189,10 +194,7 @@ function LogIn(): React.JSX.Element {
               </FormControl>
 
               <FormControl
-                sx={{
-                  m: 1,
-                  width: "100%",
-                }}
+                sx={{ m: 1, width: "100%" }}
                 variant="outlined"
               >
                 <InputLabel

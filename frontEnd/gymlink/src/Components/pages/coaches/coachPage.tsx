@@ -15,13 +15,21 @@ const CoachPage: React.FC = () => {
       title: "first name",
       width: 180,
       editable: true,
+      required: true,
     },
-    { field: "lastName", title: "last name", width: 180, editable: true },
+    {
+      field: "lastName",
+      title: "last name",
+      width: 180,
+      editable: true,
+      required: true,
+    },
     {
       field: "email",
       title: "Email",
       width: 180,
-      editable: true,
+      editable: false,
+      required: true,
     },
   ]);
   const [coaches, setCoaches] = React.useState([]);

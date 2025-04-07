@@ -12,8 +12,11 @@ import Calendar from "../../pages/Calendar/Calendar";
 import Extensions from "../../pages/extensions/extensions";
 import SetPasswordForCoach from "../../pages/setPasswordForCoach/setPasswordForCoach";
 import Stats from "../../pages/stats/stats";
+import SupportPage from "../../pages/support/supportPage";
+import store from "../../../redux/store";
 
 function MainRoute(): React.JSX.Element {
+  const user = store.getState().users.user;
   return (
     <div className="mainRoute">
       <Routes>
@@ -65,7 +68,7 @@ function MainRoute(): React.JSX.Element {
           path="/coaches"
           element={
             <PrivateRoute>
-              <CoachPage />
+              {user?.role === "admin" ? <CoachPage /> : <Page404 />}
             </PrivateRoute>
           }
         />
@@ -77,9 +80,14 @@ function MainRoute(): React.JSX.Element {
             </PrivateRoute>
           }
         />
+
         <Route
-          path="stats"
-          element={<Stats />}
+          path="/support"
+          element={
+            <PrivateRoute>
+              <SupportPage />
+            </PrivateRoute>
+          }
         />
         <Route
           path="*"

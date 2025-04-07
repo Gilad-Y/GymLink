@@ -13,8 +13,24 @@ export const createUser = async (userData: any) => {
   if (existingUser) {
     return { error: "User with the same email already exists" };
   }
-  const user = new User(userData);
-  user.password = userData._password;
+
+  // Validate required fields
+  if (!userData.email || !userData.password || !userData.role) {
+    return { error: "Missing required fields: email, password, or role" };
+  }
+
+  const user = new User({
+    email: userData.email,
+    password: userData.password,
+    role: userData.role,
+    firstName: userData.firstName || "",
+    lastName: userData.lastName || "",
+    belongsTo: userData.belongsTo || null,
+    coaches: userData.coaches || [],
+    trainees: userData.trainees || [],
+    brand: userData.brand || { name: "", image: "" },
+    profile: userData.profile || {},
+  });
 
   if (userData._id) {
     user._id = userData._id; // Use the provided _id if it exists

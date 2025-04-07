@@ -19,6 +19,7 @@ import path from "path";
 import MongoStore from "connect-mongo";
 import botRouter from "./Routes/botRouter";
 import eventsRouter from "./Routes/eventsRouter";
+import bugRouter from "./Routes/bugRouter";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -60,12 +61,12 @@ server.post("/upload", (req, res) => {
   }
 
   const userId = req.body.userId;
-  const folderType = req.body.folderType; // 'profile' or 'brand'
-
+  const folderType = req.body.folderType;
   if (
     !userId ||
-    !folderType ||
-    (folderType !== "profile" && folderType !== "brand")
+    !folderType
+    // ||
+    // (folderType !== "profile" && folderType !== "brand")
   ) {
     return res.status(400).send("Invalid userId or folderType.");
   }
@@ -74,13 +75,11 @@ server.post("/upload", (req, res) => {
   let sampleFile = req.files.file as fileUpload.UploadedFile;
 
   // Use the mv() method to place the file somewhere on your server
-  const uploadPath = path.join(
-    __dirname,
-    "upload",
-    userId,
-    folderType,
-    sampleFile.name
-  );
+
+  const uploadPath =
+    folderType === "bug"
+      ? path.join(__dirname, "upload", "bugs", sampleFile.name)
+      : path.join(__dirname, "upload", userId, folderType, sampleFile.name);
 
   sampleFile.mv(uploadPath, (err) => {
     if (err) {
@@ -116,6 +115,7 @@ server.use("/api/v1/trainee", traineeRouter);
 server.use("/api/v1/email", emailRouter);
 server.use("/api/v1/bot", botRouter);
 server.use("/api/v1/events", eventsRouter);
+server.use("/api/v1/bug", bugRouter);
 
 // Handle errors (Route Not Found)
 server.use("*", ErrorHandler);

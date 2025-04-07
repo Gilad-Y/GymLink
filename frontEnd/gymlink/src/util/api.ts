@@ -18,7 +18,7 @@ export const getUser = async (userId: string) => {
 export const updateUser = async (userId: string, userData: any) => {
   if (!userData._password) {
     userData.role = "coach";
-    userData._password = await bcrypt.hash(Math.random().toString(), 10); //// need to hash this!!
+    userData._password = await bcrypt.hash(Math.random().toString(), 10);
     http.get(`/email/sendPasswordLinkToCoach`, { params: userData });
     return await registerUser(userData);
   }
@@ -185,10 +185,13 @@ export const setCoachPass = async (id: any, password: any) => {
   }
 };
 export const uploadImage = async (
-  file: File,
-  folderType: "profile" | "brand",
+  file: File | undefined,
+  folderType: "profile" | "brand" | "bug",
   id: string
 ) => {
+  if (!file) {
+    return;
+  }
   const formData = new FormData();
   formData.append("file", file);
   formData.append("userId", id);
@@ -289,5 +292,9 @@ export const updateStats = async (userId: string, data: any) => {
     return;
   }
   const response = await http.put(`/user/stats/${userId}`, data);
+  return response.data;
+};
+export const uploadBug = async (bug: any) => {
+  const response = await http.post("/bug/upload", bug);
   return response.data;
 };

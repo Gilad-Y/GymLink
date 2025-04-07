@@ -267,7 +267,7 @@ export default function Sidebar() {
             }}
           >
             <ListItem>
-              <ListItemButton>
+              <ListItemButton onClick={() => nav("/support")}>
                 <SupportRoundedIcon />
                 תמיכה
               </ListItemButton>

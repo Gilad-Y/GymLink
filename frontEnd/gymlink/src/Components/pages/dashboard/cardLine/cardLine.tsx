@@ -17,7 +17,6 @@ function CardLine(): React.JSX.Element {
     setStats(user?.stats ? user?.stats : []);
   };
   const refreshData = () => {
-    console.log("refreshing");
     setRefresh(!refresh);
   };
   return (

@@ -6,7 +6,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import { Alert, Container, Stack } from "@mui/material";
+import { Container } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { UserModel } from "../../../models/userModel";
 import store from "../../../redux/store";
@@ -65,28 +65,41 @@ function Register(): React.JSX.Element {
 
   return (
     <div className="register">
-      <Container component="main">
+      <Container
+        component="main"
+        sx={{
+          height: "100vh", // Ensure full viewport height for the container
+          overflowY: "hidden", // Enable vertical scrolling for the entire container
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 2,
+        }}
+      >
         <CssBaseline />
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
-            height: "80vh",
-            width: "150vh",
+            flexDirection: { xs: "column", sm: "row" }, // Column for small screens, row for larger screens
+            width: "100%",
+            maxWidth: "100%",
             justifyContent: "center",
             alignItems: "center",
-            padding: 2,
+            gap: 2,
           }}
         >
           {/* Left Side (Image) */}
           <Box
             sx={{
               backgroundImage: `url(${registerPic})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              height: "100%",
-              flex: 1,
+              backgroundSize: "cover", // Ensures the image covers the container
+              backgroundPosition: "center", // Ensures the image stays centered
+              height: { xs: "200px", sm: "750px" }, // 200px height for xs screens, auto for larger screens
+              // width: "70%", // Full width on all screen sizes
+              // minWidth: "500px",
+              width: { xs: "509px", sm: "70%" },
               borderRadius: "8px",
+              minHeight: "200px", // Prevents the image from becoming too small
             }}
           />
 
@@ -98,28 +111,31 @@ function Register(): React.JSX.Element {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              flex: 1,
-              height: "100%",
+              width: { xs: "100%", sm: "80%", md: "50%" },
               borderRadius: "8px",
+              minWidth: "320px", // Ensures usability on small screens
+              height: "auto", // Let the height adjust dynamically based on content
+              maxHeight: "90vh", // Ensure that Paper height is limited and doesn't go beyond viewport
+              overflowY: "auto", // Enable vertical scrolling for Paper content if needed
             }}
           >
             <h1 style={{ textAlign: "center", fontWeight: "bold" }}>הרשמה</h1>
-            {/* <Stack
-              sx={{ width: "100%" }}
-              spacing={2}
-            >
-              <Alert severity="success">This is a success Alert.</Alert>
-              <Alert severity="info">This is an info Alert.</Alert>
-            </Stack> */}
             <form
               onSubmit={handleSubmit(registerNewUser)}
-              style={{ width: "100%" }}
+              style={{
+                width: "100%",
+                maxWidth: "600px", // Ensure form is not too wide
+                minWidth: "320px", // Ensures usability on small screens
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                padding: "16px",
+                boxSizing: "border-box",
+                height: "auto", // Let the form height adjust dynamically
+              }}
             >
               <FormControl
-                sx={{
-                  m: 1,
-                  width: "100%",
-                }}
+                sx={{ width: "100%" }}
                 variant="outlined"
               >
                 <InputLabel htmlFor="firstName">*שם פרטי</InputLabel>
@@ -139,10 +155,7 @@ function Register(): React.JSX.Element {
               </FormControl>
 
               <FormControl
-                sx={{
-                  m: 1,
-                  width: "100%",
-                }}
+                sx={{ width: "100%" }}
                 variant="outlined"
               >
                 <InputLabel htmlFor="lastName">*שם משפחה</InputLabel>
@@ -161,10 +174,7 @@ function Register(): React.JSX.Element {
               </FormControl>
 
               <FormControl
-                sx={{
-                  m: 1,
-                  width: "100%",
-                }}
+                sx={{ width: "100%" }}
                 variant="outlined"
               >
                 <InputLabel htmlFor="email">*אימייל</InputLabel>
@@ -183,10 +193,7 @@ function Register(): React.JSX.Element {
               </FormControl>
 
               <FormControl
-                sx={{
-                  m: 1,
-                  width: "100%",
-                }}
+                sx={{ width: "100%" }}
                 variant="outlined"
               >
                 <InputLabel htmlFor="outlined-adornment-password">
@@ -219,10 +226,7 @@ function Register(): React.JSX.Element {
               </FormControl>
 
               <FormControl
-                sx={{
-                  m: 1,
-                  width: "100%",
-                }}
+                sx={{ width: "100%" }}
                 variant="outlined"
               >
                 <InputLabel htmlFor="brandName">*שם מותג</InputLabel>
@@ -241,10 +245,7 @@ function Register(): React.JSX.Element {
               </FormControl>
 
               <FormControl
-                sx={{
-                  m: 1,
-                  width: "100%",
-                }}
+                sx={{ width: "100%" }}
                 variant="outlined"
               >
                 <InputLabel htmlFor="brandImage">*תמונת מותג</InputLabel>
@@ -269,7 +270,7 @@ function Register(): React.JSX.Element {
                   />
                 }
                 label="אני מסכים לתנאים"
-                sx={{ alignSelf: "flex-start", marginLeft: "10px" }}
+                sx={{ alignSelf: "flex-start" }}
               />
 
               <Button
@@ -277,8 +278,6 @@ function Register(): React.JSX.Element {
                 fullWidth
                 variant="contained"
                 sx={{
-                  mt: 3,
-                  mb: 2,
                   backgroundColor: "#00796b",
                   "&:hover": {
                     backgroundColor: "#004d40",
@@ -291,9 +290,10 @@ function Register(): React.JSX.Element {
               <Box
                 display="flex"
                 justifyContent="space-between"
+                width="100%"
               >
                 <Link
-                  href="#"
+                  href="/"
                   variant="body2"
                 >
                   יש לי כבר משתמש
@@ -302,7 +302,7 @@ function Register(): React.JSX.Element {
                   href="#"
                   variant="body2"
                 >
-                  {"שכחתי סיסמא"}
+                  שכחתי סיסמא
                 </Link>
               </Box>
             </form>

@@ -1,3 +1,15 @@
 .cardCompo {
-  width: 270px;
+  max-width: 270px;
+}
+
+@media (max-width: 768px) {
+  .cardCompo {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardCompo {
+    max-width: 150px;
+  }
 }

@@ -230,7 +230,11 @@ const App: React.FC = () => {
         onSelectEvent={handleSelectEvent}
         onEventDrop={moveEvent}
         onEventResize={resizeEvent}
-        style={{ height: "100vh" }}
+        style={{
+          height: "100vh",
+          paddingBottom: "30px",
+          borderRadius: "16px",
+        }}
         views={["month", "week", "day"]}
       />
 
